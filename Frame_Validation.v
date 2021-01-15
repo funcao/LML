@@ -51,16 +51,18 @@ Proof.
 Qed.
 
 Theorem transitive_frame_implies_axiom4: 
-  forall M phi,
-  transitive_frame (F M) -> 
-  (M ||= [! []phi -> [][]phi !]).
-Proof. 
-  unfold valid_in_model, transitive_frame.
-  simpl; intros.
-  apply H0.
-  eapply H; split. 
-  - apply H1. 
-  - assumption. 
+  forall f,
+    transitive_frame f ->
+    (forall v p, Build_Model f v ||= [! []p -> [][]p !]).
+Proof.
+  intros f H v p w H1.
+  simpl.
+  intros w' H2 w'' H3.
+  simpl in H1.
+  apply H1.
+  unfold transitive_frame in H.
+  apply H with (w:=w) (w':=w') (w'':=w'').
+  split; assumption.
 Qed.
 
 
