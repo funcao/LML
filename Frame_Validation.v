@@ -30,10 +30,11 @@ Theorem axiomT_implies_reflexive_frame:
   (forall v p, Build_Model f v ||= [! []p -> p !]) -> 
   reflexive_frame f.
 Proof.
-  intros f. apply contra. intros H. apply ex_not_not_all. 
-  exists (fun n => (fun w  => False)). apply ex_not_not_all. exists [!(#0)!].
-  intros H1. unfold valid_in_model in H1. simpl in H1. unfold reflexive_frame in H.
-  apply not_all_ex_not in H. destruct H. rename x into w. destruct H. 
+  intros f. apply contra. intros H. apply ex_not_not_all. unfold reflexive_frame in H.
+  apply not_all_ex_not in H. destruct H. exists (fun n => (fun x  => False)). 
+  apply ex_not_not_all. exists [!(#0)!]. intros H1. unfold valid_in_model in H1. 
+  simpl in H1. apply all_not_not_ex in H1. destruct H1. exists x. 
+  apply not_ex_all_not. intros H1. destruct H.
 Admitted.
 (*
 Theorem reflexive_frame_implies_axiomT:
