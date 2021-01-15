@@ -94,124 +94,117 @@ Proof.
     - exact H2.
 Qed.
 
-Theorem symmetric_frame_implies_axiomB: 
-  forall M phi,
-  symmetric_frame (F M) -> 
-  (M ||= [! phi -> []<> phi !]).
+Theorem symmetric_frame_implies_axiomB:
+  forall f,
+  symmetric_frame f ->
+  (forall v p, Build_Model f v ||= [! p -> []<> p !]).
 Proof.
-  unfold valid_in_model, symmetric_frame.
-  simpl in *; intros; exists w.
-  apply and_comm; split.
-  - apply H0.
-  - eauto.
+  intros f H v p w H1.
+  simpl.
+  intros w' H2.
+  exists w.
+  unfold symmetric_frame in H.
+  split.
+  - apply H.
+    assumption.
+  - assumption.
 Qed.
 
-Theorem axiomB_implies_symmetric_frame: 
-  forall M phi,
-  (M ||= [! phi -> []<> phi !]) -> 
-  symmetric_frame (F M).
-Proof.    
+Theorem axiomB_implies_symmetric_frame:
+  forall f,
+  (forall v p, Build_Model f v ||= [! p -> []<>p !]) -> 
+  symmetric_frame f.
+Proof.
+  intros f.
+  apply contra.
+  intros H; unfold symmetric_frame in H.
+  apply not_all_ex_not in H.
+  destruct H as [w].
+  apply not_all_ex_not in H.
+  destruct H as [w'].
+  apply imply_to_and in H.
+  destruct H as [H1 H2].
+  apply ex_not_not_all.
+  exists (fun _ x => R f w x).
+  apply ex_not_not_all.
+  exists [!(#0)!].
+  intros H; unfold valid_in_model in H; simpl in H.
+  apply H in H1.
+  - destruct H1 as [w''].
+    rename H2 into H1.
+    destruct H0 as [H2 H3].
+    destruct H1.
 Admitted.
 
-Theorem euclidean_frame_implies_axiom5: 
-  forall M phi,
-  euclidian_frame (F M) -> 
-  (M ||= [! <>phi -> []<> phi !]).
+Theorem euclidean_frame_implies_axiom5:
+  forall f,
+  euclidian_frame f ->
+  (forall v p, Build_Model f v ||= [! <>p -> []<> p !]).
 Proof.
-  unfold euclidian_frame, valid_in_model.
-  simpl in *; intros.
-  edestruct H0.
-  exists x; split.
-  - eapply H; split. 
-    * apply H1. 
-    * intuition. 
-  - intuition.
-Qed.
+Admitted.
 
 Theorem axiom5_implies_euclidean_frame: 
-  forall M phi,
-  (M ||= [! <>phi -> []<> phi !]) -> 
-  euclidian_frame (F M).
+  forall f,
+  (forall v p, Build_Model f v ||= [! <>p -> []<>p !]) -> 
+  euclidian_frame f.
 Proof.
 Admitted.
 
-Theorem serial_frame_implies_axiomD: 
-  forall M phi,
-  serial_frame (F M) -> 
-  (M ||= [! []phi -> <> phi !]).
+Theorem serial_frame_implies_axiomD:
+  forall f,
+  serial_frame f ->
+  (forall v p, Build_Model f v ||= [! []p -> <> p !]).
 Proof.
-  unfold valid_in_model, serial_frame.   
-  simpl in *; intros.
-  edestruct H.
-  exists x; split. 
-  - apply H1.
-  - eauto.
-Qed.
+Admitted.
 
 Theorem axiomD_implies_serial_frame: 
-  forall M phi,
-  (M ||= [! []phi -> <> phi !]) -> 
-  serial_frame (F M).
+  forall f,
+  (forall v p, Build_Model f v ||= [! []p -> <> p !]) ->
+  serial_frame f.
 Proof.   
 Admitted.
 
 
 Theorem functional_frame_implies_axiom:
-  forall M phi,
-  functional_frame (F M) -> 
-  (M ||= [! <>phi -> [] phi !]).
+  forall f,
+  functional_frame f ->
+  (forall v p, Build_Model f v ||= [! <>p -> [] p !]).
 Proof.
-  intros; unfold valid_in_model; 
-  unfold functional_frame in *.
-  intros w H0 w1 H1.
-  edestruct H0.
-  edestruct H with (w:=w) (w':=w1) (w'':=x).
-  - split. 
-    + apply H1. 
-    + intuition. 
-  - intuition.
-Qed.
+Admitted.
 
 Theorem axiom_implies_functional_frame:
-  forall M phi,
-  (M ||= [! <>phi -> []phi !]) -> 
-  functional_frame (F M).
+  forall f,
+  (forall v p, Build_Model f v ||= [! <>p -> [] p !]) ->
+  functional_frame f.
 Proof.
 Admitted.
 
 
 Theorem dense_frame_implies_axiom:
-  forall M phi,
-  dense_frame (F M) -> 
-  (M ||= [! [][] phi -> [] phi !]).
+  forall f,
+  dense_frame f ->
+  (forall v p, Build_Model f v ||= [! [][]p -> [] p !]).
 Proof.
 Admitted.
 
 
 Theorem axiom_implies_dense_frame:
-  forall M phi,
-  (M ||= [! [][] phi -> []phi !]) -> 
-  dense_frame (F M).
+  forall f,
+  (forall v p, Build_Model f v ||= [! [][]p -> [] p !]) ->
+  dense_frame f.
 Proof.
 Admitted.
 
 Theorem convergent_frame_implies_axiom:
-  forall M phi,
-  convergent_frame (F M) -> 
-  (M ||= [! <>[] phi -> []<> phi !]).
+  forall f,
+  convergent_frame f ->
+  (forall v p, Build_Model f v ||= [! <>[]p -> []<> p !]).
 Proof.
-  unfold convergent_frame, valid_in_model.
-  simpl in *; intros.
-  edestruct H0.
-  destruct H with (w:=w) (x:=x) (y:=w').
-  destruct H0; auto.
-  exists x0.
-  split; intuition.
-Qed.
+Admitted.
 
 Theorem axiom_implies_convergent_frame:
-  forall (M: Model) (phi: modalFormula),
-  (M ||= [! <>[] phi -> []<> phi !]) -> 
-  convergent_frame (F M).
+  forall f,
+  (forall v p, Build_Model f v ||= [! <>[]p -> []<> p !]) ->
+  convergent_frame f.
 Proof.
 Admitted.
