@@ -30,53 +30,17 @@ Theorem axiomT_implies_reflexive_frame:
   (forall v p, Build_Model f v ||= [! []p -> p !]) -> 
   reflexive_frame f.
 Proof.
-  intros f. apply contra. intros H. apply ex_not_not_all. unfold reflexive_frame in H.
-  apply not_all_ex_not in H. destruct H. exists (fun n => (fun x  => False)). 
-  apply ex_not_not_all. exists [!(#0)!]. intros H1. unfold valid_in_model in H1. 
-  simpl in H1. apply all_not_not_ex in H1. destruct H1. exists x. 
-  apply not_ex_all_not. intros H1. destruct H.
-Admitted.
-(*
-Theorem reflexive_frame_implies_axiomT:
-	forall M p,
-	reflexive_frame (F M) ->
-	(M ||= [! [] p -> p !]).
-Proof.
-	intros;
-	unfold valid_in_model in *;
-	simpl in *; intuition.
+  intros f. apply contra. 
+  intros H. unfold reflexive_frame in H. 
+  apply not_all_ex_not in H. destruct H as [w].
+  apply ex_not_not_all. exists (fun _ x => R f w x). 
+  apply ex_not_not_all. exists [!(#0)!]. 
+  intros H1. unfold valid_in_model in H1. 
+  simpl in H1. destruct H.
+  apply H1. intros w'.
+  intros H'. assumption.
 Qed.
 
-Theorem axiomT_implies_reflexive_frame:
-  forall M p,
-  (M ||= [! [] p -> p !]) -> 
-  reflexive_frame (F M).
-Proof.
-  intros M p. apply contra. intros H. unfold reflexive_frame in H. 
-  apply not_all_ex_not in H. destruct H; rename x into s. unfold valid_in_model.
-  apply ex_not_not_all. exists s.
-(*  apply (neg_formula_valuation M s [! [] p -> p !]).*)
-Admitted.
-
-Theorem axiomT_implies_reflexive_frame_Paulo:
-  forall M p,
-  (M ||= [! [] p -> p !]) -> 
-  reflexive_frame (F M).
-Proof.
-  intros.
-  (* Ou é reflexivo, ou não é. *)
-  edestruct classic.
-  - (* Se for, resolvido. *)
-    exact H0.
-  - (* Se não for, derivamos uma contradição. *)
-    exfalso.
-    (* Ok, se não for reflexivo, tem que existir uma testemunha. *)
-    unfold reflexive_frame in H0. apply not_all_ex_not in H0.
-    destruct H0 as (w, H1). unfold valid_in_model in H.
-    simpl in H. destruct (classic (formula_valuation M w [![]p!])).
-      + simpl in H0. apply H in H0. 
-Qed.
-*)
 Theorem transitive_frame_implies_axiom4: 
   forall M phi,
   transitive_frame (F M) -> 

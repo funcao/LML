@@ -8,12 +8,10 @@
 ## Tabela de conteúdos
 
 <!--ts-->
-* [Abstract](#Abstract)
-* [Technology](#Technology)
-* [Compile](#Compile)
-* [License](#License)
-* [Reference](#Reference)
-* [Authors](#Authors)
+   * [Abstract](#Abstract)
+   * [Technology](#Technology)
+   * [License](#tabela-de-conteudos)
+   * [Authors](#Authors)
 <!--te-->
 
 ## Abstract
@@ -22,21 +20,9 @@ The modelling of certain types of computational systems with classical logic inc
 ## Technology
 - [Coq](https://coq.inria.fr/)
 
-## Compile
-
-In the project directory, you can run:
-
-`
-$ make
-` 
-
 ## License
 
 [BSD-2-Clause](https://github.com/arielsilveira/ModalLibrary/blob/master/LICENSE)
-
-## Reference
-
-SILVEIRA, Ariel Agne da; ROGGIA, Karina Girardi; TORRENS, Paulo Henrique. [Implementação de uma biblioteca de lógica modal em Coq](http://sistemabu.udesc.br/pergamumweb/vinculos/000082/0000820a.pdf). 2020. 65 f. Trabalhos de Conclusão de Curso (Graduação)-Universidade do Estado de Santa Catarina, Centro de Ciências Tecnológicas, Curso de Curso de Ciência da Computação, Joinville, 2020. 
 
 ## Authors
 ---
@@ -47,17 +33,17 @@ Search Group: [FUNÇÃO](https://www.udesc.br/cct/funcao)
         <td>
             <img style="border-radius: 50%;" src="https://avatars1.githubusercontent.com/u/19842910?v=4" width="100px;" alt="">
             <br/>
-            <sub>Author: <a href="https://github.com/arielsilveira"><b>Ariel Agne da Silveira</b></sub> </a>
+            <sub>Author: <a href="github.com/arielsilveira"><b>Ariel Agne da Silveira</b></sub> </a>
         </td>
         <td>
             <img style="border-radius: 50%;" src="https://avatars2.githubusercontent.com/u/6727632?v=4" width="100px;" alt="">
             <br/>
-            <sub>Advisor: <a href="https://github.com/kaqui"><b>Karina Girardi Roggia</b></sub> </a>
+            <sub>Advisor: <a href="github.com/kaqui"><b>Karina Girardi Roggia</b></sub> </a>
         </td>
         <td>
             <img style="border-radius: 50%;" src="https://avatars3.githubusercontent.com/u/394865?v=4" width="100px;" alt="">
             <br/>
-            <sub>Co-Advisor: <a href="https://github.com/takanuva"><b>Paulo Henrique Torrens</b></sub> </a>
+            <sub>Co-Advisor: <a href="github.com/takanuva"><b>Paulo Henrique Torrens</b></sub> </a>
         </td>
     </tr>
 </table>
