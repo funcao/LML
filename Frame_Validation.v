@@ -66,12 +66,33 @@ Proof.
 Qed.
 
 
-Theorem axiom4_implies_transitive_frame: 
-  forall M phi,
-  (M ||=  [! []phi -> [][]phi !]) -> 
-  transitive_frame (F M).
+Theorem axiom4_implies_transitive_frame:
+  forall f,
+  (forall v p, Build_Model f v ||= [! []p -> [][]p !]) -> 
+  transitive_frame f.
 Proof.
-Admitted.
+  intros f.
+  apply contra.
+  intros H; unfold transitive_frame in H.
+  apply not_all_ex_not in H.
+  destruct H as [w].
+  apply not_all_ex_not in H.
+  destruct H as [w'].
+  apply not_all_ex_not in H.
+  destruct H as [w''].
+  apply imply_to_and with (P:= R f w w' /\ R f w' w'') in H.
+  destruct H as [H1 H3]; destruct H1 as [H1 H2].
+  apply ex_not_not_all.
+  exists (fun _ x => R f w x).
+  apply ex_not_not_all.
+  exists [!(#0)!].
+  intros H; unfold valid_in_model in H; simpl in H.
+  destruct H3.
+  eapply H.
+    - intros w''' H3; exact H3.
+    - exact H1.
+    - exact H2.
+Qed.
 
 Theorem symmetric_frame_implies_axiomB: 
   forall M phi,
