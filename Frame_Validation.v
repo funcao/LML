@@ -17,6 +17,26 @@ Definition neg_formula_valuation (M: Model) (m: W (F M)) (q: modalFormula): Prop
 (*Fazer contrapositiva e eliminação da dupla negação modais*)
 
 Theorem reflexive_frame_implies_axiomT:
+    forall f,
+    reflexive_frame f ->
+    (forall v p, Build_Model f v ||= [! [] p -> p !]).
+Proof.
+  intros f HR v p H H1. simpl in H1. unfold reflexive_frame in HR.
+  apply H1 in HR. assumption. 
+Qed.
+
+Theorem axiomT_implies_reflexive_frame:
+  forall f,
+  (forall v p, Build_Model f v ||= [! []p -> p !]) -> 
+  reflexive_frame f.
+Proof.
+  intros f. apply contra. intros H. apply ex_not_not_all. 
+  exists (fun n => (fun w  => False)). apply ex_not_not_all. exists [!(#0)!].
+  intros H1. unfold valid_in_model in H1. simpl in H1. unfold reflexive_frame in H.
+  apply not_all_ex_not in H. destruct H. rename x into w. destruct H. 
+Admitted.
+(*
+Theorem reflexive_frame_implies_axiomT:
 	forall M p,
 	reflexive_frame (F M) ->
 	(M ||= [! [] p -> p !]).
@@ -37,7 +57,25 @@ Proof.
 (*  apply (neg_formula_valuation M s [! [] p -> p !]).*)
 Admitted.
 
-
+Theorem axiomT_implies_reflexive_frame_Paulo:
+  forall M p,
+  (M ||= [! [] p -> p !]) -> 
+  reflexive_frame (F M).
+Proof.
+  intros.
+  (* Ou é reflexivo, ou não é. *)
+  edestruct classic.
+  - (* Se for, resolvido. *)
+    exact H0.
+  - (* Se não for, derivamos uma contradição. *)
+    exfalso.
+    (* Ok, se não for reflexivo, tem que existir uma testemunha. *)
+    unfold reflexive_frame in H0. apply not_all_ex_not in H0.
+    destruct H0 as (w, H1). unfold valid_in_model in H.
+    simpl in H. destruct (classic (formula_valuation M w [![]p!])).
+      + simpl in H0. apply H in H0. 
+Qed.
+*)
 Theorem transitive_frame_implies_axiom4: 
   forall M phi,
   transitive_frame (F M) -> 

@@ -52,6 +52,19 @@ Algumas Convenções:
     Encapsular expressões do tipo #n com paranteses, isto é, sempre escrever (#n) no lugar de #n
 *)
 
+Record Frame : Type := {
+  W : Set;
+  R : W -> W -> Prop;
+}.
+
+Record Model : Type := {
+  F : Frame; 
+  v : nat -> (W F) -> Prop; 
+}.
+
+Notation "{ W -- R }" := (Build_Frame W R).
+Notation "[ F -- V ]" := (Build_Model F V).
+
 Notation "x"          := x (in custom modal at level 0, x ident).
 Notation "( x )"      := x (in custom modal, x at level 99) : modal_scope.
 Notation "[! m !]"    := m (at level 0, m custom modal at level 99) : modal_scope.
@@ -72,16 +85,6 @@ Notation "x :: l"         := (cons x l) (at level 60, right associativity).
 Notation "[ x ; .. ; y ]" := (cons x .. (cons y nil) ..).
 
 Open Scope modal_scope.
-
-Record Frame : Type := {
-  W : Set;
-  R : W -> W -> Prop;
-}.
-
-Record Model : Type := {
-  F : Frame; 
-  v : nat -> (W F) -> Prop; 
-}.
 
 
 Fixpoint formula_valuation (M: Model) (w: W (F M)) (phi: modalFormula): Prop :=
@@ -137,10 +140,10 @@ Notation "|= p" := (valid_formula p)
   (at level 110, no associativity).
 
 (*Print Custom Grammar modal.*)
-
+(*
 Definition teste (M: Model) (w: W (F M)) (p q: modalFormula) (G: theory): Prop :=
   G |= p.
-
+*)
 
 (* If a formula belongs in a theory that is valid in a model, then it's valid in that model. *)
 Theorem entailment_valid_in_model:
