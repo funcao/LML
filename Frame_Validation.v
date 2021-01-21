@@ -118,23 +118,21 @@ Proof.
   intros f.
   apply contra.
   intros H; unfold symmetric_frame in H.
-  apply not_all_ex_not in H.
-  destruct H as [w].
-  apply not_all_ex_not in H.
-  destruct H as [w'].
-  apply imply_to_and in H.
-  destruct H as [H1 H2].
+  apply not_all_ex_not in H; destruct H as [w].
+  apply not_all_ex_not in H; destruct H as [w'].
+  apply imply_to_and in H; destruct H as [H1 H2].
   apply ex_not_not_all.
-  exists (fun _ x => R f w x).
+  exists (fun _ x => ~ R f w' x).
   apply ex_not_not_all.
   exists [!(#0)!].
   intros H; unfold valid_in_model in H; simpl in H.
-  apply H in H1.
-  - destruct H1 as [w''].
-    rename H2 into H1.
-    destruct H0 as [H2 H3].
-    destruct H1.
-Admitted.
+  pose H1 as H3.
+  apply H in H3.
+  - destruct H3 as [w''].
+    destruct H0 as [H3 H4].
+    contradiction.
+  - exact H2.
+Qed.
 
 Theorem euclidean_frame_implies_axiom5:
   forall f,
