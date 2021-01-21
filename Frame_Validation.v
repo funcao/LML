@@ -89,9 +89,9 @@ Proof.
   intros H; unfold valid_in_model in H; simpl in H.
   destruct H3.
   eapply H.
-    - intros w''' H3; exact H3.
-    - exact H1.
-    - exact H2.
+  - intros w''' H3; exact H3.
+  - exact H1.
+  - exact H2.
 Qed.
 
 Theorem symmetric_frame_implies_axiomB:
@@ -139,7 +139,21 @@ Theorem euclidean_frame_implies_axiom5:
   euclidian_frame f ->
   (forall v p, Build_Model f v ||= [! <>p -> []<> p !]).
 Proof.
-Admitted.
+  intros f H v p w H1.
+  simpl.
+  intros w' H2.
+  unfold euclidian_frame in H.
+  simpl in H1.
+  destruct H1 as [w''].
+  destruct H0 as [H1 H3].
+  exists w''.
+  split.
+  - eapply H.
+    split. 
+    + exact H2.
+    + assumption.
+  - assumption.
+Qed.
 
 Theorem axiom5_implies_euclidean_frame: 
   forall f,
