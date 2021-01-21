@@ -74,12 +74,9 @@ Proof.
   intros f.
   apply contra.
   intros H; unfold transitive_frame in H.
-  apply not_all_ex_not in H.
-  destruct H as [w].
-  apply not_all_ex_not in H.
-  destruct H as [w'].
-  apply not_all_ex_not in H.
-  destruct H as [w''].
+  apply not_all_ex_not in H; destruct H as [w].
+  apply not_all_ex_not in H; destruct H as [w'].
+  apply not_all_ex_not in H; destruct H as [w''].
   apply imply_to_and with (P:= R f w w' /\ R f w' w'') in H.
   destruct H as [H1 H3]; destruct H1 as [H1 H2].
   apply ex_not_not_all.
@@ -136,13 +133,13 @@ Qed.
 
 Theorem euclidean_frame_implies_axiom5:
   forall f,
-  euclidian_frame f ->
+  euclidean_frame f ->
   (forall v p, Build_Model f v ||= [! <>p -> []<> p !]).
 Proof.
   intros f H v p w H1.
   simpl.
   intros w' H2.
-  unfold euclidian_frame in H.
+  unfold euclidean_frame in H.
   simpl in H1.
   destruct H1 as [w''].
   destruct H0 as [H1 H3].
@@ -158,8 +155,22 @@ Qed.
 Theorem axiom5_implies_euclidean_frame: 
   forall f,
   (forall v p, Build_Model f v ||= [! <>p -> []<>p !]) -> 
-  euclidian_frame f.
+  euclidean_frame f.
 Proof.
+  intros f.
+  apply contra.
+  intros H; unfold euclidean_frame in H.
+  apply not_all_ex_not in H; destruct H as [w].
+  apply not_all_ex_not in H; destruct H as [w'].
+  apply not_all_ex_not in H; destruct H as [w''].
+  apply imply_to_and with (P := R f w w' /\ R f w w'') in H.
+  destruct H as [H1 H3]; destruct H1 as [H1 H2].
+  apply ex_not_not_all.
+  exists (fun _ _ => ~ R f w' w'').
+  apply ex_not_not_all.
+  exists [!(#0)!].
+  intros H; unfold valid_in_model in H; simpl in H.
+
 Admitted.
 
 Theorem serial_frame_implies_axiomD:

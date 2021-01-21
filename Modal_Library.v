@@ -367,7 +367,7 @@ Definition symmetric_frame (F: Frame): Prop :=
   R F w' w.
 
 (* Euclidiana *)
-Definition euclidian_frame (F: Frame): Prop :=
+Definition euclidean_frame (F: Frame): Prop :=
   forall w w' w'',
   (R F w w' /\ 
   R F w w'') -> 
