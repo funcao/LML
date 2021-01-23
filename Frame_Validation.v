@@ -166,19 +166,37 @@ Proof.
   apply imply_to_and with (P := R f w w' /\ R f w w'') in H.
   destruct H as [H1 H3]; destruct H1 as [H1 H2].
   apply ex_not_not_all.
-  exists (fun _ _ => ~ R f w' w'').
+  exists (fun _ x =>  ~ R f w' x).
   apply ex_not_not_all.
   exists [!(#0)!].
   intros H; unfold valid_in_model in H; simpl in H.
-
-Admitted.
+  destruct H with (w:=w) (w'0:=w').
+  - exists w''.
+    split.
+    + assumption.
+    + assumption.
+  - assumption.
+  - destruct H0 as [H4 H5].
+    contradiction.
+Qed.
 
 Theorem serial_frame_implies_axiomD:
   forall f,
   serial_frame f ->
   (forall v p, Build_Model f v ||= [! []p -> <> p !]).
 Proof.
-Admitted.
+  intros f H v p w H1.
+  unfold serial_frame in H.
+  destruct H with (w:=w) as [w'].
+  rename H0 into H2.
+  simpl in H1.
+  simpl.
+  exists w'.
+  split.
+  - assumption.
+  - apply H1.
+    assumption.
+Qed.
 
 Theorem axiomD_implies_serial_frame: 
   forall f,
