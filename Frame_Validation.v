@@ -202,8 +202,25 @@ Theorem axiomD_implies_serial_frame:
   forall f,
   (forall v p, Build_Model f v ||= [! []p -> <> p !]) ->
   serial_frame f.
-Proof.   
-Admitted.
+Proof.
+  intros f.
+  apply contra.
+  intros H.
+  unfold serial_frame in H.
+  apply not_all_ex_not in H; destruct H as [w].
+  apply ex_not_not_all.
+  exists (fun _ x => ~ R f w x).
+  apply ex_not_not_all.
+  exists [!(#0)!].
+  intros H1; unfold valid_in_model in H1; simpl in H1.
+  edestruct H1.
+  - intros w' H2.
+    destruct H.
+    exists w'.
+    exact H2.
+  - destruct H0 as [H2 H3].
+    contradiction.
+Qed.
 
 
 Theorem functional_frame_implies_axiom:
