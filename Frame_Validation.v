@@ -222,21 +222,44 @@ Proof.
     contradiction.
 Qed.
 
-
 Theorem functional_frame_implies_axiom:
   forall f,
   functional_frame f ->
   (forall v p, Build_Model f v ||= [! <>p -> [] p !]).
 Proof.
-Admitted.
+  intros f H v p w H1 w' H2.
+  unfold functional_frame in H.
+  simpl in H1.
+  destruct H1 as [w'' H1]; destruct H1 as [H1 H3].
+  assert (H4: R (F [f -- v]) w w' /\ R f w w'') by (split; assumption).
+  apply H in H4.
+  subst.
+  assumption.
+Qed.
 
 Theorem axiom_implies_functional_frame:
   forall f,
   (forall v p, Build_Model f v ||= [! <>p -> [] p !]) ->
   functional_frame f.
 Proof.
-Admitted.
-
+  intros f.
+  apply contra.
+  intros H; unfold functional_frame in H.
+  apply not_all_ex_not in H; destruct H as [w].
+  apply not_all_ex_not in H; destruct H as [w'].
+  apply not_all_ex_not in H; destruct H as [w''].
+  apply imply_to_and with (P := R f w w' /\ R f w w'') in H.
+  destruct H as [H1 H3]; destruct H1 as [H1 H2].
+  apply ex_not_not_all.
+  exists (fun _ x => R f w x /\ x <> w'').
+  apply ex_not_not_all.
+  exists [!(#0)!].
+  intros H; unfold valid_in_model in H; simpl in H.
+  apply H in H2.
+  - destruct H2 as [H2 H4].
+    contradiction.
+  - exists w'; repeat split; assumption.
+Qed.
 
 Theorem dense_frame_implies_axiom:
   forall f,
