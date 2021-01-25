@@ -391,7 +391,7 @@ Definition dense_frame (F: Frame) : Prop :=
   exists w'',
   R F w w' -> 
   (R F w w'' /\ 
-  R F w' w'').
+  R F w'' w').
 
 (* Convergente *)
 Definition convergent_frame (F: Frame): Prop :=

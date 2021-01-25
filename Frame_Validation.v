@@ -270,8 +270,15 @@ Proof.
   unfold dense_frame in H.
   destruct H with (w:=w1) (w':=w2) as [w3].
   simpl in H1.
-Admitted.
+  pose H2 as H4.
+  apply H0 in H4.
+  destruct H4 as [H4 H5].
+  eapply H1.
+  - exact H4.
+  - assumption.
+Qed.
 
+(*Definição de frame denso no código estava errada*)
 
 Theorem axiom_implies_dense_frame:
   forall f,
