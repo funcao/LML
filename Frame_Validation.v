@@ -285,6 +285,31 @@ Theorem axiom_implies_dense_frame:
   (forall v p, Build_Model f v ||= [! [][]p -> [] p !]) ->
   dense_frame f.
 Proof.
+  intros f.
+  apply contra.
+  intros H; unfold dense_frame in H.
+  apply not_all_ex_not in H; destruct H as [w1].
+  apply not_all_ex_not in H; destruct H as [w2].
+  apply ex_not_not_all.
+  exists (fun _ _ => ~ R f w1 w2).
+  apply ex_not_not_all.
+  exists [!(#0)!].
+  intros H1; unfold valid_in_model in H1; simpl in H1.
+  eapply not_ex_all_not in H.
+  apply imply_to_and in H.
+  destruct H as [H H'].
+  apply not_and_or in H'.
+  destruct H' as [H' | H''].
+  - edestruct H1.
+    + intros w3 H2 w4 H3.
+      destruct H'.
+      exact H.
+    + contradiction.
+    + contradiction.
+  - pose H as H2.
+    apply H1 in H2.
+    + contradiction.
+    + intros w3 H3 w4 H4.
 Admitted.
 
 Theorem convergent_frame_implies_axiom:
@@ -292,11 +317,40 @@ Theorem convergent_frame_implies_axiom:
   convergent_frame f ->
   (forall v p, Build_Model f v ||= [! <>[]p -> []<> p !]).
 Proof.
-Admitted.
+  intros f H v p w1 H1 w2 H2.
+  unfold convergent_frame in H.
+  simpl in H1.
+  destruct H1 as [w3].
+  destruct H0 as [H1 H3].
+  destruct H with (w:=w1) (x:=w2) (y:=w3) as [w4].
+  destruct H0.
+  - split; assumption.
+  - simpl.
+    exists w4.
+    split.
+    + assumption.
+    + apply H3 in H4.
+      assumption.
+Qed.
 
 Theorem axiom_implies_convergent_frame:
   forall f,
   (forall v p, Build_Model f v ||= [! <>[]p -> []<> p !]) ->
   convergent_frame f.
 Proof.
+  intros f.
+  apply contra.
+  intros H; unfold convergent_frame in H.
+  apply not_all_ex_not in H; destruct H as [w1].
+  apply not_all_ex_not in H; destruct H as [w2].
+  apply not_all_ex_not in H; destruct H as [w3].
+  apply ex_not_not_all.
+  exists (fun _ x => ~ (R f w2 x  \/ R f w3 x)).
+  apply ex_not_not_all.
+  exists [!(#0)!].
+  intros H1; unfold valid_in_model in H1; simpl in H1.
+  eapply not_ex_all_not in H.
+  apply imply_to_and in H.
+  destruct H as [H H'']; destruct H as [H H'].
+  apply not_and_or in H''.
 Admitted.
