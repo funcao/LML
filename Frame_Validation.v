@@ -21,7 +21,7 @@ Theorem reflexive_frame_implies_axiomT:
     reflexive_frame f ->
     (forall v p, Build_Model f v ||= [! [] p -> p !]).
 Proof.
-  intros f HR v p w H1. 
+  intros f HR v p w1 H1. 
   simpl in H1. 
   unfold reflexive_frame in HR.
   apply H1 in HR. 
@@ -36,16 +36,16 @@ Proof.
   intros f. 
   apply contra. 
   intros H; unfold reflexive_frame in H. 
-  apply not_all_ex_not in H; destruct H as [w].
+  apply not_all_ex_not in H; destruct H as [w1].
   apply ex_not_not_all. 
-  exists (fun _ x => R f w x). 
+  exists (fun _ x => R f w1 x). 
   apply ex_not_not_all. 
   exists [!(#0)!]. 
   intros H1; unfold valid_in_model in H1. 
   simpl in H1. 
   destruct H.
   apply H1. 
-  intros w'.
+  intros w2.
   intros H'. 
   assumption.
 Qed.
@@ -55,13 +55,13 @@ Theorem transitive_frame_implies_axiom4:
     transitive_frame f ->
     (forall v p, Build_Model f v ||= [! []p -> [][]p !]).
 Proof.
-  intros f H v p w H1.
+  intros f H v p w1 H1.
   simpl.
-  intros w' H2 w'' H3.
+  intros w2 H2 w3 H3.
   simpl in H1.
   apply H1.
   unfold transitive_frame in H.
-  apply H with (w:=w) (w':=w') (w'':=w'').
+  apply H with (w:=w1) (w':=w2) (w'':=w3).
   split; assumption.
 Qed.
 
@@ -74,19 +74,19 @@ Proof.
   intros f.
   apply contra.
   intros H; unfold transitive_frame in H.
-  apply not_all_ex_not in H; destruct H as [w].
-  apply not_all_ex_not in H; destruct H as [w'].
-  apply not_all_ex_not in H; destruct H as [w''].
-  apply imply_to_and with (P:= R f w w' /\ R f w' w'') in H.
+  apply not_all_ex_not in H; destruct H as [w1].
+  apply not_all_ex_not in H; destruct H as [w2].
+  apply not_all_ex_not in H; destruct H as [w3].
+  apply imply_to_and with (P:= R f w1 w2 /\ R f w2 w3) in H.
   destruct H as [H1 H3]; destruct H1 as [H1 H2].
   apply ex_not_not_all.
-  exists (fun _ x => R f w x).
+  exists (fun _ x => R f w1 x).
   apply ex_not_not_all.
   exists [!(#0)!].
   intros H; unfold valid_in_model in H; simpl in H.
   destruct H3.
   eapply H.
-  - intros w''' H3; exact H3.
+  - intros w4 H3; exact H3.
   - exact H1.
   - exact H2.
 Qed.
@@ -96,10 +96,10 @@ Theorem symmetric_frame_implies_axiomB:
   symmetric_frame f ->
   (forall v p, Build_Model f v ||= [! p -> []<> p !]).
 Proof.
-  intros f H v p w H1.
+  intros f H v p w1 H1.
   simpl.
-  intros w' H2.
-  exists w.
+  intros w2 H2.
+  exists w1.
   unfold symmetric_frame in H.
   split.
   - apply H.
@@ -115,17 +115,17 @@ Proof.
   intros f.
   apply contra.
   intros H; unfold symmetric_frame in H.
-  apply not_all_ex_not in H; destruct H as [w].
-  apply not_all_ex_not in H; destruct H as [w'].
+  apply not_all_ex_not in H; destruct H as [w1].
+  apply not_all_ex_not in H; destruct H as [w2].
   apply imply_to_and in H; destruct H as [H1 H2].
   apply ex_not_not_all.
-  exists (fun _ x => ~ R f w' x).
+  exists (fun _ x => ~ R f w2 x).
   apply ex_not_not_all.
   exists [!(#0)!].
   intros H; unfold valid_in_model in H; simpl in H.
   pose H1 as H3.
   apply H in H3.
-  - destruct H3 as [w''].
+  - destruct H3 as [w3].
     destruct H0 as [H3 H4].
     contradiction.
   - exact H2.
@@ -136,14 +136,14 @@ Theorem euclidean_frame_implies_axiom5:
   euclidean_frame f ->
   (forall v p, Build_Model f v ||= [! <>p -> []<> p !]).
 Proof.
-  intros f H v p w H1.
+  intros f H v p w1 H1.
   simpl.
-  intros w' H2.
+  intros w2 H2.
   unfold euclidean_frame in H.
   simpl in H1.
-  destruct H1 as [w''].
+  destruct H1 as [w3].
   destruct H0 as [H1 H3].
-  exists w''.
+  exists w3.
   split.
   - eapply H.
     split. 
@@ -160,18 +160,18 @@ Proof.
   intros f.
   apply contra.
   intros H; unfold euclidean_frame in H.
-  apply not_all_ex_not in H; destruct H as [w].
-  apply not_all_ex_not in H; destruct H as [w'].
-  apply not_all_ex_not in H; destruct H as [w''].
-  apply imply_to_and with (P := R f w w' /\ R f w w'') in H.
+  apply not_all_ex_not in H; destruct H as [w1].
+  apply not_all_ex_not in H; destruct H as [w2].
+  apply not_all_ex_not in H; destruct H as [w3].
+  apply imply_to_and with (P := R f w1 w2 /\ R f w1 w3) in H.
   destruct H as [H1 H3]; destruct H1 as [H1 H2].
   apply ex_not_not_all.
-  exists (fun _ x =>  ~ R f w' x).
+  exists (fun _ x =>  ~ R f w2 x).
   apply ex_not_not_all.
   exists [!(#0)!].
   intros H; unfold valid_in_model in H; simpl in H.
-  destruct H with (w:=w) (w'0:=w').
-  - exists w''.
+  destruct H with (w:=w1) (w':=w2).
+  - exists w3.
     split.
     + assumption.
     + assumption.
@@ -185,13 +185,13 @@ Theorem serial_frame_implies_axiomD:
   serial_frame f ->
   (forall v p, Build_Model f v ||= [! []p -> <> p !]).
 Proof.
-  intros f H v p w H1.
+  intros f H v p w1 H1.
   unfold serial_frame in H.
-  destruct H with (w:=w) as [w'].
+  destruct H with (w:=w1) as [w2].
   rename H0 into H2.
   simpl in H1.
   simpl.
-  exists w'.
+  exists w2.
   split.
   - assumption.
   - apply H1.
@@ -207,16 +207,16 @@ Proof.
   apply contra.
   intros H.
   unfold serial_frame in H.
-  apply not_all_ex_not in H; destruct H as [w].
+  apply not_all_ex_not in H; destruct H as [w1].
   apply ex_not_not_all.
-  exists (fun _ x => ~ R f w x).
+  exists (fun _ x => ~ R f w1 x).
   apply ex_not_not_all.
   exists [!(#0)!].
   intros H1; unfold valid_in_model in H1; simpl in H1.
   edestruct H1.
-  - intros w' H2.
+  - intros w2 H2.
     destruct H.
-    exists w'.
+    exists w2.
     exact H2.
   - destruct H0 as [H2 H3].
     contradiction.
@@ -227,11 +227,11 @@ Theorem functional_frame_implies_axiom:
   functional_frame f ->
   (forall v p, Build_Model f v ||= [! <>p -> [] p !]).
 Proof.
-  intros f H v p w H1 w' H2.
+  intros f H v p w1 H1 w2 H2.
   unfold functional_frame in H.
   simpl in H1.
-  destruct H1 as [w'' H1]; destruct H1 as [H1 H3].
-  assert (H4: R (F [f -- v]) w w' /\ R f w w'') by (split; assumption).
+  destruct H1 as [w3 H1]; destruct H1 as [H1 H3].
+  assert (H4: R (F [f -- v]) w1 w2 /\ R f w1 w3) by (split; assumption).
   apply H in H4.
   subst.
   assumption.
@@ -245,20 +245,20 @@ Proof.
   intros f.
   apply contra.
   intros H; unfold functional_frame in H.
-  apply not_all_ex_not in H; destruct H as [w].
-  apply not_all_ex_not in H; destruct H as [w'].
-  apply not_all_ex_not in H; destruct H as [w''].
-  apply imply_to_and with (P := R f w w' /\ R f w w'') in H.
+  apply not_all_ex_not in H; destruct H as [w1].
+  apply not_all_ex_not in H; destruct H as [w2].
+  apply not_all_ex_not in H; destruct H as [w3].
+  apply imply_to_and with (P := R f w1 w2 /\ R f w1 w3) in H.
   destruct H as [H1 H3]; destruct H1 as [H1 H2].
   apply ex_not_not_all.
-  exists (fun _ x => R f w x /\ x <> w'').
+  exists (fun _ x => R f w1 x /\ x <> w3).
   apply ex_not_not_all.
   exists [!(#0)!].
   intros H; unfold valid_in_model in H; simpl in H.
   apply H in H2.
   - destruct H2 as [H2 H4].
     contradiction.
-  - exists w'; repeat split; assumption.
+  - exists w2; repeat split; assumption.
 Qed.
 
 Theorem dense_frame_implies_axiom:
@@ -266,6 +266,10 @@ Theorem dense_frame_implies_axiom:
   dense_frame f ->
   (forall v p, Build_Model f v ||= [! [][]p -> [] p !]).
 Proof.
+  intros f H v p w1 H1 w2 H2.
+  unfold dense_frame in H.
+  destruct H with (w:=w1) (w':=w2) as [w3].
+  simpl in H1.
 Admitted.
 
 
