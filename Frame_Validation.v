@@ -291,7 +291,7 @@ Proof.
   apply not_all_ex_not in H; destruct H as [w1].
   apply not_all_ex_not in H; destruct H as [w2].
   apply ex_not_not_all.
-  exists (fun _ _ => ~ R f w1 w2).
+  exists (fun _ x => ~ R f w1 x).
   apply ex_not_not_all.
   exists [!(#0)!].
   intros H1; unfold valid_in_model in H1; simpl in H1.
@@ -300,16 +300,14 @@ Proof.
   destruct H as [H H'].
   apply not_and_or in H'.
   destruct H' as [H' | H''].
+(*   - apply H' in H; contradiction.
   - edestruct H1.
-    + intros w3 H2 w4 H3.
-      destruct H'.
-      exact H.
-    + contradiction.
-    + contradiction.
-  - pose H as H2.
-    apply H1 in H2.
-    + contradiction.
     + intros w3 H3 w4 H4.
+      apply H1 in H4.
+      * assumption.
+      * intros. admit.
+    + exact H.
+    + apply H. *)
 Admitted.
 
 Theorem convergent_frame_implies_axiom:
@@ -344,13 +342,13 @@ Proof.
   apply not_all_ex_not in H; destruct H as [w1].
   apply not_all_ex_not in H; destruct H as [w2].
   apply not_all_ex_not in H; destruct H as [w3].
-  apply ex_not_not_all.
-  exists (fun _ x => ~ (R f w2 x  \/ R f w3 x)).
-  apply ex_not_not_all.
-  exists [!(#0)!].
-  intros H1; unfold valid_in_model in H1; simpl in H1.
   eapply not_ex_all_not in H.
   apply imply_to_and in H.
   destruct H as [H H'']; destruct H as [H H'].
   apply not_and_or in H''.
+  apply ex_not_not_all.
+  exists (fun _ x => R f w1 x).
+  apply ex_not_not_all.
+  exists [!(#0)!].
+  intros H1; unfold valid_in_model in H1; simpl in H1.
 Admitted.
