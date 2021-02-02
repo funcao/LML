@@ -16,6 +16,7 @@ Definition neg_formula_valuation (M: Model) (m: W (F M)) (q: modalFormula): Prop
 
 (*Fazer contrapositiva e eliminação da dupla negação modais*)
 
+
 Theorem reflexive_frame_implies_axiomT:
     forall f,
     reflexive_frame f ->
@@ -294,20 +295,23 @@ Proof.
   exists (fun _ x => ~ R f w1 x).
   apply ex_not_not_all.
   exists [!(#0)!].
-  intros H1; unfold valid_in_model in H1; simpl in H1.
+  intros H1; unfold valid_in_model in H1; simpl in H1. 
   eapply not_ex_all_not in H.
   apply imply_to_and in H.
   destruct H as [H H'].
   apply not_and_or in H'.
   destruct H' as [H' | H''].
-(*   - apply H' in H; contradiction.
+  - apply H' in H; contradiction.
   - edestruct H1.
     + intros w3 H3 w4 H4.
       apply H1 in H4.
       * assumption.
-      * intros. admit.
+      * intros w5 H5 w6 H6.
+        apply H1 in H6.
+        -- assumption.
+        -- intros w7 H7 w8 H8. admit.
     + exact H.
-    + apply H. *)
+    + apply H. 
 Admitted.
 
 Theorem convergent_frame_implies_axiom:
@@ -342,13 +346,46 @@ Proof.
   apply not_all_ex_not in H; destruct H as [w1].
   apply not_all_ex_not in H; destruct H as [w2].
   apply not_all_ex_not in H; destruct H as [w3].
-  eapply not_ex_all_not in H.
+(*   eapply not_ex_all_not in H.
   apply imply_to_and in H.
   destruct H as [H H'']; destruct H as [H H'].
-  apply not_and_or in H''.
+  apply not_and_or in H''. *)
   apply ex_not_not_all.
-  exists (fun _ x => R f w1 x).
+  exists (fun _ x => (R f w2 x /\ R f w3 x)).
   apply ex_not_not_all.
   exists [!(#0)!].
   intros H1; unfold valid_in_model in H1; simpl in H1.
+  induction H1 with (w1) (w2).
+  - destruct H0 as [H2 H3].
+    eapply not_ex_all_not in H.
+    apply imply_to_and in H.
+    destruct H as [H H'']; destruct H as [H H'].
+    apply H'' in H3; contradiction.
+  - exists w3. 
+    eapply not_ex_all_not in H.
+    apply imply_to_and in H.
+    destruct H as [H H'']; destruct H as [H H'].
+    split.
+    + assumption.
+    + intros w4 H2. admit.
+  - 
+(*   - exists w3.
+    split.
+    + assumption.
+    + intros w4 H2. right; assumption.
+  -  *)
 Admitted.
+
+(* 
+Theorem validation_frame_reflexivo_volta:
+  forall M p,
+  (M ||= [![] p -> p!]) -> 
+  reflexive_frame (F M).
+Proof.
+  intros M p.
+  apply contra.
+  intros H.
+  inversion M.
+  apply not_all_ex_not in H; destruct H as [w1].
+  specialize v with (fun _ x => R F _ x).
+Admitted. *)

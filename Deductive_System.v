@@ -63,27 +63,8 @@ Inductive deduction (A: axiom -> Prop): theory -> modalFormula -> Prop :=
                 (f: modalFormula)
                 (d1: deduction A t f),
          deduction A t ([! [] f !]).
-(*
-Inductive deduction' (A: axiom -> Prop): theory -> modalFormula -> Prop :=
-  (* Premise. *)
-  | Prem': forall (t: theory)
-                 (f: modalFormula)
-                 (i: nat),
-          (nth_error t i = Some f) -> deduction' A t f
-  (* Axiom. *)
-  | Ax': forall (t: theory)
-               (a: axiom)
-               (f: modalFormula),
-        A a -> instantiate a = f -> deduction' A t f
-  (* Modus Ponens. *)
-  | Mp': forall (t: theory)
-                (f g: modalFormula),
-        deduction' A t (f -> g) -> deduction' A t f -> deduction' A t g
-  (* Generalization. *)
-  | Nec': forall (t: theory)
-                (f: modalFormula),
-        deduction' A t f -> deduction' A t (.[] f).
-*)
+
+
 Inductive K: axiom -> Prop :=
   | K_ax1: forall p q, K (ax1 p q)
   | K_ax2: forall p q r, K (ax2 p q r)
