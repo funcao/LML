@@ -141,6 +141,15 @@ Inductive Lindenbaum_set'': nat -> theory -> Prop :=
     Lindenbaum_set'' n2 (union Delta1 Delta2)
 .
 
+Inductive LindenbaumList (Delta:theory): Prop :=
+  | C1: (exists n, Lindenbaum_set'' n Delta) -> LindenbaumList Delta.
+
+(* Definition build_lindenbaum (Delta:theory) : theory :=
+  match LindenbaumList Delta with
+    | C1 _ Delta => Delta
+  end 
+. *)
+
 Lemma construct_set': (*existe 1 conjunto de Lindenbaum*)
   forall n,
   exists Delta,
