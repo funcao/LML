@@ -90,6 +90,21 @@ Variable A: axiom -> Prop.
 Variable Gamma: theory.
 Variable G: Consistent A Gamma.
 
+Fixpoint sucessive_union (n: nat) (Delta1 Delta2: theory): theory :=
+  match n with
+    | O => Gamma
+    | S n' => 
+      match Delta1, Delta2 with
+        | nil, nil => sucessive_union n' nil nil
+        | h::t, nil => h :: sucessive_union n' Delta1 nil
+        | nil, h::t => h :: sucessive_union n' nil Delta2
+        | h1::t1, h2::t2 => 
+                  if negb (modalequiv h1 h2) then h1 :: h2 :: sucessive_union n' Delta1 Delta2
+                  else h1 :: sucessive_union n' Delta1 Delta2
+      end
+  end
+.
+
 Inductive Lindenbaum_set': nat -> theory -> Prop :=
   | Lindenbaum_zero':
     Lindenbaum_set' 0 Gamma
@@ -103,6 +118,14 @@ Inductive Lindenbaum_set': nat -> theory -> Prop :=
     Lindenbaum_set' n Delta ->
     ~Consistent A (P n :: Delta) ->
     Lindenbaum_set' (S n) Delta.
+
+Fixpoint build_lindenbaum_set (n:nat) (Delta: theory) : theory :=
+ match Lindenbaum_set' n Delta with
+  | Lindenbaum_zero' => nil
+  | Lindenbaum_succ1' _ _ _ _ => nil
+  | Lindenbaum_succ2' _ _ _ _ => nil
+  end
+.
 
 Lemma construct_set': (*existe 1 conjunto de Lindenbaum*)
   forall n,

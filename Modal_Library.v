@@ -42,6 +42,18 @@ Fixpoint literals (f:modalFormula) : set nat :=
     | Implies  p1 p2 => set_union eq_nat_dec (literals p1) (literals p2) 
 end.
 
+Fixpoint modalequiv (m1 m2:modalFormula) : bool :=
+    match m1,m2 with 
+    | Lit x1, Lit x2               => if x1 =? x2 then true else false
+    | Neg p1, Neg p2               => modalequiv p1 p2
+    | Box p1, Box p2               => modalequiv p1 p2
+    | Dia p1, Dia p2               => modalequiv p1 p2
+    | And p1 p2, And p3 p4         => andb (modalequiv p1 p3) (modalequiv p2 p4) 
+    | Or p1 p2, Or p3 p4           => andb (modalequiv p1 p3) (modalequiv p2 p4)
+    | Implies p1 p2, Implies p3 p4 => andb (modalequiv p1 p3) (modalequiv p2 p4)
+    | _,_                          => false
+end.
+
 Declare Custom Entry modal.
 Declare Scope modal_scope.
 
