@@ -90,18 +90,13 @@ Variable A: axiom -> Prop.
 Variable Gamma: theory.
 Variable G: Consistent A Gamma.
 
-Fixpoint sucessive_union (n: nat) (Delta1 Delta2: theory): theory :=
-  match n with
-    | O => Gamma
-    | S n' => 
-      match Delta1, Delta2 with
-        | nil, nil => sucessive_union n' nil nil
-        | h::t, nil => h :: sucessive_union n' Delta1 nil
-        | nil, h::t => h :: sucessive_union n' nil Delta2
-        | h1::t1, h2::t2 => 
-                  if negb (modalequiv h1 h2) then h1 :: h2 :: sucessive_union n' Delta1 Delta2
-                  else h1 :: sucessive_union n' Delta1 Delta2
-      end
+Fixpoint union (Delta1 Delta2: theory): theory :=
+  match Delta1, Delta2 with
+    | nil, nil => nil
+    | h::t, nil => h :: t
+    | nil, h::t => h :: t
+    | h1::t1, h2::t2 => if negb (modalequiv h1 h2) then h1 :: h2 :: union t1 t2
+                        else h1 :: union t1 t2
   end
 .
 
@@ -119,13 +114,30 @@ Inductive Lindenbaum_set': nat -> theory -> Prop :=
     ~Consistent A (P n :: Delta) ->
     Lindenbaum_set' (S n) Delta.
 
-Fixpoint build_lindenbaum_set (n:nat) (Delta: theory) : theory :=
- match Lindenbaum_set' n Delta with
-  | Lindenbaum_zero' => nil
-  | Lindenbaum_succ1' _ _ _ _ => nil
-  | Lindenbaum_succ2' _ _ _ _ => nil
-  end
+Inductive Lindenbaum_set'': nat -> theory -> Prop :=
+  | Lindenbaum_zero'':
+    Lindenbaum_set'' 0 Gamma
+  | Lindenbaum_succ1'':
+    forall n Delta,
+    Lindenbaum_set'' n Delta ->
+    Consistent A (P n :: Delta) ->
+    Lindenbaum_set'' (S n) (P n :: Delta)
+  | Lindenbaum_succ2'':
+    forall n Delta,
+    Lindenbaum_set'' n Delta ->
+    ~Consistent A (P n :: Delta) ->
+    Lindenbaum_set'' (S n) Delta
+  | Lindenbaum_union:
+    forall n Delta1 Delta2,
+    Lindenbaum_set'' n Delta1 ->
+    Lindenbaum_set'' n Delta2 ->
+    Lindenbaum_set'' n (union Delta1 Delta2)
 .
+
+Inductive build_lindenbaum_set (n:nat) (Delta: theory) : Prop :=
+  | BL: Lindenbaum_set'' n Delta -> build_lindenbaum_set n Delta
+.
+
 
 Lemma construct_set': (*existe 1 conjunto de Lindenbaum*)
   forall n,
