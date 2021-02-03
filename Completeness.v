@@ -1,4 +1,4 @@
-Require Import Modal_Library Deductive_System List Classical.
+Require Import Modal_Library Deductive_System List Classical Bool.
 
 Definition Consistent (A: axiom -> Prop) (G : theory) : Prop := 
   forall p,
@@ -127,17 +127,19 @@ Inductive Lindenbaum_set'': nat -> theory -> Prop :=
     Lindenbaum_set'' n Delta ->
     ~Consistent A (P n :: Delta) ->
     Lindenbaum_set'' (S n) Delta
-  | Lindenbaum_union:
-    forall n Delta1 Delta2,
-    Lindenbaum_set'' n Delta1 ->
-    Lindenbaum_set'' n Delta2 ->
-    Lindenbaum_set'' n (union Delta1 Delta2)
+  | Lindenbaum_union1:
+    forall n1 n2 Delta1 Delta2,
+    Lindenbaum_set'' n1 Delta1 ->
+    Lindenbaum_set'' n2 Delta2 ->
+    n2 <= n1 ->
+    Lindenbaum_set'' n1 (union Delta1 Delta2)
+  | Lindenbaum_union2:
+    forall n1 n2 Delta1 Delta2,
+    Lindenbaum_set'' n1 Delta1 ->
+    Lindenbaum_set'' n2 Delta2 ->
+    n1 <= n2 ->
+    Lindenbaum_set'' n2 (union Delta1 Delta2)
 .
-
-Inductive build_lindenbaum_set (n:nat) (Delta: theory) : Prop :=
-  | BL: Lindenbaum_set'' n Delta -> build_lindenbaum_set n Delta
-.
-
 
 Lemma construct_set': (*existe 1 conjunto de Lindenbaum*)
   forall n,
