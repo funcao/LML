@@ -59,9 +59,11 @@ Declare Scope modal_scope.
 
 (*
 Algumas Convenções:
-    Sempre encapsular formulas modais com [! !], mesmo se seja somente uma única formula
+    Sempre encapsular formulas modais com [! !], 
+      mesmo se seja somente uma única formula
     Usar [ ] ao invés de nil
-    Encapsular expressões do tipo #n com paranteses, isto é, sempre escrever (#n) no lugar de #n
+    Encapsular expressões do tipo #n com paranteses, 
+      isto é, sempre escrever (#n) no lugar de #n
 *)
 
 Record Frame : Type := {

@@ -141,14 +141,28 @@ Inductive Lindenbaum_set'': nat -> theory -> Prop :=
     Lindenbaum_set'' n2 (union Delta1 Delta2)
 .
 
-Inductive LindenbaumList (Delta:theory): Prop :=
-  | C1: (exists n, Lindenbaum_set'' n Delta) -> LindenbaumList Delta.
+Definition BConsistent (A: axiom -> Prop) (G : theory) : bool := 
+  match (forall p, ~ (A; G |-- [! p /\ ~p !])) with
+    | True  => true
+  end
+.
 
-(* Definition build_lindenbaum (Delta:theory) : theory :=
-  match LindenbaumList Delta with
-    | C1 _ Delta => Delta
-  end 
-. *)
+Fixpoint Construct_Lindenbaum (n:nat) (Delta:theory): theory :=
+  match n with
+    | O    => Gamma
+    | S n' => if BConsistent A (P n :: Delta) then
+                union (P n :: Delta) (Construct_Lindenbaum n' Delta)
+              else
+                union Delta (Construct_Lindenbaum n' Delta)
+  end
+.
+
+(*
+  TODO: Confirmar que a segunda definição indutiva esta correta
+        Verificar se a função é equivalente a alguma das 
+          definições indutivas
+        Fazer os Lemas 4, 6, 7, 8 e 9 do texto
+*)
 
 Lemma construct_set': (*existe 1 conjunto de Lindenbaum*)
   forall n,
