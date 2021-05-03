@@ -18,11 +18,11 @@ Definition neg_formula_valuation (M: Model) (m: W (F M)) (q: modalFormula): Prop
 
 
 Theorem reflexive_frame_implies_axiomT:
-    forall f,
+    forall f p,
     reflexive_frame f ->
-    (forall v p, Build_Model f v ||= [! [] p -> p !]).
+    (forall v, Build_Model f v ||= [! [] p -> p !]).
 Proof.
-  intros f HR v p w1 H1. 
+  intros f p HR v w1 H1. 
   simpl in H1. 
   unfold reflexive_frame in HR.
   apply H1 in HR. 
@@ -42,15 +42,37 @@ Proof.
   exists (fun _ x => R f w1 x). 
   apply ex_not_not_all. 
   exists [!(#0)!]. 
-  intros H1; unfold valid_in_model in H1. 
-  simpl in H1. 
+  intros H1; unfold valid_in_model in H1; simpl in H1. 
+  destruct H.
+  apply H1. 
+  intros w2 H'; assumption.
+Qed.
+(*
+Theorem axiomT_implies_reflexive_frame':
+  forall f p,
+  (forall v, Build_Model f v ||= [! []p -> p !]) -> 
+  reflexive_frame f.
+Proof.
+  intros f p. 
+  apply contra. 
+  intros H; unfold reflexive_frame in H. 
+  apply not_all_ex_not in H; destruct H as [w1].
+  apply ex_not_not_all. 
+  exists (fun _ x => R f w1 x).
+  unfold valid_in_model.
+  intros H1; unfold valid_in_model in H1; simpl in H1.
+  destruct H.
+  apply H1.
+   apply ex_not_not_all. 
+  exists w1. 
+  intros H1; unfold valid_in_model in H1; simpl in H1.
   destruct H.
   apply H1. 
   intros w2.
   intros H'. 
-  assumption.
+  assumption. 
 Qed.
-
+*)
 Theorem transitive_frame_implies_axiom4: 
   forall f,
     transitive_frame f ->

@@ -157,6 +157,13 @@ Fixpoint Construct_Lindenbaum (n:nat) (Delta:theory): theory :=
   end
 .
 
+(* 
+Lemma construct_lindenbaum':
+  forall n,
+  exists Delta Delta1,
+  Delta1 = Construct_Lindenbaum n Delta. 
+*)
+
 (*
   TODO: Confirmar que a segunda definição indutiva esta correta
         Verificar se a função é equivalente a alguma das 
