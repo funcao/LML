@@ -368,46 +368,21 @@ Proof.
   apply not_all_ex_not in H; destruct H as [w1].
   apply not_all_ex_not in H; destruct H as [w2].
   apply not_all_ex_not in H; destruct H as [w3].
-(*   eapply not_ex_all_not in H.
+  eapply not_ex_all_not in H.
   apply imply_to_and in H.
   destruct H as [H H'']; destruct H as [H H'].
-  apply not_and_or in H''. *)
-  apply ex_not_not_all.
-  exists (fun _ x => (R f w2 x /\ R f w3 x)).
-  apply ex_not_not_all.
-  exists [!(#0)!].
-  intros H1; unfold valid_in_model in H1; simpl in H1.
-  induction H1 with (w1) (w2).
-  - destruct H0 as [H2 H3].
-    eapply not_ex_all_not in H.
-    apply imply_to_and in H.
-    destruct H as [H H'']; destruct H as [H H'].
-    apply H'' in H3; contradiction.
-  - exists w3. 
-    eapply not_ex_all_not in H.
-    apply imply_to_and in H.
-    destruct H as [H H'']; destruct H as [H H'].
-    split.
-    + assumption.
-    + intros w4 H2. admit.
-  - 
-(*   - exists w3.
-    split.
-    + assumption.
-    + intros w4 H2. right; assumption.
-  -  *)
-Admitted.
+  apply not_and_or in H''.
+  destruct H'' as [H'' | H'''].
+  - apply ex_not_not_all.
+    exists (fun _ x => (R f w3 x)).
+    apply ex_not_not_all.
+    exists ([!#0!]).
+    intros H1; unfold valid_in_model in H1; simpl in H1.
+    destruct H1 with (w1) (w2).
+    + exists w2; split; try assumption.
+      intros w4 H2. 
+      Admitted.
+    
+(*       eapply H'' in H2.
+. *)
 
-(* 
-Theorem validation_frame_reflexivo_volta:
-  forall M p,
-  (M ||= [![] p -> p!]) -> 
-  reflexive_frame (F M).
-Proof.
-  intros M p.
-  apply contra.
-  intros H.
-  inversion M.
-  apply not_all_ex_not in H; destruct H as [w1].
-  specialize v with (fun _ x => R F _ x).
-Admitted. *)
