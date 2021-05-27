@@ -372,7 +372,7 @@ Proof.
   apply imply_to_and in H.
   destruct H as [H H'']; destruct H as [H H'].
   apply not_and_or in H''.
-  destruct H'' as [H'' | H'''].
+  destruct H'' as [H0 | H0].
   - apply ex_not_not_all.
     exists (fun _ x => (R f w3 x)).
     apply ex_not_not_all.
@@ -380,9 +380,70 @@ Proof.
     intros H1; unfold valid_in_model in H1; simpl in H1.
     destruct H1 with (w1) (w2).
     + exists w2; split; try assumption.
-      intros w4 H2. 
-      Admitted.
-    
-(*       eapply H'' in H2.
-. *)
+      intros w4 H2.
+(*      apply H2 in H0.
+      contradiction.
+      Admitted.*)
+      admit.
+    + assumption.
+    + admit.
+  - apply ex_not_not_all.
+    exists (fun _ x => (R f w2 x)).
+    apply ex_not_not_all.
+    exists ([!#0!]).
+    intros H1; unfold valid_in_model in H1; simpl in H1.
+    destruct H1 with (w1) (w3).
+    + exists w3; split; try assumption.
+      intros w4 H2.
+(*      apply H2 in H0.
+      contradiction.
+      Admitted.*)
+      admit.
+    + assumption.
+    + admit.
+Admitted.
 
+
+Theorem axiom_implies_convergent_frame':
+  forall f,
+  (forall v p, Build_Model f v ||= [! <>[]p -> []<> p !]) ->
+  convergent_frame f.
+Proof.
+  intros f.
+  apply contra.
+  intros H; unfold convergent_frame in H.
+  apply not_all_ex_not in H; destruct H as [w1].
+  apply not_all_ex_not in H; destruct H as [w2].
+  apply not_all_ex_not in H; destruct H as [w3].
+  assert ((R f w1 w2 /\ R f w1 w3) /\ (forall z, ~ R f w2 z \/ ~ R f w3 z)).
+  - split.
+    + eapply not_ex_all_not in H.
+      apply imply_to_and in H.
+      destruct H.
+      exact H.
+    + intros w4.
+      eapply not_ex_all_not in H.
+      apply imply_to_and in H.
+      destruct H.
+      apply not_and_or in H0.
+      exact H0.
+  - destruct H0.
+    edestruct H1. (*Ver isso aqui*)
+    apply ex_not_not_all.
+    exists (fun _ x => (R f w3 x)).
+    edestruct H.
+    apply not_and_or in H1.
+    destruct H1.
+    + 
+    apply ex_not_not_all.
+    exists ([!#0!]).
+    intros H1; unfold valid_in_model in H1; simpl in H1.
+    destruct H1 with (w1) (w2).
+    + exists w2; split.
+      * edestruct H. apply H0.
+      * intros w4 H2.
+        edestruct H.
+        apply not_and_or in H3.
+        destruct H3.
+        -- apply H3 in H2; contradiction.
+        --
