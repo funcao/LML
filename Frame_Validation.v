@@ -428,22 +428,21 @@ Proof.
       apply not_and_or in H0.
       exact H0.
   - destruct H0.
-    edestruct H1. (*Ver isso aqui*)
+    eapply not_ex_all_not in H.
+    apply imply_to_and in H; destruct H; clear H0. (*H0 e H são a mesma coisa*)
+    apply not_and_or in H2.
     apply ex_not_not_all.
-    exists (fun _ x => (R f w3 x)).
-    edestruct H.
-    apply not_and_or in H1.
-    destruct H1.
-    + 
-    apply ex_not_not_all.
-    exists ([!#0!]).
-    intros H1; unfold valid_in_model in H1; simpl in H1.
-    destruct H1 with (w1) (w2).
-    + exists w2; split.
-      * edestruct H. apply H0.
-      * intros w4 H2.
-        edestruct H.
-        apply not_and_or in H3.
-        destruct H3.
-        -- apply H3 in H2; contradiction.
-        --
+    + destruct H2 as [H2 | H2].
+      * exists (fun _ x => (R f w3 x)).
+        apply ex_not_not_all.
+        exists ([!#0!]).
+        intros H3; unfold valid_in_model in H3; simpl in H3.
+        destruct H3 with (w1) (w2).
+        -- exists w2; split; [apply H | ]. (*<--- "Aplique H no primeiro Subgoal"*)
+           intros w4 H4.                   (*"não faça nada no segundo"*)
+           edestruct H1.
+           ++ apply H0 in H4; contradiction.
+           ++ admit.
+        -- destruct H; assumption.
+        -- 
+Qed.
