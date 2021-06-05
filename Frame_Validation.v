@@ -367,17 +367,17 @@ Proof.
   apply not_all_ex_not in H; destruct H as [w3].
   eapply not_ex_all_not in H.
   apply imply_to_and in H.
-  destruct H as [H H'']; destruct H as [H H'].
-  apply not_and_or in H''.
-  destruct H'' as [H0 | H0].
+  destruct H as [H H1]; destruct H as [H H'].
+  apply not_and_or in H1.
+  destruct H1 as [H1 | H1].
   - apply ex_not_not_all.
     exists (fun _ x => (R f w3 x)).
     apply ex_not_not_all.
     exists ([!#0!]).
-    intros H1; unfold valid_in_model in H1; simpl in H1.
-    destruct H1 with (w1) (w2).
+    intros H2; unfold valid_in_model in H2; simpl in H2.
+    destruct H2 with (w1) (w2).
     + exists w2; split; try assumption.
-      intros w4 H2.
+      intros w4 H3.
 (*      apply H2 in H0.
       contradiction.
       Admitted.*)
@@ -388,20 +388,19 @@ Proof.
     exists (fun _ x => (R f w2 x)).
     apply ex_not_not_all.
     exists ([!#0!]).
-    intros H1; unfold valid_in_model in H1; simpl in H1.
-    destruct H1 with (w1) (w3).
+    intros H2; unfold valid_in_model in H2; simpl in H2.
+    destruct H2 with (w1) (w3).
     + exists w3; split; try assumption.
-      intros w4 H2.
+      intros w4 H3.
 (*      apply H2 in H0.
       contradiction.
       Admitted.*)
       admit.
     + assumption.
     + admit.
-Admitted.
+Abort.
 
-
-Theorem axiom_implies_convergent_frame':
+Theorem axiom_implies_convergent_frame'':
   forall f,
   (forall v p, Build_Model f v ||= [! <>[]p -> []<> p !]) ->
   convergent_frame f.
@@ -412,34 +411,52 @@ Proof.
   apply not_all_ex_not in H; destruct H as [w1].
   apply not_all_ex_not in H; destruct H as [w2].
   apply not_all_ex_not in H; destruct H as [w3].
-  assert ((R f w1 w2 /\ R f w1 w3) /\ (forall z, ~ R f w2 z \/ ~ R f w3 z)).
-  - split.
-    + eapply not_ex_all_not in H.
-      apply imply_to_and in H.
-      destruct H.
-      exact H.
-    + intros w4.
-      eapply not_ex_all_not in H.
-      apply imply_to_and in H.
-      destruct H.
-      apply not_and_or in H0.
-      exact H0.
-  - destruct H0.
-    eapply not_ex_all_not in H.
-    apply imply_to_and in H; destruct H; clear H0. (*H0 e H são a mesma coisa*)
-    apply not_and_or in H2.
-    apply ex_not_not_all.
-    + destruct H2 as [H2 | H2].
-      * exists (fun _ x => (R f w3 x)).
-        apply ex_not_not_all.
-        exists ([!#0!]).
-        intros H3; unfold valid_in_model in H3; simpl in H3.
-        destruct H3 with (w1) (w2).
-        -- exists w2; split; [apply H | ]. (*<--- "Aplique H no primeiro Subgoal"*)
-           intros w4 H4.                   (*"não faça nada no segundo"*)
-           edestruct H1.
-           ++ apply H0 in H4; contradiction.
-           ++ admit.
-        -- destruct H; assumption.
-        -- 
-Qed.
+  apply ex_not_not_all.
+  exists(fun _ x => R f w3 x \/ R f w2 x).
+  apply ex_not_not_all.
+  exists ([!#0!]).
+  intros H2; unfold valid_in_model in H2; simpl in H2.
+  destruct H2 with (w1) (w2).
+  - exists w2; split.
+    + eapply not_ex_all_not in H;
+      apply imply_to_and in H;
+      destruct H as [H0 H1]; 
+      destruct H0; 
+      assumption.
+    + intros w4 H4; 
+      right; 
+      assumption.
+  - eapply not_ex_all_not in H;
+    apply imply_to_and in H;
+    destruct H as [H0 H1];
+    destruct H0; 
+    assumption.
+  - rename x into w4.
+    clear H2. (*Isso não vai ajudar em nada e ocupa espaço no Proof View*)
+    apply not_ex_all_not with (n := w4) in H.
+    apply imply_to_and in H.
+    destruct H as [H H1]; destruct H as [H H'].
+    destruct H0 as [H2 H3].
+    (*stuck*)
+    firstorder.
+    (*super stuck*)
+Abort.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
