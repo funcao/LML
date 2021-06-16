@@ -414,3 +414,11 @@ Definition convergent_frame (F: Frame): Prop :=
   (R F w x /\ 
   R F w y) -> 
   (R F x z /\ R F y z).
+
+(* Convergente *)
+Definition convergent_frame' (F: Frame): Prop :=
+  forall w x y,
+  (R F w x /\ 
+  R F w y) ->
+  (exists z, (R F x z /\ R F y z)).
+  
