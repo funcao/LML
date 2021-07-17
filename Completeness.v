@@ -85,7 +85,12 @@ End Lindebaum.
 
 Section Lindebaum'.
 
-Variable P: nat -> modalFormula.
+Variable P: nat -> modalFormula. 
+(*
+Pn é um átomo, i.e., se insiro somente Pn's no conj. de lindenbaum,
+nunca terei um conjunto de todas as formulas, apenas um conjunto de todos
+os atomos
+*)
 Variable A: axiom -> Prop.
 Variable Gamma: theory.
 Variable G: Consistent A Gamma.
@@ -100,10 +105,65 @@ Fixpoint union (Delta1 Delta2: theory): theory :=
   end
 .
 
-Inductive Lindenbaum_set': nat -> theory -> Prop :=
+Inductive FormulaSet (n: nat): modalFormula -> Prop := 
+  | FLit: FormulaSet n (P n)
+  | FNeg: FormulaSet n (Neg (P n))
+  | FBox: FormulaSet n (Box (P n))
+  | FDia: FormulaSet n (Dia (P n))
+  | FAnd (f: modalFormula): FormulaSet n f ->
+         FormulaSet n (And (P n) f)
+  | FOr (f: modalFormula): FormulaSet n f ->
+         FormulaSet n (Or (P n) f)
+  | FImplies (f: modalFormula): FormulaSet n f ->
+         FormulaSet n (Implies (P n) f)
+.
+
+Inductive FormulaSet': nat -> modalFormula -> Prop := 
+  | F'Lit: forall n m, m < n -> FormulaSet' n (P m)
+  | F'Neg: forall n, FormulaSet' n (P n) -> 
+                     FormulaSet' n (Neg (P n))
+  | F'Box: forall n, FormulaSet' n (P n) -> 
+                     FormulaSet' n (Box (P n))
+  | F'Dia: forall n, FormulaSet' n (P n) -> 
+                     FormulaSet' n (Dia (P n))
+  | F'And: forall n f, 
+                     FormulaSet' n (P n) -> 
+                     FormulaSet' n f ->
+                     FormulaSet' n (And (P n) f)
+  | F'Or: forall n f, 
+                     FormulaSet' n (P n) -> 
+                     FormulaSet' n f ->
+                     FormulaSet' n (Or (P n) f)
+  | F'Implies: forall n f, 
+                     FormulaSet' n (P n) -> 
+                     FormulaSet' n f ->
+                     FormulaSet' n (Implies (P n) f)
+.
+
+Theorem FormulaSet'Increment:
+  forall n m f,
+  m < n -> FormulaSet' m f -> FormulaSet' n f.
+Proof.
+  clear A Gamma G.
+  intros n m f H1 H2.
+  
+Admitted.
+
+Theorem FormulaSet'Sound:
+  forall n f,
+  FormulaSet' n f.
+Proof.
+Admitted.
+
+Inductive LindenbaumSet: theory -> Prop := 
+  | LindenbaumZero: LindenbaumSet 0 Gamma
+  | 
+.
+(*  
+Inductive Lindenbaum_set' : nat -> theory -> Prop :=
   | Lindenbaum_zero':
     Lindenbaum_set' 0 Gamma
-  | Lindenbaum_succ1':
+  | Lindenbaum_succ1:'
     forall n Delta,
     Lindenbaum_set' n Delta ->
     Consistent A (P n :: Delta) ->
@@ -114,57 +174,11 @@ Inductive Lindenbaum_set': nat -> theory -> Prop :=
     ~Consistent A (P n :: Delta) ->
     Lindenbaum_set' (S n) Delta.
 
-Inductive Lindenbaum_set'': nat -> theory -> Prop :=
-  | Lindenbaum_zero'':
-    Lindenbaum_set'' 0 Gamma
-  | Lindenbaum_succ1'':
-    forall n Delta,
-    Lindenbaum_set'' n Delta ->
-    Consistent A (P n :: Delta) ->
-    Lindenbaum_set'' (S n) (P n :: Delta)
-  | Lindenbaum_succ2'':
-    forall n Delta,
-    Lindenbaum_set'' n Delta ->
-    ~Consistent A (P n :: Delta) ->
-    Lindenbaum_set'' (S n) Delta
-  | Lindenbaum_union1:
-    forall n1 n2 Delta1 Delta2,
-    Lindenbaum_set'' n1 Delta1 ->
-    Lindenbaum_set'' n2 Delta2 ->
-    n2 <= n1 ->
-    Lindenbaum_set'' n1 (union Delta1 Delta2)
-  | Lindenbaum_union2:
-    forall n1 n2 Delta1 Delta2,
-    Lindenbaum_set'' n1 Delta1 ->
-    Lindenbaum_set'' n2 Delta2 ->
-    n1 <= n2 ->
-    Lindenbaum_set'' n2 (union Delta1 Delta2)
-.
-
-Definition BConsistent (A: axiom -> Prop) (G : theory) : bool := 
-  match (forall p, ~ (A; G |-- [! p /\ ~p !])) with
-    | True  => true
-  end
-.
-
-Fixpoint Construct_Lindenbaum (n:nat) (Delta:theory): theory :=
-  match n with
-    | O    => Gamma
-    | S n' => if BConsistent A (P n :: Delta) then
-                union (P n :: Delta) (Construct_Lindenbaum n' Delta)
-              else
-                union Delta (Construct_Lindenbaum n' Delta)
-  end
-.
-
-(* 
 Lemma construct_lindenbaum':
   forall n,
   exists Delta Delta1,
   Delta1 = Construct_Lindenbaum n Delta. 
-*)
 
-(*
   TODO: Confirmar que a segunda definição indutiva esta correta
         Verificar se a função é equivalente a alguma das 
           definições indutivas

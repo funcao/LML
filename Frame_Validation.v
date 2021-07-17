@@ -333,7 +333,7 @@ Proof.
     + assumption.
 Qed.
 
-(* Theorem convergent_frame_implies_axiom:
+Theorem convergent_frame_implies_axiom:
   forall f,
   convergent_frame f ->
   (forall v p, Build_Model f v ||= [! <>[]p -> []<> p !]).
@@ -352,77 +352,8 @@ Proof.
     + assumption.
     + apply H3 in H4.
       assumption.
-Qed. *)
-
-Theorem convergent_frame'_implies_axiom:
-  forall f,
-  convergent_frame' f ->
-  (forall v p, Build_Model f v ||= [! <>[]p -> []<> p !]).
-Proof.
-  intros f H v p w1 H1 w2 H2.
-  unfold convergent_frame' in H.
-  simpl in H1.
-  destruct H1 as [w3 H1]; destruct H1 as [H1 H3].
-  destruct H with (w1) (w2) (w3) as [w4]; auto.
-  destruct H0 as [H4 H5].
-  simpl; exists w4; split; try assumption.
-  apply H3; assumption.
 Qed.
 
-Theorem axiom_implies_convergent_frame': 
-  forall f,
-  (forall v p, Build_Model f v ||= [! <>[]p -> []<> p !]) ->
-  convergent_frame' f.
-Proof.
-  intros f.
-  apply contra.
-  intros H; unfold convergent_frame' in H.
-  apply not_all_ex_not in H; destruct H as [w1].
-  apply not_all_ex_not in H; destruct H as [w2].
-  apply not_all_ex_not in H; destruct H as [w3].
-  apply imply_to_and in H.
-  destruct H as [H0 H2]; destruct H0 as [H0 H1].
-  apply ex_not_not_all.
-  exists(fun _ x => R f w3 x \/ R f w2 x).
-  apply ex_not_not_all; exists ([!#0!]).
-  intros H3; unfold valid_in_model in H3; simpl in H3.
-  destruct H3 with (w1) (w2); try assumption.
-  - exists w2; split; try assumption.
-    intros w4 H4; right; assumption.
-  - rename x into w4.
-    destruct H2; exists w4; destruct H as [H H']; destruct H' as [H' | H'].
-    + split; auto.
-    + (*stuck*)
-Abort.
-
-Theorem axiom_implies_convergent_frame'': 
-  forall f,
-  (forall v p, Build_Model f v ||= [! <>[]p -> []<> p !]) ->
-  convergent_frame' f.
-Proof.
-  intros f.
-  apply contra.
-  intros H; unfold convergent_frame' in H.
-  apply not_all_ex_not in H; destruct H as [w1].
-  apply not_all_ex_not in H; destruct H as [w2].
-  apply not_all_ex_not in H; destruct H as [w3].
-  apply imply_to_and in H.
-  destruct H as [H0 H2]; destruct H0 as [H0 H1].
-  apply ex_not_not_all.
-  exists(fun _ x => (R f w3 x /\ ~ R f w2 x) \/ (R f w2 x /\ ~ R f w3 x)).
-  apply ex_not_not_all; exists ([!#0!]).
-  intros H3; unfold valid_in_model in H3; simpl in H3.
-  destruct H3 with (w1) (w2); try assumption.
-  - exists w2; split; try assumption.
-    intros w4 H4; right; split; try assumption.
-    intros H5; destruct H2.
-    exists w4; split; assumption.
-  - rename x into w4; clear H3.
-    destruct H2; exists w4.
-    firstorder.
-    (*stuck*)
-Abort.
-(* 
 (*
 Problema aqui: Não tenho informação suficiente pois cada 
 lado da disjunção tem uma função de valoração diferente
@@ -489,7 +420,7 @@ Theorem axiom_implies_convergent_frame':
   (forall v p, Build_Model f v ||= [! <>[]p -> []<> p !]) ->
   convergent_frame f.
 Proof.
-  intros f 
+  intros f.
   apply contra.
   intros H; unfold convergent_frame in H.
   apply not_all_ex_not in H; destruct H as [w1].
@@ -521,7 +452,8 @@ Proof.
     apply imply_to_and in H.
     destruct H as [H H1]; destruct H as [H H'].
     destruct H0 as [H2 H3].
-    (*stuck*)
+    pose H1 as H4.
+    destruct H3.
     firstorder.
     (*super stuck*)
 Abort.
@@ -632,8 +564,6 @@ Proof.
     (*stuck*)
     (*dar destruct em H1 não muda em nada*)
 Abort.
-
- *)
 
 
 
