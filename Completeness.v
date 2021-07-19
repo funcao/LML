@@ -119,25 +119,29 @@ Inductive FormulaSet (n: nat): modalFormula -> Prop :=
 .
 
 Inductive FormulaSet': nat -> modalFormula -> Prop := 
-  | F'Lit: forall n m, m < n -> FormulaSet' n (P m)
-  | F'Neg: forall n, FormulaSet' n (P n) -> 
-                     FormulaSet' n (Neg (P n))
-  | F'Box: forall n, FormulaSet' n (P n) -> 
-                     FormulaSet' n (Box (P n))
-  | F'Dia: forall n, FormulaSet' n (P n) -> 
-                     FormulaSet' n (Dia (P n))
-  | F'And: forall n f, 
-                     FormulaSet' n (P n) -> 
-                     FormulaSet' n f ->
-                     FormulaSet' n (And (P n) f)
-  | F'Or: forall n f, 
-                     FormulaSet' n (P n) -> 
-                     FormulaSet' n f ->
-                     FormulaSet' n (Or (P n) f)
-  | F'Implies: forall n f, 
-                     FormulaSet' n (P n) -> 
-                     FormulaSet' n f ->
-                     FormulaSet' n (Implies (P n) f)
+  (*Não sei se isso \/ está certo*)
+  | F'Lit: forall n m, m < n -> FormulaSet' n (P m) 
+  | F'Neg: forall n f, 
+                     FormulaSet' n f -> (*mudar o n ?*)
+                     FormulaSet' n (Neg f)
+  | F'Box: forall n f, 
+                     FormulaSet' n f -> 
+                     FormulaSet' n (Box f)
+  | F'Dia: forall n f, 
+                     FormulaSet' n f -> 
+                     FormulaSet' n (Dia f)
+  | F'And: forall n1 f1 n2 f2, 
+                     FormulaSet' n1 f1 -> 
+                     FormulaSet' n2 f2 ->
+                     FormulaSet' (n1 * n2) (And f1 f2)
+  | F'Or: forall n1 f1 n2 f2, 
+                     FormulaSet' n1 f1 -> 
+                     FormulaSet' n2 f2 ->
+                     FormulaSet' (n1 + n2) (Or f1 f2)
+  | F'Implies: forall n1 f1 n2 f2, (*arrumar operador entre n1 e n2*)
+                     FormulaSet' n1 f1 -> 
+                     FormulaSet' n2 f2 ->
+                     FormulaSet' (n1 * n2) (Implies f1 f2)
 .
 
 Theorem FormulaSet'Increment:
