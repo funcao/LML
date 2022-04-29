@@ -6,3 +6,9 @@
 *.bbl
 *.blg
 *.pdf
+*.vo
+*.vok
+*.vos
+*.glob
+.CoqMakefile.d
+CoqMakefile.conf
