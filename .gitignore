@@ -1,0 +1,8 @@
+*.DS_Store
+*_minted-paper
+*auto
+*.log
+*.aux
+*.bbl
+*.blg
+*.pdf
