@@ -7,7 +7,7 @@
     Minion: Miguel
 *)
 
-Require Import Arith List ListSet Notations Utf8 Classical.
+Require Import Arith List ListSet Notations Classical.
 
 Inductive modalFormula : Set :=
     | Lit          : nat -> modalFormula
@@ -42,34 +42,29 @@ Fixpoint literals (f:modalFormula) : set nat :=
     | Implies  p1 p2 => set_union eq_nat_dec (literals p1) (literals p2) 
 end.
 
-(* -- New notation -- *)
-Notation " φ .-> ψ "  := (Implies φ ψ) (at level 13, right associativity).
-Notation " φ .\/ ψ "  := (Or φ ψ)      (at level 12, left associativity).
-Notation " φ ./\ ψ "   := (And φ ψ)     (at level 11, left associativity).
-Notation " .~ φ "     := (Neg φ)       (at level 9, right associativity).
-Notation " .[] φ "    := (Box φ)       (at level 9, right associativity).
-Notation " .<> φ "    := (Dia φ)       (at level 9, right associativity).
-Notation " # φ "      := (Lit φ)       (at level 1, no associativity).
+Fixpoint modalequiv (m1 m2:modalFormula) : bool :=
+    match m1,m2 with 
+    | Lit x1, Lit x2               => if x1 =? x2 then true else false
+    | Neg p1, Neg p2               => modalequiv p1 p2
+    | Box p1, Box p2               => modalequiv p1 p2
+    | Dia p1, Dia p2               => modalequiv p1 p2
+    | And p1 p2, And p3 p4         => andb (modalequiv p1 p3) (modalequiv p2 p4) 
+    | Or p1 p2, Or p3 p4           => andb (modalequiv p1 p3) (modalequiv p2 p4)
+    | Implies p1 p2, Implies p3 p4 => andb (modalequiv p1 p3) (modalequiv p2 p4)
+    | _,_                          => false
+end.
 
+Declare Custom Entry modal.
+Declare Scope modal_scope.
 
-Notation " ☐ φ" := (.[] φ)
-    (at level 1, φ at level 200, right associativity): type_scope.
-
-Notation " ◇ φ" := (.<> φ)
-    (at level 1, φ at level 200, right associativity): type_scope.
-
-Notation " φ → ψ" := (φ .-> ψ)
-    (at level 99, ψ at level 200, right associativity) : type_scope.
-
-
-Notation " X ∈ Y " := (In X Y)
-    (at level 250, no associativity) : type_scope.
-
-Notation "[ ]" := nil.
-Notation "x :: l" := (cons x l)
-                     (at level 60, right associativity).
-Notation "[ x ; .. ; y ]" := (cons x .. (cons y nil) ..).
-
+(*
+Algumas Convenções:
+    Sempre encapsular formulas modais com [! !], 
+      mesmo se seja somente uma única formula
+    Usar [ ] ao invés de nil
+    Encapsular expressões do tipo #n com paranteses, 
+      isto é, sempre escrever (#n) no lugar de #n
+*)
 
 Record Frame : Type := {
   W : Set;
@@ -81,69 +76,98 @@ Record Model : Type := {
   v : nat -> (W F) -> Prop; 
 }.
 
+Notation "{ W -- R }" := (Build_Frame W R).
+Notation "[ F -- V ]" := (Build_Model F V).
 
-Check Build_Frame.
-Check Build_Model.
+Notation "x"          := x (in custom modal at level 0, x ident).
+Notation "( x )"      := x (in custom modal, x at level 99) : modal_scope.
+Notation "[! m !]"    := m (at level 0, m custom modal at level 99) : modal_scope.
+Notation " p -> q "   := (Implies p q) (in custom modal at level 13, right associativity).
+Notation " p \/ q "   := (Or p q)      (in custom modal at level 12, left associativity).
+Notation " p /\ q "   := (And p q)     (in custom modal at level 11, left associativity).
+Notation " ~ p "      := (Neg p)       (in custom modal at level 9, right associativity).
+Notation " [] p "     := (Box p)       (in custom modal at level 9, right associativity).
+Notation " <> p "     := (Dia p)       (in custom modal at level 9, right associativity).
+Notation " # p  "     := (Lit p)       (in custom modal at level 1, no associativity, p constr).
+Notation "x :: l"     := (cons x l)    (in custom modal at level 60, right associativity).
+Notation "[ ]"            := (nil)     (in custom modal).
+Notation "[ x ; .. ; y ]" := (cons x .. (cons y nil) ..) (in custom modal).
+Notation "x ++ y"     := (app x y)     (in custom modal at level 60, right associativity).
+
+Notation "[ ]"            := nil.
+Notation "x :: l"         := (cons x l) (at level 60, right associativity).
+Notation "[ x ; .. ; y ]" := (cons x .. (cons y nil) ..).
+
+Open Scope modal_scope.
 
 
-Fixpoint fun_validation (M: Model) (w: W (F M)) (φ: modalFormula): Prop :=
-  match φ with
-  | Lit     x      => v M x w 
-  | Box     ψ      => forall w': W (F M), R (F M) w w' -> fun_validation M w' ψ
-  | Dia     ψ      => exists w': W (F M), R (F M) w w' /\ fun_validation M w' ψ
-  | Neg     ψ      => ~fun_validation M w ψ
-  | And     ψ  Ɣ   => fun_validation M w ψ /\ fun_validation M w Ɣ
-  | Or      ψ  Ɣ   => fun_validation M w ψ \/ fun_validation M w Ɣ
-  | Implies ψ  Ɣ   => fun_validation M w ψ -> fun_validation M w Ɣ
+Fixpoint formula_valuation (M: Model) (w: W (F M)) (phi: modalFormula): Prop :=
+  match phi with
+  | Lit     x            => v M x w 
+  | Box     psi          => forall w': W (F M), R (F M) w w' -> formula_valuation M w' psi
+  | Dia     psi          => exists w': W (F M), R (F M) w w' /\ formula_valuation M w' psi
+  | Neg     psi          => ~formula_valuation M w psi
+  | And     psi  gamma   => formula_valuation M w psi /\ formula_valuation M w gamma
+  | Or      psi  gamma   => formula_valuation M w psi \/ formula_valuation M w gamma
+  | Implies psi  gamma   => formula_valuation M w psi -> formula_valuation M w gamma
   end.
 
-(* World Satisfaziblity *)
-Notation "M ' w ||- φ" := (fun_validation M w φ)
-  (at level 110, only parsing, right associativity).
-Notation "M ☯ w ╟ φ  " := (fun_validation M w φ)
-  (at level 110, only printing, right associativity).
-
-(* Model satisfazibility *)
-Definition validate_model (M: Model) (φ: modalFormula): Prop :=
-  forall w: W (F M), fun_validation M w φ.
-
-Notation "M |= φ" := (validate_model M φ)
-  (at level 110, only parsing, right associativity).
-Notation "M ╞ φ " := (validate_model M φ)
-  (at level 110, only printing, right associativity).
-
-(******  Finite theories and entailment ******)
+Definition valid_in_model (M: Model) (phi: modalFormula): Prop :=
+  forall w: W (F M), formula_valuation M w phi.
 
 Definition theory := list modalFormula.
 
-Fixpoint theoryModal (M: Model) (Γ: theory): Prop :=
-  match Γ with
+Fixpoint theory_valid_in_model (M: Model) (Gamma: theory): Prop :=
+  match Gamma with
   | nil => True
-  | h :: t => (validate_model M h) /\ (theoryModal M t)
+  | h :: t => (valid_in_model M h) /\ (theory_valid_in_model M t)
   end.
 
-Definition entails (M: Model) (Γ: theory) (φ: modalFormula): Prop :=
-  theoryModal M Γ -> validate_model M φ.
+Definition entails (M: Model) (Gamma: theory) (phi: modalFormula): Prop :=
+  theory_valid_in_model M Gamma -> valid_in_model M [! phi !].
 
-Notation "M '' Γ |- φ" := (entails M Γ φ)
-  (at level 110, only parsing, no associativity).
-Notation "M ♥ Γ ├ φ  " := (entails M Γ φ)
-  (at level 110, only printing, no associativity).
+Definition theory_valid_in_frame (Gamma: theory) (phi: modalFormula): Prop :=
+  forall M, theory_valid_in_model M Gamma -> valid_in_model M [! phi !].
 
-Notation "⊤" := True.
-Notation "⊥" := False.
+Definition equivalence (phi psi: modalFormula) : Prop := 
+  (theory_valid_in_frame [! [phi] !] [! psi !] ) /\ (theory_valid_in_frame [! [psi] !] [! phi !]).
 
-(***** structural properties of deduction ****)
+Definition valid_formula (phi: modalFormula): Prop :=
+  forall F: Frame, theory_valid_in_frame [! [phi] !] [! phi !].
 
-(* If a formula belongs in a theory, it's valid. *)
-Theorem exact_deduction:
-  forall Γ φ,
-  In φ Γ ->
+Notation "M ; w ||- p" := (formula_valuation M w p) 
+  (at level 110, right associativity).
+
+Notation "M ||= p" := (valid_in_model M p) 
+  (at level 110, right associativity).
+
+Notation "G |= p" := (theory_valid_in_frame G p) 
+  (at level 110, no associativity).
+
+Notation "M ; G |- p" := (entails M G p)
+  (at level 110, no associativity).
+
+Notation "p =|= q" := (equivalence p q) 
+  (at level 110, no associativity).
+
+Notation "|= p" := (valid_formula p)
+  (at level 110, no associativity).
+
+(*Print Custom Grammar modal.*)
+(*
+Definition teste (M: Model) (w: W (F M)) (p q: modalFormula) (G: theory): Prop :=
+  G |= p.
+*)
+
+(* If a formula belongs in a theory that is valid in a model, then it's valid in that model. *)
+Theorem entailment_valid_in_model:
+  forall Gamma phi,
+  In phi Gamma ->
   forall M,
-  M '' Γ |- φ.
+  M; Gamma |- [! phi !].
 Proof.
   intros.
-  induction Γ.
+  induction Gamma.
   - inversion H.
   - simpl in H.
     destruct H.
@@ -151,58 +175,57 @@ Proof.
       unfold entails; intros.
       destruct H; auto.
     + unfold entails; intro.
-      apply IHΓ; auto.
+      apply IHGamma; auto.
       destruct H0; auto.
 Qed.
 
-(* reflexivity *)
-Theorem reflexive_deduction:
-  forall M Γ φ,
-  M '' φ::Γ |- φ.
+(* Semantic entailment is reflexive *)
+Theorem reflexive_entailment:
+  forall M Gamma phi,
+  M; phi::Gamma |- [! phi !].
 Proof.
   intros.
-  apply exact_deduction.
+  apply entailment_valid_in_model.
   constructor; auto.
 Qed.
 
-Lemma theoryModal_union:
-  forall M Γ ẟ,
-  theoryModal M (Γ ++ ẟ) -> 
-  (theoryModal M Γ /\ 
-  theoryModal M ẟ).
+Lemma theory_valid_in_model_union:
+  forall M Gamma delta,
+  theory_valid_in_model M (Gamma ++ delta) -> 
+  (theory_valid_in_model M Gamma /\ 
+  theory_valid_in_model M delta).
 Proof.
     intros.
-    induction Γ.
+    induction Gamma.
     - simpl in *.
       split; tauto.
     - simpl in *.
       apply and_assoc.
       destruct H as [left right]; split.
       + assumption.
-      + apply IHΓ.
+      + apply IHGamma.
         assumption.
 Qed.
 
-(* prova bottom-up *)
-Theorem  transitive_deduction_bu:
-  forall M Γ ẟ φ ψ Ɣ,
-  (M '' φ::Γ |- ψ) /\ 
-  (M '' ψ::ẟ |- Ɣ) -> 
-  (M '' φ::Γ++ẟ |- Ɣ).
+Theorem  transitive_entailment:
+  forall M Gamma delta phi psi gamma,
+  (M; phi::Gamma |- [! psi !]) /\ 
+  (M; psi::delta |- [! gamma !]) -> 
+  (M; phi::Gamma++delta |- [! gamma !]).
 Proof.
   intros.
   unfold entails in *.
   destruct H as [H1 H2].
   intros; apply H2.
   simpl in *; destruct H as [left right].
-  apply theoryModal_union in right; destruct right as [ModalG ModalD].
+  apply theory_valid_in_model_union in right; destruct right as [ModalG ModalD].
   tauto.
 Qed.
 
 Theorem exchange: 
-  forall M Γ φ ψ Ɣ,
-  (M '' φ::ψ::Γ |- Ɣ) -> 
-  (M '' ψ::φ::Γ |- Ɣ).
+  forall M Gamma phi psi gamma,
+  (M; phi::psi::Gamma |- [! gamma !]) -> 
+  (M; psi::phi::Gamma |- [! gamma !]).
 Proof.
   intros.
   unfold entails in *; intros.
@@ -218,26 +241,26 @@ Qed.
 
 Inductive transpose {T}: list T -> list T -> Prop :=
   | tranpose_head:
-    forall φ ψ tail,
-    transpose (φ:: ψ :: tail) (ψ :: φ:: tail)
+    forall phi psi tail,
+    transpose (phi:: psi :: tail) (psi :: phi:: tail)
   | transpose_tail:
-    forall φ tail1 tail2,
-    transpose tail1 tail2 -> transpose (φ :: tail1) (φ :: tail2)
+    forall phi tail1 tail2,
+    transpose tail1 tail2 -> transpose (phi :: tail1) (phi :: tail2)
   | transpose_refl:
-    forall ψ,
-    transpose ψ ψ
+    forall psi,
+    transpose psi psi
   | transpose_trans:
-    forall φ ψ Ɣ,
-    transpose φ ψ -> transpose ψ Ɣ -> transpose φ Ɣ
+    forall phi psi gamma,
+    transpose phi psi -> transpose psi gamma -> transpose phi gamma
   | transpose_sym:
-    forall φ ψ,
-    transpose φ ψ -> transpose ψ φ.
+    forall phi psi,
+    transpose phi psi -> transpose psi phi.
 
 Lemma transpose_in:
   forall {T} xs ys,
   transpose xs ys ->
-  forall φ: T,
-  In φ xs <-> In φ ys.
+  forall phi: T,
+  In phi xs <-> In phi ys.
 Proof.
   induction 1; intros.
   - split; intros.
@@ -273,11 +296,11 @@ Proof.
     + apply IHtranspose; auto.
 Qed.
 
-Theorem tranpose_deduction:
-  forall M Γ ẟ φ,
-  transpose Γ ẟ ->
-  (M '' Γ |- φ) <-> 
-  (M '' ẟ |- φ).
+Theorem transpose_entailment:
+  forall M Gamma delta phi,
+  transpose Gamma delta ->
+  (M; Gamma |- [! phi !]) <-> 
+  (M; delta |- [! phi !]).
 Proof.
   induction 1.
   - split; intros.
@@ -315,9 +338,9 @@ Proof.
 Qed.
 
 Theorem idempotence:
-  forall M Γ φ ψ,
-  (M '' φ::φ::Γ |- ψ) -> 
-  (M '' φ::Γ |- ψ).
+  forall M Gamma phi psi,
+  (M; phi::phi::Gamma |- [! psi !]) -> 
+  (M; phi::Gamma |- [! psi !]).
 Proof.
   intros.
   unfold entails in *; intros.
@@ -330,35 +353,35 @@ Proof.
 Qed.
 
 Theorem monotonicity:
-  forall M Γ ẟ φ,
-  (M '' Γ |- φ) -> 
-  (M '' Γ++ẟ |- φ).
+  forall M Gamma delta phi,
+  (M; Gamma |- [! phi !]) -> 
+  (M; Gamma++delta |- [! phi !]).
 Proof.
   unfold entails in *; intros.
   apply H.
-  apply theoryModal_union with (ẟ := ẟ).
+  apply theory_valid_in_model_union with (delta := delta).
   assumption.
 Qed.
 
 (* Reflexividade *)
-Definition reflexivity_frame (F: Frame): Prop :=
+Definition reflexive_frame (F: Frame): Prop :=
   forall w, R F w w.
 
 (* Transitividade *)
-Definition transitivity_frame (F: Frame): Prop :=
+Definition transitive_frame (F: Frame): Prop :=
   forall w w' w'': W F,
   (R F w w' /\ 
   R F w' w'') -> 
   R F w w''.
 
 (* Simetria *)
-Definition simmetry_frame (F: Frame): Prop :=
+Definition symmetric_frame (F: Frame): Prop :=
   forall w w',
   R F w w' -> 
   R F w' w.
 
 (* Euclidiana *)
-Definition euclidian_frame (F: Frame): Prop :=
+Definition euclidean_frame (F: Frame): Prop :=
   forall w w' w'',
   (R F w w' /\ 
   R F w w'') -> 
@@ -382,32 +405,20 @@ Definition dense_frame (F: Frame) : Prop :=
   exists w'',
   R F w w' -> 
   (R F w w'' /\ 
-  R F w' w'').
+  R F w'' w').
 
 (* Convergente *)
-Definition convergente_frame (F: Frame): Prop :=
+Definition convergent_frame (F: Frame): Prop :=
   forall w x y,
   exists z,
   (R F w x /\ 
   R F w y) -> 
   (R F x z /\ R F y z).
 
-(* Equivalencia lógica *)
-
-Definition entails_modal (Γ: theory) (φ: modalFormula): Prop :=
-  forall M,
-  theoryModal M Γ -> 
-  validate_model M φ.
-
-Notation "Γ ||= φ" := (entails_modal Γ φ)
-  (at level 110, no associativity).
-
-Definition equivalence (φ ψ: modalFormula) : Prop := 
-  ([φ] ||= ψ ) /\ 
-  ([ψ] ||= φ).
-
-Notation "φ =|= ψ" := (equivalence φ ψ)
-  (at level 110, only parsing, no associativity).
-
-Notation "φ ≡ ψ " := (φ =|= ψ)
-  (at level 110, only printing, no associativity).
+(* Convergente *)
+Definition convergent_frame' (F: Frame): Prop :=
+  forall w x y,
+  (R F w x /\ 
+  R F w y) ->
+  (exists z, (R F x z /\ R F y z)).
+  

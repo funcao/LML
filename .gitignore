@@ -6,6 +6,7 @@
 *.bbl
 *.blg
 *.pdf
+<<<<<<< HEAD
 *.fdb*
 *.dvi
 *.fls
@@ -35,3 +36,11 @@ settings.json
 CMakeSettings.json
 CppProperties.json
 *_target
+=======
+*.vo
+*.vok
+*.vos
+*.glob
+.CoqMakefile.d
+CoqMakefile.conf
+>>>>>>> 13b01d34788f07a1c426a18dd4320d75c692da0f
