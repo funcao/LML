@@ -127,7 +127,8 @@
 %% The abstract is a short summary of the work to be presented in the
 %% article.
 \begin{abstract}
- bla bla
+  The correct specification of requirements is crucial for software development.
+  Modal logics are ...
 \end{abstract}
 
 %%
@@ -215,13 +216,17 @@ More specifically, we contribute:
   \item We define a \emph{deep embedding} of modal logic syntax in Coq and
     define its Kripke semantics.
   \item We model the Hilbert deductive systems K, D, B, T, K4, K5, S4 and S5
-    in Coq and prove ...
-  \item We prove a lot of things... 
+    in Coq and prove its soundness with respect to Kripke semantics.
+  \item We show a proof of the L\"ob's theorem using the Hilbert deductive system
+    developed in our library.
 \end{itemize}
 
 The rest of this work is organized as follows: Section~\ref{sec:background} provides
-brief introduction on modal logics and the Coq proof assistant. Related work is discussed
-on Section~\ref{sec:related} and draws Section~\ref{sec:conclusion} draws some conclusions and
+brief introduction on modal logics and the Coq proof assistant. Details about
+the implementation of our Coq library are presented in
+Section~\ref{sec:implementation}. A case study in proving the L\"ob's theorem is
+the subject of Section~\ref{sec:case}. Related work is discussed
+on Section~\ref{sec:related} and Section~\ref{sec:conclusion} draws some conclusions and
 provide some pointers for future works.
 
 \section{Background}\label{sec:background}
@@ -338,9 +343,6 @@ that $\mathcal{M}\,;\,w\models \varphi$ does not hold):
     $\mathcal{M}\,;\,w\models\varphi_1$ or $\mathcal{M}\,;\,w\models\varphi_2$;
   \item $\mathcal{M}\,;\,w\models \varphi_1 \to \varphi_2$ iff
     $\mathcal{M}\,;\,w\not\models\varphi_1$ or $\mathcal{M}\,;\,w\models\varphi_2$;
-  \item $\mathcal{M}\,;\,w\models \varphi_1 \leftrightarrow \varphi_2$ iff
-    $\mathcal{M}\,;\,w\models\varphi_1 \to \varphi_2$ and
-    $\mathcal{M}\,;\,w\models\varphi_2\to\varphi_1$;
   \item $\mathcal{M}\,;\,w\models\Box\varphi$ iff $\forall w \in W. w R y \to \mathcal{M}\,;\,y \models\varphi$;
   \item $\mathcal{M}\,;\,w\models\Diamond\varphi$ iff $\exists w \in W. w R y \land \mathcal{M}\,;\,y \models\varphi$;
 \end{enumerate}  
@@ -352,6 +354,53 @@ it holds on all models $\mathcal{M} = \langle \mathcal{F},\mathcal{V}\rangle$, i
 for any $\mathcal{M}$, we have that $\mathcal{M}\models\varphi$. Finally, we say that a formula
 is valid, written $\models \varphi$, if it is valid in any frame $\mathcal{F}$.
 
+\section{Embedding Modal Logic in Coq}\label{sec:implementation}
+
+In this section, we describe the implementation details of our modal logic
+library in Coq. We start by describing the structure of formula syntax and the
+representation of frames and models, needed to define the Kripke semantics.
+
+\paragraph{Syntax of modal logics formulas}
+In order to implement our modal logic library, we use a \emph{deep embedding} of
+formulas, i.e. we represent the syntax as the following Coq inductive datatype.
+\begin{minted}{coq}
+Inductive modalFormula : Set :=
+| Lit     : nat          -> modalFormula
+| Neg     : modalFormula -> modalFormula
+| Box     : modalFormula -> modalFormula
+| Dia     : modalFormula -> modalFormula
+| And     : modalFormula -> modalFormula -> modalFormula
+| Or      : modalFormula -> modalFormula -> modalFormula
+| Implies : modalFormula -> modalFormula -> modalFormula.
+\end{minted}
+Most constructors of the type have an immediate meaning, since they represent
+connectives of propositional logics. The constructor \mintinline{coq}{Lit}
+is used to construct propositional variables; constructor \mintinline{coq}{Box}
+denotes the modal operator $\Box$ and \mintinline{coq}{Dia}, the operator
+$\Diamond$.
+
+Before defining the Kripke semantics, we need to represent the model used to
+interpret a modal logic formula. We encode a frame by a record formed by a
+a type \mintinline{coq}{W : Set} to represent the set of worlds and the
+accessibility relation \mintinline{coq}{R : W -> W -> Prop}.
+\begin{minted}{coq}
+Record Frame : Type := {
+  W : Set;
+  R : W -> W -> Prop;
+}.
+\end{minted}
+A model is denoted by another record formed by a frame and a labelling function,
+which assign the truth value of a variable at a given world.
+\begin{minted}{coq}
+Record Model : Type := {
+  F : Frame; 
+  v : nat -> (W F) -> Prop; 
+}.
+\end{minted}
+Note that the type of the labelling function \mintinline{coq}{v} ensures that it
+refers to a world from the set of possible worlds in the frame \mintinline{coq}{F}.
+
+\section{Case Study}\label{sec:case}
 
 \section{Related work}\label{sec:related}
 
