@@ -15,15 +15,24 @@ section model
   open modal_syntax
   open modal_syntax.formula
 
-  def fun_validation (M : model)(w : W (F M)) : formula → Prop
-  | (var v) := V M v w
-  | (.□ f) := ∀ w' : W (F M), R (F M) w w' → fun_validation f
-  | (.◇ f) := ∃ w' : W (F M), R (F M) w w' ∧ fun_validation f
-  | (.¬ f) := ¬ fun_validation f
-  | (f₁ .∧. f₂) := fun_validation f₁ ∧ fun_validation f₂ 
-  | (f₁ .∨. f₂) := fun_validation f₁ ∨ fun_validation f₂
-  | (f₁ .⟶. f₂) := fun_validation f₁ → fun_validation f₂
+  @[simp]
+  def fun_validation (M : model) : W (F M) → formula → Prop
+  | w (var v)
+    := V M v w
+  | w (.□ f)
+    := ∀ w' : W (F M), R (F M) w w' → fun_validation w' f
+  | w (.◇ f)
+    := ∃ w' : W (F M), R (F M) w w' ∧ fun_validation w' f
+  | w (.¬ f)
+    := ¬ fun_validation w f
+  | w (f₁ .∧. f₂)
+    := fun_validation w f₁ ∧ fun_validation w f₂
+  | w (f₁ .∨. f₂)
+    := fun_validation w f₁ ∨ fun_validation w f₂
+  | w (f₁ .⟶. f₂)
+    := fun_validation w f₁ → fun_validation w f₂
 
+  @[simp]
   def validate_model (M : model)(f : formula) : Prop
     := ∀ w : W (F M), fun_validation M w f
 end model

@@ -94,7 +94,7 @@
 %%\citestyle{acmauthoryear}
 
 \usepackage{minted}
-
+\usepackage{bussproof}
 
 %%
 %% end of the preamble, start of the body of the document source.
@@ -202,8 +202,9 @@ mathematics~\cite{Leroy09,Klein10,Gonthier13,Gonthier08}; 2) There is a growing
 community of developers using such tools thanks to 
 textbooks on the subject~\cite{Nipkow14,Bertot10,Chlipala13} which allows
 newbies to join the game of formal verification and 3) The custom automation
-facilities that current proof assistants support allows that some trivial facts can
-be checked using decision procedures.
+facilities that current proof assistants support, allows that trivial facts can
+be proved using decision procedures, relieving the user from writing proof
+scripts for formulas that can be checked automatically.
 
 In this context, the present work aims to contribute by constructing a library
 that formalize a family of modal logics and its related properties in Coq.
@@ -306,8 +307,8 @@ proposition may be true in some world, but false in another one. The versions of
 modal logics considered in this work extends traditional propositional logics
 with two operators on propositions: $\Box$ (box) and $\Diamond$ (diamond).
 The syntax of modal logic formulas are defined by the following context free
-grammar (where $\circ \in\{\land,\lor,\to,\leftrightarrow\}$, $\mathcal{P}$ is
-the enumerable set of propositional variables and $A\in\mathcal{P}$ is arbitrary):
+grammar (where $\circ \in\{\land,\lor,\to,\leftrightarrow\}$, $\mathcal{P} = \{A,B,C,...\}$ is
+the enumerable set of propositional variables):
 \[
   \begin{array}{lcl}
     \varphi & ::= & \bot\,|\,\top\,|\,A\,|\,\neg\varphi\,|\,\varphi\circ\varphi\,|\,\Box\varphi\,|\,\Diamond\varphi
@@ -333,6 +334,7 @@ in a given world is defined by inductive relation $\mathcal{M}\,;\,w\models \var
 follows (notation $\mathcal{M}\,;\,w\not\models \varphi$ denotes
 that $\mathcal{M}\,;\,w\models \varphi$ does not hold):
 
+\begin{figure}[H]
 \begin{enumerate}
   \item $\mathcal{M}\,;\,w\not\models \bot$ and $\mathcal{M}\,;\,w\models \top$;
   \item $\mathcal{M}\,;\,w\models A$ iff $\mathcal{V}(A,w) = T$;
@@ -345,14 +347,53 @@ that $\mathcal{M}\,;\,w\models \varphi$ does not hold):
     $\mathcal{M}\,;\,w\not\models\varphi_1$ or $\mathcal{M}\,;\,w\models\varphi_2$;
   \item $\mathcal{M}\,;\,w\models\Box\varphi$ iff $\forall w \in W. w R y \to \mathcal{M}\,;\,y \models\varphi$;
   \item $\mathcal{M}\,;\,w\models\Diamond\varphi$ iff $\exists w \in W. w R y \land \mathcal{M}\,;\,y \models\varphi$;
-\end{enumerate}  
-
+  \end{enumerate}
+  \caption{Kripke semantics}
+  \label{fig:kripke}
+\end{figure}
 We say that a formula $\varphi$ is satisfiable in a model $\mathcal{M}$,
 denoted by $\mathcal{M}\models \varphi$, if $\forall w \in W. M\,;w\,\models \varphi$ holds.
 Similarly, $\varphi$ is valid in a frame $\mathcal{F}$, written $\mathcal{F}\models\varphi$, if
 it holds on all models $\mathcal{M} = \langle \mathcal{F},\mathcal{V}\rangle$, i.e.
-for any $\mathcal{M}$, we have that $\mathcal{M}\models\varphi$. Finally, we say that a formula
+for any $\mathcal{M}$, we have that $\mathcal{M}\models\varphi$. A formula
 is valid, written $\models \varphi$, if it is valid in any frame $\mathcal{F}$.
+
+Using the semantics, we can define the concept of \emph{entailment}: Given a set
+of formulas $\Gamma$ and a formula $\varphi$, we say that $\Gamma$ entails
+$\varphi$, written $\Gamma\models\varphi$, iff $\forall \varphi' \in\Gamma .
+\mathcal{M} \models \varphi' \to \mathcal{M} \models \varphi$, for some model $\mathcal{M}$.
+
+In this work, we consider Hilbert deductive systems for modal logics.
+Essentially, the considered system adds two axioms for the modalities
+to the set of axioms for classical propositional logic.
+The included axioms express that $\Box$ distributes over implication and
+$\Diamond$ over disjunction.
+\[
+  \begin{array}{ll}
+    \textbf{K}           & \Box(A \to B) \to (\Box A \to \Box B)\\
+    \textbf{Possibility} & \Diamond (A \lor B) \to (\Diamond A \lor \Diamond B)\\
+  \end{array}
+\]
+Apart from the axioms, we also need the traditional \emph{modus ponens} rule
+and a rule that allows to conclude formulas with necessity. 
+
+\begin{figure}[H]
+\begin{tabular}{cc}
+    \AxiomC{$\Gamma\vdash\varphi_1\to\varphi_2$}
+    \AxiomC{$\Gamma\vdash\varphi_2$}
+    \RightLabel{MP}
+    \BinaryInfC{$\Gamma\vdash\varphi_2$}
+    \DisplayProof
+  &
+    \AxiomC{$\Gamma\vdash\varphi$}
+    \RightLabel{Nec}
+    \UnaryInfC{$\Gamma\vdash\Box \varphi$}
+    \DisplayProof
+\end{tabular}
+\end{figure}
+The set of axioms and the two previous rules forms a sound and complete Hilbert-style
+deductive system for modal logics~\cite{blackburn}.
+
 
 \section{Embedding Modal Logic in Coq}\label{sec:implementation}
 
@@ -360,18 +401,18 @@ In this section, we describe the implementation details of our modal logic
 library in Coq. We start by describing the structure of formula syntax and the
 representation of frames and models, needed to define the Kripke semantics.
 
-\paragraph{Syntax of modal logics formulas}
-In order to implement our modal logic library, we use a \emph{deep embedding} of
-formulas, i.e. we represent the syntax as the following Coq inductive datatype.
+\paragraph{Syntax and semantics of modal logics}
+In order to implement our library, we use a \emph{deep embedding} of
+formulas, i.e. we represent formulas as the following Coq inductive datatype.
 \begin{minted}{coq}
-Inductive modalFormula : Set :=
-| Lit     : nat          -> modalFormula
-| Neg     : modalFormula -> modalFormula
-| Box     : modalFormula -> modalFormula
-| Dia     : modalFormula -> modalFormula
-| And     : modalFormula -> modalFormula -> modalFormula
-| Or      : modalFormula -> modalFormula -> modalFormula
-| Implies : modalFormula -> modalFormula -> modalFormula.
+Inductive form : Set :=
+| Lit     : nat          -> form
+| Neg     : form -> form
+| Box     : form -> form
+| Dia     : form -> form
+| And     : form -> form -> form
+| Or      : form -> form -> form
+| Implies : form -> form -> form.
 \end{minted}
 Most constructors of the type have an immediate meaning, since they represent
 connectives of propositional logics. The constructor \mintinline{coq}{Lit}
@@ -382,7 +423,7 @@ $\Diamond$.
 Before defining the Kripke semantics, we need to represent the model used to
 interpret a modal logic formula. We encode a frame by a record formed by a
 a type \mintinline{coq}{W : Set} to represent the set of worlds and the
-accessibility relation \mintinline{coq}{R : W -> W -> Prop}.
+accessibility relation is denoted by a type \mintinline{coq}{R : W -> W -> Prop}.
 \begin{minted}{coq}
 Record Frame : Type := {
   W : Set;
@@ -398,11 +439,113 @@ Record Model : Type := {
 }.
 \end{minted}
 Note that the type of the labelling function \mintinline{coq}{v} ensures that it
-refers to a world from the set of possible worlds in the frame \mintinline{coq}{F}.
+refers to a world from the set of possible worlds in the frame
+\mintinline{coq}{F}. The encoding of the Kripke semantics is done by a Coq function
+that which implements the relation of Figure~\ref{fig:kripke}. We omit the code
+for propositional logics connectives for brevity. The interesting parts are for
+variables (constructor \mintinline{coq}{Lit}) which uses the labelling function
+\mintinline{coq}{v} from the model \mintinline{coq}{M}. The meaning of
+modalities $\Box$ and $\Diamond$ are represented by a quantifying over worlds
+and use the accessibility relation $R$. 
+\begin{minted}{coq}
+Fixpoint formula_valuation (M: Model)
+                           (w: W (F M))
+                           (phi: form): Prop :=
+  match phi with
+  | Lit     x            => v M x w 
+  | Box     psi
+     => forall w': W (F M), R (F M) w w' ->
+                            formula_valuation M w' psi
+  | Dia     psi
+     => exists w': W (F M), R (F M) w w' /\
+                   formula_valuation M w' psi
+  (** some code omitted* )
+  end.
+\end{minted}
+In order to ease the task of writing formulas and its semantics properties, we
+define Coq notations that mimics the standard way of writing them.
+
+\paragraph{Systems for modal logic}
+
+
+\paragraph{The Hilbert deductive system}
+Basically, a Hilbert-style deductive system allows the use of on four
+possibilities in a proof: 1) the use of a hypothesis; 2) use of an axiom;
+3) use of the modus ponens rule or 4) the use of the generalization (necessity)
+rule. The inductive type \mintinline{coq}{deduction} encodes these possibilities
+as its constructors. The \mintinline{coq}{deduction} type is parameterized by
+axioms that form a system for modal logics. In this way, our definition can be
+used in several systems of modal logic.
+\begin{minted}{coq}
+Inductive deduction (A: axiom -> Prop)
+                           : theory -> form -> Prop :=
+  (* Premise. *)
+  | Prem: forall (t: theory)
+                 (f: form)
+                 (i: nat),
+          (nth_error t i = Some f) -> deduction A t f
+  (* Axiom. *)
+  | Ax: forall (t: theory)
+               (a: axiom)
+               (f: form),
+        A a -> instantiate a = f -> deduction A t f
+  (* Modus Ponens. *)
+  | Mp: forall (t: theory)
+               (f g: form)
+               (d1: deduction A t (f -> g))
+               (d2: deduction A t f),
+        deduction A t g
+  (* Generalization. *)
+  | Nec: forall (t: theory)
+                (f: form)
+                (d1: deduction A t f),
+         deduction A t (Box f).
+\end{minted}
+The constructors \mintinline{coq}{Prem}, \mintinline{coq}{Mp} and \mintinline{coq}{Nec}
+represent rules for hypothesis, modus ponens and generalization, respectively.
+The \mintinline{coq}{Ax} constructor deserves a bit of explanation. Function
+\mintinline{coq}{instantiate} build a formula from a given axiom set for a given
+system represented by a theory, which parameterizes our deduction type.
+\begin{minted}{coq}
+Definition instantiate (a: axiom): modalFormula :=
+  match a with
+  | ax1    p   q
+     => [! p -> (q -> p) !]
+  | ax2    p   q   r
+     => [! (p -> (q -> r)) -> ((p -> q) -> (p -> r)) !]
+  | ax3    p   q
+     => [! (~ q -> ~ p) -> (p -> q) !]
+  | axK    p   q
+     => [! [] (p -> q) -> ([] p -> [] q) !]
+  | axPos  p   q
+     => [! <> (p \/ q) -> (<> p \/ <> q) !]
+  (** some code omitted *)
+  end.
+\end{minted}
+Notation \mintinline{coq}{[! p !]} is used to write modal logic formulas using a
+syntax closer to mathematical practice using Coq. This is necessary to avoid
+ambiguities, since some symbols are also used by Coq's syntax.
+Modalities $\Box$ and $\Diamond$ are denoted by \mintinline{coq}{[]}
+and \mintinline{coq}{<>}, respectively.
 
 \section{Case Study}\label{sec:case}
 
 \section{Related work}\label{sec:related}
+
+\paragraph{Formalizations of modal logics on proof assistants}
+
+The formalization of epistemic modal logic in Coq was the subject of Wind's
+work~\cite{dewind}.
+The author made a Coq implementation of modal logic based on the S5 system,
+which consists of  the axioms $K$, $T$, $4$ and $5$. The objective was the
+modelling of two well known puzzles.
+Wind's formalization was separated into some components. The first consists in
+defining the syntax of formulas and the Kripke semantics. Next, the author uses
+their definitions to give some examples of modal operators, worlds and how they
+interact with each other. Using the built machinery, the author developed
+introduction and elimination rules for modal logic and use them to model the
+wize man's and muddy children puzzles.
+
 
 \section{Conclusion}\label{sec:conclusion}
 

@@ -41,3 +41,4 @@ CppProperties.json
 *.glob
 .CoqMakefile.d
 CoqMakefile.conf
+*.out
