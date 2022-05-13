@@ -4,11 +4,11 @@ Section Lindebaum.
 
 Definition Consistent (A: axiom -> Prop) (G : theory) : Prop := 
   forall p,
-  ~ (A; G |-- [! p /\ ~p !]).
+  ~ (A; G |--  p ./\ .~p).
 
 Definition Maximal_Consistent (A: axiom -> Prop) (G : theory) : Prop :=
   forall p,
-  ~(In [! p !] G /\  In [! ~ p !] G) /\ Consistent A G.
+  ~(In p G /\  In .~ p G) /\ Consistent A G.
 
 Lemma lema_1 :
   forall A Delta Gamma,
@@ -20,7 +20,7 @@ Proof.
   destruct H.
   unfold Consistent, not in *; intros.
   eapply H;
-  eapply deduction_weak.
+  eapply derive_weak.
   exact H0.
   exact H1.
 Qed.
