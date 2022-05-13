@@ -380,7 +380,7 @@ and a rule that allows to conclude formulas with necessity.
 \begin{figure}[H]
 \begin{tabular}{cc}
     \AxiomC{$\Gamma\vdash\varphi_1\to\varphi_2$}
-    \AxiomC{$\Gamma\vdash\varphi_2$}
+    \AxiomC{$\Gamma\vdash\varphi_1$}
     \RightLabel{MP}
     \BinaryInfC{$\Gamma\vdash\varphi_2$}
     \DisplayProof
@@ -393,6 +393,9 @@ and a rule that allows to conclude formulas with necessity.
 \end{figure}
 The set of axioms and the two previous rules forms a sound and complete Hilbert-style
 deductive system for modal logics~\cite{blackburn}.
+
+A central aspect in the study of modal logics is the properties of its
+accessibility relations.
 
 
 \section{Embedding Modal Logic in Coq}\label{sec:implementation}
