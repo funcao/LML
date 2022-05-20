@@ -1,14 +1,14 @@
 Require Import Modal_Library Classical List.
 
 Theorem implies_to_or_modal : 
-  forall phi psi,
-  [! phi -> psi !]  =|= [! ~ phi \/ psi !].
+  forall φ ψ,
+  φ .-> ψ  =|=  (.~ φ) .\/ ψ .
 Proof.
   split.
-  - unfold theory_valid_in_frame in *. 
+  - unfold entails_modal in *. 
     intros; simpl in *.
     destruct H as (?,_). 
-    unfold valid_in_model in *. 
+    unfold validate_model in *. 
     simpl in *; intros.
     edestruct classic.
     + exact H0.
@@ -16,10 +16,10 @@ Proof.
       apply not_or_and in H0.
       destruct H0 as (?, _);
       apply NNPP in H0; auto.
-  - unfold theory_valid_in_frame in *. 
+  - unfold entails_modal in *. 
     intros; simpl in *.
     destruct H as (?, _).
-    unfold valid_in_model in *.
+    unfold validate_model in *.
     simpl in *; intros.
     destruct H with w.
     + contradiction.
@@ -27,20 +27,20 @@ Proof.
 Qed.
 
 Theorem double_neg_modal :
-  forall phi,
-  [! ~ ~ phi !] =|= [! phi !].
+  forall φ,
+  (.~ .~ φ) =|= φ.
 Proof.
   split.
-  - unfold theory_valid_in_frame.
+  - unfold entails_modal.
     simpl in *.
-    unfold valid_in_model.    
+    unfold validate_model.    
     intros.
     destruct H as (?, _).
     simpl in *.
     apply NNPP; auto.
-  - unfold theory_valid_in_frame.
+  - unfold entails_modal.
     simpl in *.
-    unfold valid_in_model.    
+    unfold validate_model.    
     intros; simpl in *.
     destruct H as (?, _).
     edestruct classic.
@@ -50,21 +50,21 @@ Proof.
 Qed.
 
 Theorem and_to_implies_modal: 
-  forall phi psi,
-  [! phi /\ psi !] =|= [! ~ (phi -> ~ psi) !].
+  forall φ ψ,
+  φ ./\ ψ =|= .~ (φ .-> .~ ψ).
 Proof.
   split.
-  - unfold theory_valid_in_frame, valid_in_model.
+  - unfold entails_modal, validate_model.
     simpl in *; intros.
-    unfold valid_in_model in *.
+    unfold validate_model in *.
     simpl in *.
     destruct H as (?, _).
     unfold not; intros; apply H0.
     + destruct H with (w:=w); auto.
     + destruct H with (w:=w); auto.
-  - unfold theory_valid_in_frame.
+  - unfold entails_modal.
     simpl in *; intros.
-    unfold valid_in_model in *.
+    unfold validate_model in *.
     intros; simpl in *.
     destruct H as (?, _).
     split.
@@ -81,14 +81,14 @@ Proof.
 Qed.
 
 Theorem diamond_to_box_modal:
-  forall phi,
-  [! <> phi !] =|= [! ~ [] ~ phi !].
+  forall φ,
+  .<> φ =|= .~ .[] .~ φ.
 Proof.
   split.
-  - unfold theory_valid_in_frame, valid_in_model in *.
+  - unfold entails_modal, validate_model in *.
     simpl in *; intros.
     destruct H as (?, _).
-    unfold valid_in_model in H; simpl in H.
+    unfold validate_model in H; simpl in H.
     edestruct classic.
     + exact H0.
     + unfold not; intros. 
@@ -96,9 +96,9 @@ Proof.
       apply H1 with (w':=x).
       destruct H2; auto.
       destruct H2; auto.
-  - intros. unfold theory_valid_in_frame in *.
+  - intros. unfold entails_modal in *.
     simpl in *.
-    unfold valid_in_model in *.
+    unfold validate_model in *.
     simpl in *. 
     unfold not in *.
     intros.

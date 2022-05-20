@@ -1,9 +1,1 @@
 -R . Top
-
-./Modal_Library.v
-./Deductive_System.v
-./Completeness.v
-./Frame_Validation.v
-./Logical_Equivalence.v
-./Soundness.v
-./exemplos.v
