@@ -1,8 +1,8 @@
-Require Import Modal_Library Classical List.
+Require Import Modal_Library Modal_Notations Classical List.
 
-Theorem implies_to_or_modal : 
+Theorem implies_to_or_modal:
   forall φ ψ,
-  φ .-> ψ  =|=  (.~ φ) .\/ ψ .
+  [! φ -> ψ !] =|= [! ~φ \/ ψ !].
 Proof.
   split.
   - unfold entails_modal in *. 
@@ -26,32 +26,32 @@ Proof.
     + assumption. 
 Qed.
 
-Theorem double_neg_modal :
+Theorem double_neg_modal:
   forall φ,
-  (.~ .~ φ) =|= φ.
+  [! ~~φ !] =|= φ.
 Proof.
   split.
   - unfold entails_modal.
     simpl in *.
-    unfold validate_model.    
+    unfold validate_model.
     intros.
     destruct H as (?, _).
     simpl in *.
     apply NNPP; auto.
   - unfold entails_modal.
     simpl in *.
-    unfold validate_model.    
+    unfold validate_model.
     intros; simpl in *.
     destruct H as (?, _).
     edestruct classic.
     + exact H0.
-    + apply NNPP in H0. 
+    + apply NNPP in H0.
       exfalso; eauto.
 Qed.
 
-Theorem and_to_implies_modal: 
+Theorem and_to_implies_modal:
   forall φ ψ,
-  φ ./\ ψ =|= .~ (φ .-> .~ ψ).
+  [! φ /\ ψ !] =|= [! ~(φ -> ~ψ) !].
 Proof.
   split.
   - unfold entails_modal, validate_model.
@@ -82,7 +82,7 @@ Qed.
 
 Theorem diamond_to_box_modal:
   forall φ,
-  .<> φ =|= .~ .[] .~ φ.
+  [! <>φ !] =|= [! ~[]~φ !].
 Proof.
   split.
   - unfold entails_modal, validate_model in *.
@@ -105,8 +105,8 @@ Proof.
     destruct H as (?, _).
     edestruct classic.
     + exact H0.
-    + exfalso; apply H with (w:=w); 
+    + exfalso; apply H with (w:=w);
       intros.
-      apply H0; exists w'; 
-      split; auto; auto. 
+      apply H0; exists w';
+      split; auto; auto.
 Qed.

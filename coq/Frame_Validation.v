@@ -1,4 +1,4 @@
-Require Import Modal_Library Classical.
+Require Import Modal_Library Modal_Notations Classical.
 
 (*
 https://coq.inria.fr/library/Coq.Logic.Classical_Pred_Type.html
@@ -6,46 +6,50 @@ https://coq.inria.fr/library/Coq.Logic.Classical_Pred_Type.html
 
 Theorem contra:
   forall P Q,
-  (~ P -> ~ Q) -> (Q -> P).
+  (~P -> ~Q) -> (Q -> P).
 Proof.
-  intros. apply NNPP. intro. apply H in H1. contradiction.
+  intros.
+  apply NNPP.
+  tauto.
 Qed.
 
 Theorem reflexive_frame_implies_axiomT:
-    forall f p,
-    reflexivity_frame f ->
-    (forall v, Build_Model f v |= .[] p .-> p).
+  forall f p,
+  reflexivity_frame f ->
+  forall v,
+  [f -- v] |= [! []p -> p !].
 Proof.
-  intros f p HR v w1 H1. 
-  simpl in H1. 
+  intros f p HR v w1 H1.
+  simpl in H1.
   unfold reflexivity_frame in HR.
-  apply H1 in HR. 
-  assumption. 
+  apply H1 in HR.
+  assumption.
 Qed.
 
 Theorem axiomT_implies_reflexive_frame:
   forall f,
-  (forall v p, Build_Model f v |= .[]p .-> p) -> 
+  (forall v p, [f -- v] |= [! []p -> p !]) ->
   reflexivity_frame f.
 Proof.
-  intros f. 
+  intros f.
   apply contra.
-  intros H; unfold reflexivity_frame in H. 
+  intros H; unfold reflexivity_frame in H.
   apply not_all_ex_not in H; destruct H as [w1].
-  apply ex_not_not_all. 
-  exists (fun _ x => R f w1 x). 
-  apply ex_not_not_all. 
-  exists (#0). 
-  intros H1; unfold fun_validation in H1; simpl in H1. 
+  apply ex_not_not_all.
+  exists (fun _ x => R f w1 x).
+  apply ex_not_not_all.
+  exists [! #0 !].
+  intros H1; unfold fun_validation in H1; simpl in H1.
   destruct H.
-  apply H1. 
+  apply H1.
   intros w2 H'; assumption.
 Qed.
 
-Theorem transitive_frame_implies_axiom4: 
+Theorem transitive_frame_implies_axiom4:
   forall f,
-    transitivity_frame f ->
-    (forall v p, Build_Model f v |= .[]p .-> .[].[]p).
+  transitivity_frame f ->
+  forall v p,
+  [f -- v] |= [! []p -> [][]p !].
 Proof.
   intros f H v p w1 H1.
   simpl.
@@ -53,13 +57,13 @@ Proof.
   simpl in H1.
   apply H1.
   unfold transitivity_frame in H.
-  apply H with (w:=w1) (w':=w2) (w'':=w3).
+  apply H with (w := w1) (w' := w2) (w'' := w3).
   split; assumption.
 Qed.
 
 Theorem axiom4_implies_transitive_frame:
   forall f,
-  (forall v p, Build_Model f v |= .[]p .-> .[].[]p) -> 
+  (forall v p, [f -- v] |= [! []p -> [][]p !]) ->
   transitivity_frame f.
 Proof.
   intros f.
@@ -73,7 +77,7 @@ Proof.
   apply ex_not_not_all.
   exists (fun _ x => R f w1 x).
   apply ex_not_not_all.
-  exists (#0).
+  exists [! #0 !].
   intros H; unfold fun_validation in H; simpl in H.
   destruct H3.
   eapply H.
@@ -85,7 +89,8 @@ Qed.
 Theorem symmetric_frame_implies_axiomB:
   forall f,
   simmetry_frame f ->
-  (forall v p, Build_Model f v |= p .-> .[].<> p).
+  forall v p,
+  [f -- v] |= [! p -> []<>p !].
 Proof.
   intros f H v p w1 H1.
   simpl.
@@ -97,7 +102,7 @@ Qed.
 
 Theorem axiomB_implies_symmetric_frame:
   forall f,
-  (forall v p, Build_Model f v |= p .-> .[].<>p) -> 
+  (forall v p, [f -- v] |= [! p -> []<>p !]) ->
   simmetry_frame f.
 Proof.
   intros f.
@@ -109,7 +114,7 @@ Proof.
   apply ex_not_not_all.
   exists (fun _ x => ~ R f w2 x).
   apply ex_not_not_all.
-  exists (#0).
+  exists [! #0 !].
   intros H; unfold fun_validation in H; simpl in H.
   pose H1 as H3.
   apply H in H3; try assumption.
@@ -121,7 +126,8 @@ Qed.
 Theorem euclidean_frame_implies_axiom5:
   forall f,
   euclidian_frame f ->
-  (forall v p, Build_Model f v |= .<>p .-> .[].<> p).
+  forall v p,
+  [f -- v] |= [! <>p -> []<>p !].
 Proof.
   intros f H v p w1 H1.
   simpl.
@@ -135,9 +141,9 @@ Proof.
   - eapply H; split; [exact H2 | assumption].
 Qed.
 
-Theorem axiom5_implies_euclidean_frame: 
+Theorem axiom5_implies_euclidean_frame:
   forall f,
-  (forall v p, Build_Model f v |= .<>p .-> .[].<>p) -> 
+  (forall v p, [f -- v] |= [! <>p -> []<>p !]) ->
   euclidian_frame f.
 Proof.
   intros f.
@@ -151,7 +157,7 @@ Proof.
   apply ex_not_not_all.
   exists (fun _ x =>  ~ R f w2 x).
   apply ex_not_not_all.
-  exists (#0).
+  exists [! #0 !].
   intros H; unfold fun_validation in H; simpl in H.
   destruct H with (w1) (w2); try assumption.
   - exists w3; split; assumption.
@@ -161,7 +167,8 @@ Qed.
 Theorem serial_frame_implies_axiomD:
   forall f,
   serial_frame f ->
-  (forall v p, Build_Model f v |= .[]p .-> .<> p).
+  forall v p,
+  [f -- v] |= [! []p -> <>p !].
 Proof.
   intros f H v p w1 H1.
   unfold serial_frame in H.
@@ -174,7 +181,7 @@ Qed.
 
 Theorem axiomD_implies_serial_frame: 
   forall f,
-  (forall v p, Build_Model f v |= .[]p .-> .<> p) ->
+  (forall v p, [f -- v] |= [! []p -> <>p !]) ->
   serial_frame f.
 Proof.
   intros f.
@@ -185,7 +192,7 @@ Proof.
   apply ex_not_not_all.
   exists (fun _ x => ~ R f w1 x).
   apply ex_not_not_all.
-  exists (#0).
+  exists [! #0 !].
   intros H1; unfold fun_validation in H1; simpl in H1.
   edestruct H1.
   - intros w2 H2.
@@ -197,19 +204,20 @@ Qed.
 Theorem functional_frame_implies_axiom:
   forall f,
   functional_frame f ->
-  (forall v p, Build_Model f v |= .<>p .-> .[]p).
+  forall v p,
+  [f -- v] |= [! <>p -> []p !].
 Proof.
   intros f H v p w1 H1 w2 H2.
   unfold functional_frame in H.
   simpl in H1.
   destruct H1 as [w3 H1]; destruct H1 as [H1 H3].
-  assert (H4: R (F (Build_Model f v)) w1 w2 /\ R f w1 w3) by (split; assumption).
+  assert (H4: R (F ([f -- v])) w1 w2 /\ R f w1 w3) by (split; assumption).
   apply H in H4; subst; assumption.
 Qed.
 
 Theorem axiom_implies_functional_frame:
   forall f,
-  (forall v p, Build_Model f v |= .<>p .-> .[] p) ->
+  (forall v p, [f -- v] |= [! <>p -> []p !]) ->
   functional_frame f.
 Proof.
   intros f.
@@ -223,7 +231,7 @@ Proof.
   apply ex_not_not_all.
   exists (fun _ x => R f w1 x /\ x <> w3).
   apply ex_not_not_all.
-  exists (#0).
+  exists [! #0 !].
   intros H; unfold fun_validation in H; simpl in H.
   apply H in H2.
   - destruct H2 as [H2 H4]; contradiction.
@@ -233,7 +241,8 @@ Qed.
 Theorem dense_frame_implies_axiom:
   forall f,
   dense_frame f ->
-  (forall v p, Build_Model f v |= .[].[]p .-> .[] p).
+  forall v p,
+  [f -- v] |= [! [][]p -> []p !].
 Proof.
   intros f H v p w1 H1 w2 H2.
   unfold dense_frame in H.
@@ -245,7 +254,7 @@ Qed.
 
 Theorem axiom_implies_dense_frame:
   forall f,
-  (forall v p, Build_Model f v |= .[].[]p .-> .[] p) ->
+  (forall v p, [f -- v] |= [! [][]p -> []p !]) ->
   dense_frame f.
 Proof.
   intros f.
@@ -256,7 +265,7 @@ Proof.
   apply ex_not_not_all.
   exists (fun _ x => exists y, R f w1 y /\ R f y x).
   apply ex_not_not_all.
-  exists (#0).
+  exists [! #0 !].
   intros H1; unfold fun_validation in H1; simpl in H1. 
   edestruct H1.
   - intros w3 H3 w4 H4.
@@ -276,7 +285,8 @@ Qed.
 Theorem convergent_frame_implies_axiom:
   forall f,
   convergente_frame f ->
-  (forall v p, Build_Model f v |= .<>.[]p .-> .[].<> p).
+  forall v p,
+  [f -- v] |= [! <>[]p -> []<> p !].
 Proof.
   intros f H v p w1 H1 w2 H2.
   unfold convergente_frame in H.
@@ -294,7 +304,8 @@ Qed.
 Theorem noetherian_frame_implies_axiomGL:
   forall f,
   noetherian_frame f ->
-  (forall v p, Build_Model f v |= .[](.[]p .-> p) .-> .[]p).
+  forall v p,
+  [f -- v] |= [! []([]p -> p) -> []p !].
 Proof.
   intros f H v p w1 H1 w2 H2.
   unfold noetherian_frame in H; destruct H as [H H'].
@@ -302,29 +313,30 @@ Proof.
   simpl in H1; apply H1; try assumption.
   intros w3 H3.
   assert (H4: R f w1 w3) by (eapply H; split; [exact H2 | exact H3]).
+  admit.
 Admitted.
 
 Theorem axiomGL_implies_noetherian_frame:
   forall f,
-  (forall v p, Build_Model f v |= .[](.[]p .-> p) .-> .[]p) ->
+  (forall v p, [f -- v] |= [! []([]p -> p) -> []p !]) ->
   noetherian_frame f.
 Proof.
   intros f; apply contra.
   intros H; unfold noetherian_frame in H.
   apply not_and_or in H.
-
+  admit.
 Admitted.
 
 (*
-Problema aqui: Não tenho informação suficiente pois cada 
+Problema aqui: Não tenho informação suficiente pois cada
 lado da disjunção tem uma função de valoração diferente
 
 Quebra a disjunção da hipótese e cada lado tem sua própria função de valoração,
 estas que são as que eu defini na prova no papel
 *)
-Theorem axiom_implies_convergent_frame: 
+Theorem axiom_implies_convergent_frame:
   forall f,
-  (forall v p, Build_Model f v |= .<>.[]p .-> .[].<> p) ->
+  (forall v p, [f -- v] |= [! <>[]p -> []<> p !]) ->
   convergente_frame f.
 Proof.
   intros f.
@@ -340,7 +352,7 @@ Proof.
   - apply ex_not_not_all.
     exists (fun _ x => (R f w3 x)).
     apply ex_not_not_all.
-    exists (#0).
+    exists [! #0 !].
     intros H2; unfold fun_validation in H2; simpl in H2.
     destruct H2 with (w1) (w2).
     + exists w2; split; try assumption.
@@ -354,7 +366,7 @@ Proof.
   - apply ex_not_not_all.
     exists (fun _ x => (R f w2 x)).
     apply ex_not_not_all.
-    exists (#0).
+    exists [! #0 !].
     intros H2; unfold fun_validation in H2; simpl in H2.
     destruct H2 with (w1) (w3).
     + exists w3; split; try assumption.
@@ -377,7 +389,7 @@ podiam ser instanciadas
 *)
 Theorem axiom_implies_convergent_frame':
   forall f,
-  (forall v p, Build_Model f v |= .<>.[]p .-> .[].<> p) ->
+  (forall v p, [f -- v] |= [! <>[]p -> []<> p !]) ->
   convergente_frame f.
 Proof.
   intros f.
@@ -389,7 +401,7 @@ Proof.
   apply ex_not_not_all.
   exists(fun _ x => R f w3 x \/ R f w2 x).
   apply ex_not_not_all.
-  exists (#0).
+  exists [! #0 !].
   intros H2; unfold fun_validation in H2; simpl in H2.
   destruct H2 with (w1) (w2).
   - exists w2; split.
@@ -419,7 +431,7 @@ relacionamento de um lado, do outro não pode haver
 *)
 Theorem axiom_implies_convergent_frame'':
   forall f,
-  (forall v p, Build_Model f v |= .<>.[]p .-> .[].<> p) ->
+  (forall v p, [f -- v] |= [! <>[]p -> []<> p !]) ->
   convergente_frame f.
 Proof.
   intros f.
@@ -431,7 +443,7 @@ Proof.
   apply ex_not_not_all.
   exists(fun _ w4 => (R f w3 w4 -> ~ R f w2 w4) \/ (R f w2 w4 -> ~ R f w3 w4)).
   apply ex_not_not_all.
-  exists (#0).
+  exists [! #0 !].
   intros H2; unfold fun_validation in H2; simpl in H2.
   destruct H2 with (w1) (w2).
   - exists w2; split.
@@ -469,7 +481,7 @@ Abort.
 
 Theorem axiom_implies_convergent_frame''':
   forall f,
-  (forall v p, Build_Model f v |= .<>.[]p .-> .[].<> p) ->
+  (forall v p, [f -- v] |= [! <>[]p -> []<>p !]) ->
   convergente_frame f.
 Proof.
   intros f.
@@ -481,7 +493,7 @@ Proof.
   apply ex_not_not_all.
   exists(fun _ w4 => (R f w3 w4 /\ ~ R f w2 w4) \/ (R f w2 w4 /\ ~ R f w3 w4)).
   apply ex_not_not_all.
-  exists (#0).
+  exists [! #0 !].
   intros H2; unfold fun_validation in H2; simpl in H2.
   destruct H2 with (w1) (w2).
   - exists w2; split.
@@ -514,6 +526,3 @@ Proof.
     (*stuck*)
     (*dar destruct em H1 não muda em nada*)
 Abort.
-
-
-

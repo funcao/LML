@@ -1,4 +1,4 @@
-Require Import Modal_Library List Classical Logic.
+Require Import Modal_Library Modal_Notations List Classical Logic Equality.
 
 (**** HILBERT SYSTEM (axiomatic method) ****)
 Inductive axiom : Set :=
@@ -23,24 +23,24 @@ Inductive axiom : Set :=
 
 Definition instantiate (a: axiom): modalFormula :=
   match a with
-  | ax1    φ   ψ       => φ .-> (ψ .-> φ)
-  | ax2    φ   ψ   Ɣ   => (φ .-> (ψ .-> Ɣ)) .-> ((φ .-> ψ) .-> (φ .-> Ɣ))
-  | ax3    φ   ψ       => (.~ ψ .-> .~ φ) .-> (φ .-> ψ)
-  | ax4    φ   ψ       => φ .-> (ψ .-> (φ ./\ ψ))
-  | ax5    φ   ψ       => (φ ./\ ψ) .-> φ
-  | ax6    φ   ψ       => (φ ./\ ψ) .-> ψ
-  | ax7    φ   ψ       => φ .-> (φ .\/ ψ)
-  | ax8    φ   ψ       => ψ .-> (φ .\/ ψ)
-  | ax9    φ   ψ   Ɣ   => (φ .-> Ɣ) .-> ((ψ .-> Ɣ) .-> ((φ .\/ ψ) .-> Ɣ))
-  | ax10   φ   ψ       => .~ .~ φ .-> φ
-  | axK    φ   ψ       => .[] (φ .-> ψ) .-> (.[] φ .-> .[] ψ)
-  | axPos  φ   ψ       => .<> (φ .\/ ψ) .-> (.<> φ .\/ .<> ψ)
-  | axT    φ           => .[]φ .-> φ
-  | axB    φ           => φ .-> .[] .<> φ
-  | axK4   φ           => .[] φ .-> .[] .[] φ
-  | axD    φ           => .[] φ .-> .<> φ 
-  | axK5   φ           => .<> φ .-> .[] .<> φ 
-  | axGL   φ           => .[] (.[]φ .-> φ) .-> .[]φ
+  | ax1   φ ψ   => [! φ -> (ψ -> φ) !]
+  | ax2   φ ψ Ɣ => [! (φ -> (ψ -> Ɣ)) -> ((φ -> ψ) -> (φ -> Ɣ)) !]
+  | ax3   φ ψ   => [! (~ψ -> ~φ) -> (φ -> ψ) !]
+  | ax4   φ ψ   => [! φ -> (ψ -> (φ /\ ψ)) !]
+  | ax5   φ ψ   => [! (φ /\ ψ) -> φ !]
+  | ax6   φ ψ   => [! (φ /\ ψ) -> ψ !]
+  | ax7   φ ψ   => [! φ -> (φ \/ ψ) !]
+  | ax8   φ ψ   => [! ψ -> (φ \/ ψ) !]
+  | ax9   φ ψ Ɣ => [! (φ -> Ɣ) -> ((ψ -> Ɣ) -> ((φ \/ ψ) -> Ɣ)) !]
+  | ax10  φ ψ   => [! ~~φ -> φ !]
+  | axK   φ ψ   => [! [](φ -> ψ) -> ([] φ -> [] ψ) !]
+  | axPos φ ψ   => [! <> (φ \/ ψ) -> (<> φ \/ <> ψ) !]
+  | axT   φ     => [! []φ -> φ !]
+  | axB   φ     => [! φ -> [] <> φ !]
+  | axK4  φ     => [! [] φ -> [] [] φ !]
+  | axD   φ     => [! [] φ -> <> φ !]
+  | axK5  φ     => [! <> φ -> [] <> φ !]
+  | axGL  φ     => [! []([]φ -> φ) -> []φ !]
   end.
 
 Inductive deduction (A: axiom -> Prop): theory -> modalFormula -> Prop :=
@@ -57,14 +57,14 @@ Inductive deduction (A: axiom -> Prop): theory -> modalFormula -> Prop :=
   (* Modus Ponens. *)
   | Mp: forall (t: theory)
                (f g: modalFormula)
-               (d1: deduction A t (f .-> g))
+               (d1: deduction A t [! f -> g !])
                (d2: deduction A t f),
         deduction A t g
   (* Generalization. *)
   | Nec: forall (t: theory)
                 (f: modalFormula)
                 (d1: deduction A t f),
-         deduction A t (.[] f).
+         deduction A t [! []f !].
 
 Inductive K: axiom -> Prop :=
   | K_ax1: forall φ ψ, K (ax1 φ ψ)
@@ -105,7 +105,7 @@ Inductive K5: axiom -> Prop :=
   | K5_K: forall φ, K φ -> K5 φ
   | K5_axK5: forall φ , K5 (axK5 φ).
 
-(* Reflexive and Transitive*)
+(* Reflexive and Transitive *)
 Inductive S4: axiom -> Prop :=
   | S4_T: forall φ, T φ -> S4 φ
   | S4_axK4: forall φ , S4 (axK4 φ).
@@ -126,30 +126,28 @@ Inductive GL: axiom -> Prop :=
 
 (* Notations and Theorems *)
 
-(* Coercion T_K: K >-> T. *)
-
-Notation "A ; G |-- p" := (deduction A G p) 
+Notation "A ; G |-- p" := (deduction A G p)
     (at level 110, no associativity).
 
 Lemma derive_identity:
-  forall Γ φ, 
-  K; Γ |-- φ .-> φ.
+  forall Γ φ,
+  K; Γ |-- [! φ -> φ !].
 Proof.
   intros.
-  apply Mp with (f := φ.-> φ .-> φ).
-  - apply Mp with (f := φ .-> (φ .-> φ) .-> φ).
-    + apply Ax with (a := (ax2 φ (φ .-> φ) φ)).
+  apply Mp with (f := [! φ -> φ -> φ !]).
+  - apply Mp with (f := [! φ -> (φ -> φ) -> φ !]).
+    + apply Ax with (a := ax2 φ [! φ -> φ !] φ).
       * constructor.
       * reflexivity.
-    + apply Ax with (a := (ax1 φ (φ .-> φ))).
+    + apply Ax with (a := ax1 φ [! φ -> φ !]).
       * constructor.
       * reflexivity.
-  - apply Ax with (a := (ax1 φ φ)).
+  - apply Ax with (a := ax1 φ φ).
     + constructor.
     + reflexivity.
 Qed.
 
-Lemma derive_refl : 
+Lemma derive_refl:
   forall A Γ φ,
   A; φ :: Γ |-- φ.
 Proof.
@@ -158,63 +156,51 @@ Proof.
   reflexivity.
 Qed.
 
-
-Definition subset (Γ Δ : theory) : Prop :=
-  forall φ, 
-  In φ Γ -> 
-  In φ Δ.
-
-Notation "A ⊆ B" := (subset A B)
-  (at level 70, only printing, no associativity) : type_scope.
-
+Definition subset (Γ Δ: theory): Prop :=
+  forall φ,
+  In φ Γ -> In φ Δ.
 
 Lemma derive_In:
-  forall A Γ φ ,
+  forall A Γ φ,
   In φ Γ ->
   A; Γ |-- φ.
 Proof.
   intros; eapply In_nth_error in H.
   destruct H.
-  apply Prem with (i:=x).
+  apply Prem with (i := x).
   assumption.
 Qed.
 
-Lemma derive_weak: 
+Lemma derive_weak:
   forall Γ ẟ,
   subset Γ ẟ ->
   forall A φ,
-  (A; Γ |-- φ) -> 
+  (A; Γ |-- φ) ->
   (A; ẟ |-- φ).
 Proof.
   intros.
   induction H0.
-  - eapply derive_In; apply H. 
-    eapply nth_error_In. 
+  - eapply derive_In; apply H.
+    eapply nth_error_In.
     exact H0.
-  - apply Ax with (a:= a). 
-    + assumption.
-    + assumption.
-  - eapply Mp;
-     eauto.
-  - apply Nec; 
-    intuition.
+  - apply Ax with (a:= a); auto.
+  - eapply Mp; eauto.
+  - apply Nec; intuition.
 Qed.
 
-Lemma derive_monotonicity :
-  forall ẟ Γ φ, 
-  (K; Γ |-- φ) -> 
+Lemma derive_monotonicity:
+  forall ẟ Γ φ,
+  (K; Γ |-- φ) ->
   (K; ẟ ++ Γ |-- φ).
 Proof.
   intros.
   apply derive_weak with Γ.
-  - unfold subset. intros. 
+  - unfold subset. intros.
     induction ẟ.
     + simpl; assumption.
     + simpl in *; right; assumption.
   - assumption.
 Qed.
-
-Require Import Equality.
 
 Lemma derive_modus_ponens:
   forall Γ φ ψ,
@@ -223,24 +209,24 @@ Lemma derive_modus_ponens:
   (K; Γ |-- ψ).
 Proof.
   intros; dependent induction H.
-  - apply nth_error_In in H. 
+  - apply nth_error_In in H.
     destruct H.
     + destruct H.
       assumption.
     + apply derive_In.
-      assumption.  
+      assumption.
   - apply Ax with (a:=a).
     + assumption.
     + reflexivity.
   - eapply Mp.
-    + eapply IHdeduction1. 
+    + eapply IHdeduction1.
       * eauto.
-      * assumption. 
-    + eapply IHdeduction2. 
+      * assumption.
+    + eapply IHdeduction2.
       * eauto.
-      * assumption. 
+      * assumption.
   - apply Nec.
-    + eapply IHdeduction. 
+    + eapply IHdeduction.
       * eauto.
-      * assumption. 
+      * assumption.
 Qed.

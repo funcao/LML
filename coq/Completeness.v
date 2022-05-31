@@ -1,19 +1,19 @@
-Require Import Modal_Library Deductive_System List Classical Bool.
+Require Import Modal_Library Modal_Notations Deductive_System List Classical Bool.
 
 Section Lindebaum.
 
-Definition Consistent (A: axiom -> Prop) (G : theory) : Prop := 
+Definition Consistent (A: axiom -> Prop) (G : theory) : Prop :=
   forall p,
-  ~ (A; G |--  p ./\ .~p).
+  ~(A; G |-- [! p /\ ~p !]).
 
 Definition Maximal_Consistent (A: axiom -> Prop) (G : theory) : Prop :=
   forall p,
-  ~(In p G /\  In .~ p G) /\ Consistent A G.
+  ~(In p G /\ In [! ~p !] G) /\ Consistent A G.
 
-Lemma lema_1 :
+Lemma lema_1:
   forall A Delta Gamma,
-  (Consistent A Delta /\ 
-  subset Gamma Delta) -> 
+  (Consistent A Delta /\
+  subset Gamma Delta) ->
   Consistent A Gamma.
 Proof.
   intros.
@@ -98,8 +98,10 @@ Section Lindebaum'.
 
 (*Inductive deduction (A: axiom -> Prop): theory -> modalFormula -> Prop*)
 (*Isso é um problema*)
-Print filter.
-Print reflect.
+
+(* Print filter.
+Print reflect. *)
+
 (*
 É possível que não de para
 coverter Props para Bools de forma alguma,
@@ -201,11 +203,6 @@ Inductive FormulaSet: nat -> modalFormula -> Prop := (*deixando vc aqi*)
                      FormulaSet n2 f2 ->
                      FormulaSet (n1 * n2) (Implies f1 f2).
 
-
-
-
-
-
 End Lindebaum'.
 
 (*
@@ -218,12 +215,11 @@ End Lindebaum'.
   P/ todo conjunto Gamma, se ele é consistente então existe um conjunto
   maximal consistente Delta que contém Gamma
 *)
-Lemma Lindenbaum: 
-  forall A Gamma, 
-  Consistent A Gamma -> 
-  exists Delta, 
-  (Maximal_Consistent A Delta /\ 
-  subset Gamma Delta).
+Lemma Lindenbaum:
+  forall A Gamma,
+  Consistent A Gamma ->
+  exists Delta,
+  (Maximal_Consistent A Delta /\ subset Gamma Delta).
 Proof.
-  admit. 
+  admit.
 Admitted.
