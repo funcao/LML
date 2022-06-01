@@ -1,9 +1,9 @@
-Require Import Modal_Library Classical List Deductive_System.
+Require Import Modal_Library Modal_Notations Classical List Deductive_System.
 
 (* p -> (q -> p) *)
 Lemma Hilbert_Axiom_1_soundness:
   forall M w φ ψ,
-  M ' w ||- φ .-> (ψ .-> φ).
+  M ' w ||- [! φ -> (ψ -> φ) !].
 Proof.
   simpl; intros.
   assumption.
@@ -12,7 +12,7 @@ Qed.
 (* (p -> (q -> r)) -> ((p -> q) -> (p -> r)) *)
 Lemma Hilbert_Axiom_2_soundness:
   forall M w φ ψ Ɣ,
-  M ' w ||- (φ .-> (ψ .-> Ɣ)) .-> ((φ .-> ψ) .-> (φ .-> Ɣ)).
+  M ' w ||- [! (φ -> (ψ -> Ɣ)) -> ((φ -> ψ) -> (φ -> Ɣ)) !].
 Proof.
   simpl; intros.
   apply H.
@@ -23,7 +23,7 @@ Qed.
 (* (~ q -> ~ p) -> (p -> q) *)
 Lemma Hilbert_Axiom_3_soundness:
   forall M w φ ψ,
-  M ' w ||- (.~ ψ .-> .~ φ) .-> (φ .-> ψ).
+  M ' w ||- [! (~ψ -> ~φ) -> (φ -> ψ) !].
 Proof.
   simpl; intros.
   pose (classic (M ' w ||- ψ)) as Hip.
@@ -36,16 +36,16 @@ Qed.
 (* p -> (q -> (p /\ q)) *)
 Lemma Hilbert_Axiom_4_soundness: 
   forall M w φ ψ,
-  M ' w ||- φ .-> (ψ .-> (φ ./\ ψ)).
+  M ' w ||- [! φ -> (ψ -> (φ /\ ψ)) !].
 Proof.
   simpl; intros.
   split; auto.
 Qed.
 
 (* (p /\ q) -> p *)
-Lemma Hilbert_Axiom_5_soundness: 
+Lemma Hilbert_Axiom_5_soundness:
   forall M w φ ψ,
-  M ' w ||- (φ ./\ ψ) .-> φ.
+  M ' w ||- [! (φ /\ ψ) -> φ !].
 Proof.
   simpl; intros.
   destruct H as [Hip1 Hip2].
@@ -53,9 +53,9 @@ Proof.
 Qed.
 
 (* (p /\ q) -> q *)
-Lemma Hilbert_Axiom_6_soundness: 
+Lemma Hilbert_Axiom_6_soundness:
   forall M w φ ψ,
-  M ' w ||- (φ ./\ ψ) .-> ψ.
+  M ' w ||- [! (φ /\ ψ) -> ψ !].
 Proof.
   simpl; intros.
   destruct H as [Hip1 Hip2].
@@ -63,9 +63,9 @@ Proof.
 Qed.
 
 (* p -> (p \/ q) *)
-Lemma Hilbert_Axiom_7_soundness: 
+Lemma Hilbert_Axiom_7_soundness:
   forall M w φ ψ,
-  M ' w ||- (φ .-> (φ .\/ ψ)).
+  M ' w ||- [! φ -> (φ \/ ψ) !].
 Proof.
   simpl; intros.
   left.
@@ -75,7 +75,7 @@ Qed.
 (* q -> (p \/ q) *)
 Lemma Hilbert_Axiom_8_soundness: 
   forall M w φ ψ,
-  M ' w ||- (ψ .-> (φ .\/ ψ)).
+  M ' w ||- [! ψ -> (φ \/ ψ) !].
 Proof.
   simpl; intros.
   right.
@@ -85,7 +85,7 @@ Qed.
 (* (p -> r) -> (q -> r) -> (p \/ q) -> r *)
 Lemma Hilbert_Axiom_9_soundness: 
   forall M w φ ψ Ɣ,
-  M ' w ||- (φ .-> Ɣ) .-> (ψ .-> Ɣ) .-> (φ .\/ ψ) .-> Ɣ.
+  M ' w ||- [! (φ -> Ɣ) -> (ψ -> Ɣ) -> (φ \/ ψ) -> Ɣ !].
 Proof.
   simpl; intros.
   destruct H1.
@@ -96,9 +96,9 @@ Proof.
 Qed.
 
 (* ~~p -> p *)
-Lemma Hilbert_Axiom_10_soundness: 
+Lemma Hilbert_Axiom_10_soundness:
   forall M w φ,
-  M ' w ||- .~.~φ .-> φ.
+  M ' w ||- [! ~~φ -> φ !].
 Proof.
   simpl; intros.
   apply NNPP in H.
@@ -108,7 +108,7 @@ Qed.
 (* <>(p \/ q) -> (<>p \/ <>q) *)
 Lemma Axiom_Possibility_soundness:
   forall M w φ ψ,
-  M ' w ||- .<> (φ .\/ ψ) .-> (.<> φ .\/ .<> ψ).
+  M ' w ||- [! <>(φ \/ ψ) -> (<>φ \/ <>ψ) !].
 Proof.
   simpl; intros.
   destruct H as [ w' [ Hip1 [ Hip2 | Hip3 ] ]].
@@ -123,7 +123,7 @@ Qed.
 (* [](p -> q) -> ([]p -> []q) *)
 Lemma Axiom_K_soundness:
   forall M w φ ψ,
-  M ' w ||- .[](φ .-> ψ) .-> (.[]φ .-> .[]ψ).
+  M ' w ||- [! [](φ -> ψ) -> ([]φ -> []ψ) !].
 Proof.
   simpl; intros.
   apply H.
@@ -135,7 +135,7 @@ Qed.
 (* φ ∈ Γ -> Γ ||= φ  *)
 Lemma case_two :
   forall Γ φ,
-  In φ Γ -> 
+  In φ Γ ->
   Γ ||= φ.
 Proof.
   unfold entails_modal, validate_model; intros.
@@ -147,8 +147,8 @@ Qed.
 (* a /\ (a -> b) -> b *)
 Lemma Modus_Ponens_soundness:
   forall M w φ ψ,
-  ((M ' w ||- φ) /\ 
-  (M ' w ||- φ .-> ψ)) -> 
+  ((M ' w ||- φ) /\
+  (M ' w ||- [! φ -> ψ !])) ->
   (M ' w ||- ψ).
 Proof.
   simpl; intros.
@@ -158,8 +158,8 @@ Qed.
 
 Lemma Necessitation_soundness:
   forall M φ,
-  (M |= φ) -> 
-  (M |= .[]φ).
+  (M |= φ) ->
+  (M |= [! []φ !]).
 Proof.
   unfold validate_model; simpl; intros.
   apply H.
@@ -167,7 +167,7 @@ Qed.
 
 Theorem soundness:
   forall (G: theory) (φ: modalFormula),
-  (K; G |-- φ) -> 
+  (K; G |-- φ) ->
   (G ||= φ).
 Proof.
   induction 1.
