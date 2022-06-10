@@ -198,8 +198,7 @@ Lemma Lindenbaum:
   forall A Gamma, 
   Consistent A Gamma -> 
   exists Delta, 
-  (Maximal_Consistent A Delta /\ 
-  subset Gamma Delta).
+  (Maximal_Consistent A Delta /\ subset Gamma Delta).
 Proof.
-  admit. 
+  admit.
 Admitted.

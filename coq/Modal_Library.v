@@ -21,25 +21,25 @@ Inductive modalFormula: Set :=
 
 (* Size modal formula *)
 Fixpoint modalSize (f:modalFormula) : nat :=
-    match f with 
-    | Lit      x     => 1
-    | Neg      p1    => 1 + (modalSize p1)
-    | Box      p1    => 1 + (modalSize p1)
-    | Dia      p1    => 1 + (modalSize p1)
-    | And      p1 p2 => 1 + (modalSize p1) + (modalSize p2)
-    | Or       p1 p2 => 1 + (modalSize p1) + (modalSize p2)
-    | Implies  p1 p2 => 1 + (modalSize p1) + (modalSize p2)
+  match f with 
+  | Lit      x     => 1
+  | Neg      p1    => 1 + (modalSize p1)
+  | Box      p1    => 1 + (modalSize p1)
+  | Dia      p1    => 1 + (modalSize p1)
+  | And      p1 p2 => 1 + (modalSize p1) + (modalSize p2)
+  | Or       p1 p2 => 1 + (modalSize p1) + (modalSize p2)
+  | Implies  p1 p2 => 1 + (modalSize p1) + (modalSize p2)
 end.
 
 Fixpoint literals (f:modalFormula) : set nat :=
-    match f with 
-    | Lit      x     => set_add eq_nat_dec x (empty_set nat)
-    | Dia      p1    => literals p1
-    | Box      p1    => literals p1
-    | Neg      p1    => literals p1
-    | And      p1 p2 => set_union eq_nat_dec (literals p1) (literals p2)
-    | Or       p1 p2 => set_union eq_nat_dec (literals p1) (literals p2)
-    | Implies  p1 p2 => set_union eq_nat_dec (literals p1) (literals p2) 
+  match f with 
+  | Lit      x     => set_add eq_nat_dec x (empty_set nat)
+  | Dia      p1    => literals p1
+  | Box      p1    => literals p1
+  | Neg      p1    => literals p1
+  | And      p1 p2 => set_union eq_nat_dec (literals p1) (literals p2)
+  | Or       p1 p2 => set_union eq_nat_dec (literals p1) (literals p2)
+  | Implies  p1 p2 => set_union eq_nat_dec (literals p1) (literals p2) 
 end.
 
 Record Frame: Type := {
@@ -178,45 +178,45 @@ Inductive transpose {T}: list T -> list T -> Prop :=
     forall φ ψ,
     transpose φ ψ -> transpose ψ φ.
 
-    Lemma transpose_in:
-    forall {T} xs ys,
-    transpose xs ys ->
-    forall φ: T,
-    In φ xs <-> In φ ys.
-  Proof.
-    induction 1; intros.
-    - split; intros.
-      + destruct H.
-        * destruct H; intuition.
-        * destruct H; try intuition.
-          destruct H; intuition.
-      + destruct H.
-        * destruct H; intuition.
-        * destruct H; try intuition.
-          destruct H; intuition.
-    - split; intros.
-      + destruct H0.
-        * destruct H0.
-          left; auto.
-        * right; apply IHtranspose.
-          assumption.
-      + destruct H0.
-        * destruct H0.
-          left; auto.
-        * right; apply IHtranspose.
-          assumption.
-    - intuition.
-    - split; intros.
-      + apply IHtranspose2.
-        apply IHtranspose1.
+Lemma transpose_in:
+  forall {T} xs ys,
+  transpose xs ys ->
+  forall φ: T,
+  In φ xs <-> In φ ys.
+Proof.
+  induction 1; intros.
+  - split; intros.
+    + destruct H.
+      * destruct H; intuition.
+      * destruct H; try intuition.
+        destruct H; intuition.
+    + destruct H.
+      * destruct H; intuition.
+      * destruct H; try intuition.
+        destruct H; intuition.
+  - split; intros.
+    + destruct H0.
+      * destruct H0.
+        left; auto.
+      * right; apply IHtranspose.
         assumption.
-      + apply IHtranspose1.
-        apply IHtranspose2.
+    + destruct H0.
+      * destruct H0.
+        left; auto.
+      * right; apply IHtranspose.
         assumption.
-    - split; intros.
-      + apply IHtranspose; auto.
-      + apply IHtranspose; auto.
-  Qed.
+  - intuition.
+  - split; intros.
+    + apply IHtranspose2.
+      apply IHtranspose1.
+      assumption.
+    + apply IHtranspose1.
+      apply IHtranspose2.
+      assumption.
+  - split; intros.
+    + apply IHtranspose; auto.
+    + apply IHtranspose; auto.
+Qed.
 
 Theorem tranpose_deduction:
   forall M Γ ẟ φ,
@@ -314,14 +314,14 @@ Definition serial_frame (F: Frame): Prop :=
   exists w', R F w w'.
 
 (* Funcional *)
-Definition functional_frame (F: Frame) : Prop :=
+Definition functional_frame (F: Frame): Prop :=
   forall w w' w'',
   (R F w w' /\ 
   R F w w'') -> 
   w' = w''.
 
 (* Densa*)
-Definition dense_frame (F: Frame) : Prop :=
+Definition dense_frame (F: Frame): Prop :=
   forall w w',
   exists w'',
   R F w w' -> 

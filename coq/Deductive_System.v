@@ -46,19 +46,19 @@ Definition instantiate (a: axiom): modalFormula :=
 Inductive deduction (A: axiom -> Prop): theory -> modalFormula -> Prop :=
 (* Premise. *)
 | Prem: forall (t: theory)
-                (f: modalFormula)
-                (i: nat),
+               (f: modalFormula)
+               (i: nat),
         (nth_error t i = Some f) -> deduction A t f
 (* Axiom. *)
 | Ax: forall (t: theory)
-              (a: axiom)
-              (f: modalFormula),
+             (a: axiom)
+             (f: modalFormula),
       A a -> instantiate a = f -> deduction A t f
 (* Modus Ponens. *)
 | Mp: forall (t: theory)
-              (f g: modalFormula)
-              (d1: deduction A t [! f -> g !])
-              (d2: deduction A t f),
+             (f g: modalFormula)
+             (d1: deduction A t [! f -> g !])
+             (d2: deduction A t f),
       deduction A t g
 (* Generalization. *)
 | Nec: forall (t: theory)
@@ -101,7 +101,7 @@ Inductive D: axiom -> Prop :=
   | D_axD: forall φ , D (axD φ).
 
 (* Euclidean *)
-  Inductive K5: axiom -> Prop :=
+Inductive K5: axiom -> Prop :=
   | K5_K: forall φ, K φ -> K5 φ
   | K5_axK5: forall φ , K5 (axK5 φ).
 
@@ -125,8 +125,6 @@ Inductive GL: axiom -> Prop :=
   | GL_axGL: forall φ, GL (axGL φ).
 
 (* Notations and Theorems *)
-
-(* Coercion T_K: K >-> T. *)
 
 Notation "A ; G |-- p" := (deduction A G p)
     (at level 110, no associativity).
@@ -162,7 +160,7 @@ Definition subset (Γ Δ: theory): Prop :=
   forall φ,
   In φ Γ -> In φ Δ.
 
-  Lemma derive_In:
+Lemma derive_In:
   forall A Γ φ,
   In φ Γ ->
   A; Γ |-- φ.
