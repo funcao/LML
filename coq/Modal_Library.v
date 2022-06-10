@@ -20,27 +20,27 @@ Inductive modalFormula: Set :=
   | Implies: modalFormula -> modalFormula -> modalFormula.
 
 (* Size modal formula *)
-Fixpoint modalSize (f:modalFormula): nat :=
-  match f with 
-  | Lit     x     => 1
-  | Neg     p1    => 1 + (modalSize p1)
-  | Box     p1    => 1 + (modalSize p1)
-  | Dia     p1    => 1 + (modalSize p1)
-  | And     p1 p2 => 1 + (modalSize p1) + (modalSize p2)
-  | Or      p1 p2 => 1 + (modalSize p1) + (modalSize p2)
-  | Implies p1 p2 => 1 + (modalSize p1) + (modalSize p2)
-  end.
+Fixpoint modalSize (f:modalFormula) : nat :=
+    match f with 
+    | Lit      x     => 1
+    | Neg      p1    => 1 + (modalSize p1)
+    | Box      p1    => 1 + (modalSize p1)
+    | Dia      p1    => 1 + (modalSize p1)
+    | And      p1 p2 => 1 + (modalSize p1) + (modalSize p2)
+    | Or       p1 p2 => 1 + (modalSize p1) + (modalSize p2)
+    | Implies  p1 p2 => 1 + (modalSize p1) + (modalSize p2)
+end.
 
-Fixpoint literals (f:modalFormula): set nat :=
-  match f with 
-  | Lit     x     => set_add eq_nat_dec x (empty_set nat)
-  | Dia     p1    => literals p1
-  | Box     p1    => literals p1
-  | Neg     p1    => literals p1
-  | And     p1 p2 => set_union eq_nat_dec (literals p1) (literals p2)
-  | Or      p1 p2 => set_union eq_nat_dec (literals p1) (literals p2)
-  | Implies p1 p2 => set_union eq_nat_dec (literals p1) (literals p2) 
-  end.
+Fixpoint literals (f:modalFormula) : set nat :=
+    match f with 
+    | Lit      x     => set_add eq_nat_dec x (empty_set nat)
+    | Dia      p1    => literals p1
+    | Box      p1    => literals p1
+    | Neg      p1    => literals p1
+    | And      p1 p2 => set_union eq_nat_dec (literals p1) (literals p2)
+    | Or       p1 p2 => set_union eq_nat_dec (literals p1) (literals p2)
+    | Implies  p1 p2 => set_union eq_nat_dec (literals p1) (literals p2) 
+end.
 
 Record Frame: Type := {
   W: Set;
@@ -178,45 +178,45 @@ Inductive transpose {T}: list T -> list T -> Prop :=
     forall φ ψ,
     transpose φ ψ -> transpose ψ φ.
 
-Lemma transpose_in:
-  forall {T} xs ys,
-  transpose xs ys ->
-  forall φ: T,
-  In φ xs <-> In φ ys.
-Proof.
-  induction 1; intros.
-  - split; intros.
-    + destruct H.
-      * destruct H; intuition.
-      * destruct H; try intuition.
-        destruct H; intuition.
-    + destruct H.
-      * destruct H; intuition.
-      * destruct H; try intuition.
-        destruct H; intuition.
-  - split; intros.
-    + destruct H0.
-      * destruct H0.
-        left; auto.
-      * right; apply IHtranspose.
+    Lemma transpose_in:
+    forall {T} xs ys,
+    transpose xs ys ->
+    forall φ: T,
+    In φ xs <-> In φ ys.
+  Proof.
+    induction 1; intros.
+    - split; intros.
+      + destruct H.
+        * destruct H; intuition.
+        * destruct H; try intuition.
+          destruct H; intuition.
+      + destruct H.
+        * destruct H; intuition.
+        * destruct H; try intuition.
+          destruct H; intuition.
+    - split; intros.
+      + destruct H0.
+        * destruct H0.
+          left; auto.
+        * right; apply IHtranspose.
+          assumption.
+      + destruct H0.
+        * destruct H0.
+          left; auto.
+        * right; apply IHtranspose.
+          assumption.
+    - intuition.
+    - split; intros.
+      + apply IHtranspose2.
+        apply IHtranspose1.
         assumption.
-    + destruct H0.
-      * destruct H0.
-        left; auto.
-      * right; apply IHtranspose.
+      + apply IHtranspose1.
+        apply IHtranspose2.
         assumption.
-  - intuition.
-  - split; intros.
-    + apply IHtranspose2.
-      apply IHtranspose1.
-      assumption.
-    + apply IHtranspose1.
-      apply IHtranspose2.
-      assumption.
-  - split; intros.
-    + apply IHtranspose; auto.
-    + apply IHtranspose; auto.
-Qed.
+    - split; intros.
+      + apply IHtranspose; auto.
+      + apply IHtranspose; auto.
+  Qed.
 
 Theorem tranpose_deduction:
   forall M Γ ẟ φ,
@@ -314,14 +314,14 @@ Definition serial_frame (F: Frame): Prop :=
   exists w', R F w w'.
 
 (* Funcional *)
-Definition functional_frame (F: Frame): Prop :=
+Definition functional_frame (F: Frame) : Prop :=
   forall w w' w'',
   (R F w w' /\ 
   R F w w'') -> 
   w' = w''.
 
 (* Densa*)
-Definition dense_frame (F: Frame): Prop :=
+Definition dense_frame (F: Frame) : Prop :=
   forall w w',
   exists w'',
   R F w w' -> 
@@ -336,23 +336,19 @@ Definition convergente_frame (F: Frame): Prop :=
   R F w y) -> 
   (R F x z /\ R F y z).
 
-Arguments transp {A}.
-
-Definition contained_function {T} (S R: T -> T -> Prop): Prop :=
-  forall w1 w2, S w1 w2 -> R w1 w2.
-
-Definition well_founded_frame (F: Frame) (R: relation (W F)): Prop :=
-  forall S: relation (W F),
-  (exists w1 w2, S w1 w2 -> contained_function S R) ->
-  exists w1, forall w2, ~ S w2 w1.
+Definition SubsetOfW (F: Frame): Type :=
+  W F -> Prop.
 
 Definition conversely_well_founded_frame (F: Frame): Prop :=
-  well_founded_frame F (transp (R F)).
+  (* Set-theoretic definition: *)
+  forall X: SubsetOfW F, (exists x, X x) -> 
+  exists w1, X w1 /\ forall w2, X w2 -> 
+  ~ (R F w1 w2).
 
 Definition noetherian_frame (F: Frame): Prop :=
   transitivity_frame F /\ conversely_well_founded_frame F.
 
-(* Logical equivalence *)
+(* Equivalencia lógica *)
 Definition entails_modal (Γ: theory) (φ: modalFormula): Prop :=
   forall M,
   theoryModal M Γ -> 

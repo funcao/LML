@@ -1,19 +1,18 @@
 (*File to create tests. *)
 Require Import List Modal_Library Modal_Notations Deductive_System.
 Import ListNotations.
-(* Page proof: 22 *)
 
 Theorem Lob:
   forall P,
-  (K4; nil |-- [! []P -> P !]) ->
-  (K4; nil |-- [! P !]).
+  (GL; nil |-- [! []P -> P !]) ->
+  (GL; nil |-- [! P !]).
 Proof.
   intros.
   admit.
 Admitted.
 
-Lemma Example:
-  (* TODO: fix notation for deduction! *)
+(* Page proof: 22 *)
+Example Example1:
   T; ([! [](#0 -> #1) !] :: [! [](#1 -> #2) !] :: nil) |-- [! [](#0 -> #2) !].
 Proof.
   (* Line: 16 *)

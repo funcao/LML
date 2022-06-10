@@ -96,27 +96,6 @@ End Lindebaum.
 
 Section Lindebaum'.
 
-(*Inductive deduction (A: axiom -> Prop): theory -> modalFormula -> Prop*)
-(*Isso é um problema*)
-
-(* Print filter.
-Print reflect. *)
-
-(*
-É possível que não de para
-coverter Props para Bools de forma alguma,
-nesse caso, muda o Delta p/ uma função de bool e adapta o código
-de acordo com o necessário [?]
-
-Definition Consistent' (A: axiom -> Prop) (G : theory) : Prop := 
-  forall p,
-  ~ (A; G |-- [! p /\ ~p !]).
-
-Definition Maximal_Consistent' (A: axiom -> Prop) (G : theory) : Prop :=
-  forall p,
-  ~(In [! p !] G /\  In [! ~ p !] G) /\ Consistent A G.
-*)
-
 Variable P: nat -> modalFormula. 
 Variable A: axiom -> Prop.
 Variable Gamma: modalFormula -> Prop. (*X -> Prop == Conjunto de X*)
@@ -215,11 +194,12 @@ End Lindebaum'.
   P/ todo conjunto Gamma, se ele é consistente então existe um conjunto
   maximal consistente Delta que contém Gamma
 *)
-Lemma Lindenbaum:
-  forall A Gamma,
-  Consistent A Gamma ->
-  exists Delta,
-  (Maximal_Consistent A Delta /\ subset Gamma Delta).
+Lemma Lindenbaum: 
+  forall A Gamma, 
+  Consistent A Gamma -> 
+  exists Delta, 
+  (Maximal_Consistent A Delta /\ 
+  subset Gamma Delta).
 Proof.
-  admit.
+  admit. 
 Admitted.

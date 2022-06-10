@@ -1,16 +1,10 @@
 Require Import Modal_Library Modal_Notations Classical.
 
-(*
-https://coq.inria.fr/library/Coq.Logic.Classical_Pred_Type.html
-*)
-
 Theorem contra:
   forall P Q,
-  (~P -> ~Q) -> (Q -> P).
+  (~ P -> ~ Q) -> (Q -> P).
 Proof.
-  intros.
-  apply NNPP.
-  tauto.
+  intros. apply NNPP. intro. apply H in H1. contradiction.
 Qed.
 
 Theorem reflexive_frame_implies_axiomT:
@@ -39,7 +33,7 @@ Proof.
   exists (fun _ x => R f w1 x).
   apply ex_not_not_all.
   exists [! #0 !].
-  intros H1; unfold fun_validation in H1; simpl in H1.
+  intros H1; unfold validate_model in H1; simpl in H1.
   destruct H.
   apply H1.
   intros w2 H'; assumption.
@@ -57,7 +51,7 @@ Proof.
   simpl in H1.
   apply H1.
   unfold transitivity_frame in H.
-  apply H with (w := w1) (w' := w2) (w'' := w3).
+  apply H with (w:=w1) (w':=w2) (w'':=w3).
   split; assumption.
 Qed.
 
@@ -78,7 +72,7 @@ Proof.
   exists (fun _ x => R f w1 x).
   apply ex_not_not_all.
   exists [! #0 !].
-  intros H; unfold fun_validation in H; simpl in H.
+  intros H; unfold validate_model in H; simpl in H.
   destruct H3.
   eapply H.
   - intros H3 H4; apply H4.
@@ -115,7 +109,7 @@ Proof.
   exists (fun _ x => ~ R f w2 x).
   apply ex_not_not_all.
   exists [! #0 !].
-  intros H; unfold fun_validation in H; simpl in H.
+  intros H; unfold validate_model in H; simpl in H.
   pose H1 as H3.
   apply H in H3; try assumption.
   destruct H3 as [w3];
@@ -138,7 +132,7 @@ Proof.
   destruct H0 as [H1 H3].
   exists w3.
   split; try assumption.
-  - eapply H; split; [exact H2 | assumption].
+  eapply H; split; [exact H2 | assumption].
 Qed.
 
 Theorem axiom5_implies_euclidean_frame:
@@ -158,7 +152,7 @@ Proof.
   exists (fun _ x =>  ~ R f w2 x).
   apply ex_not_not_all.
   exists [! #0 !].
-  intros H; unfold fun_validation in H; simpl in H.
+  intros H; unfold validate_model in H; simpl in H.
   destruct H with (w1) (w2); try assumption.
   - exists w3; split; assumption.
   - destruct H0 as [H4 H5]; contradiction.
@@ -193,7 +187,7 @@ Proof.
   exists (fun _ x => ~ R f w1 x).
   apply ex_not_not_all.
   exists [! #0 !].
-  intros H1; unfold fun_validation in H1; simpl in H1.
+  intros H1; unfold validate_model in H1; simpl in H1.
   edestruct H1.
   - intros w2 H2.
     destruct H.
@@ -211,7 +205,7 @@ Proof.
   unfold functional_frame in H.
   simpl in H1.
   destruct H1 as [w3 H1]; destruct H1 as [H1 H3].
-  assert (H4: R (F ([f -- v])) w1 w2 /\ R f w1 w3) by (split; assumption).
+  assert (H4: R (f) w1 w2 /\ R f w1 w3) by (split; assumption).
   apply H in H4; subst; assumption.
 Qed.
 
@@ -232,7 +226,7 @@ Proof.
   exists (fun _ x => R f w1 x /\ x <> w3).
   apply ex_not_not_all.
   exists [! #0 !].
-  intros H; unfold fun_validation in H; simpl in H.
+  intros H; unfold validate_model in H; simpl in H.
   apply H in H2.
   - destruct H2 as [H2 H4]; contradiction.
   - exists w2; repeat split; assumption.
@@ -266,7 +260,7 @@ Proof.
   exists (fun _ x => exists y, R f w1 y /\ R f y x).
   apply ex_not_not_all.
   exists [! #0 !].
-  intros H1; unfold fun_validation in H1; simpl in H1. 
+  intros H1; unfold validate_model in H1; simpl in H1. 
   edestruct H1.
   - intros w3 H3 w4 H4.
     exists w3; split; [apply H3 | assumption].
@@ -300,40 +294,6 @@ Proof.
     apply H3 in H4; assumption.
 Qed.
 
-(*Isso está tudo errado*)
-Theorem noetherian_frame_implies_axiomGL:
-  forall f,
-  noetherian_frame f ->
-  forall v p,
-  [f -- v] |= [! []([]p -> p) -> []p !].
-Proof.
-  intros f H v p w1 H1 w2 H2.
-  unfold noetherian_frame in H; destruct H as [H H'].
-  unfold transitivity_frame in H.
-  simpl in H1; apply H1; try assumption.
-  intros w3 H3.
-  assert (H4: R f w1 w3) by (eapply H; split; [exact H2 | exact H3]).
-  admit.
-Admitted.
-
-Theorem axiomGL_implies_noetherian_frame:
-  forall f,
-  (forall v p, [f -- v] |= [! []([]p -> p) -> []p !]) ->
-  noetherian_frame f.
-Proof.
-  intros f; apply contra.
-  intros H; unfold noetherian_frame in H.
-  apply not_and_or in H.
-  admit.
-Admitted.
-
-(*
-Problema aqui: Não tenho informação suficiente pois cada
-lado da disjunção tem uma função de valoração diferente
-
-Quebra a disjunção da hipótese e cada lado tem sua própria função de valoração,
-estas que são as que eu defini na prova no papel
-*)
 Theorem axiom_implies_convergent_frame:
   forall f,
   (forall v p, [f -- v] |= [! <>[]p -> []<> p !]) ->
@@ -345,184 +305,110 @@ Proof.
   apply not_all_ex_not in H; destruct H as [w1];
   apply not_all_ex_not in H; destruct H as [w2];
   apply not_all_ex_not in H; destruct H as [w3].
-  eapply not_ex_all_not in H.
-  apply imply_to_and in H.
-  destruct H as [H H1]; destruct H as [H H'].
-  apply not_and_or in H1; destruct H1 as [H1 | H1].
-  - apply ex_not_not_all.
-    exists (fun _ x => (R f w3 x)).
-    apply ex_not_not_all.
-    exists [! #0 !].
-    intros H2; unfold fun_validation in H2; simpl in H2.
-    destruct H2 with (w1) (w2).
-    + exists w2; split; try assumption.
-      intros w4 H3.
-(*      apply H2 in H0.
-      contradiction.
-      Admitted.*)
-      admit.
-    + assumption.
-    + admit.
-  - apply ex_not_not_all.
-    exists (fun _ x => (R f w2 x)).
-    apply ex_not_not_all.
-    exists [! #0 !].
-    intros H2; unfold fun_validation in H2; simpl in H2.
-    destruct H2 with (w1) (w3).
-    + exists w3; split; try assumption.
-      intros w4 H3.
-(*      apply H2 in H0.
-      contradiction.
-      Admitted.*)
-      admit.
-    + assumption.
-    + admit.
-Abort.
-
-(*
-Problema aqui: Chego num ponto onde não tenho informação suficiente 
-para chegar numa contradição nas hipoteses
-
-Uma só função de valoração que é uma disjunção entre as funções de valoração
-de antes. Resolve o problema de variáveis existênciais que não 
-podiam ser instanciadas
-*)
-Theorem axiom_implies_convergent_frame':
-  forall f,
-  (forall v p, [f -- v] |= [! <>[]p -> []<> p !]) ->
-  convergente_frame f.
-Proof.
-  intros f.
-  apply contra.
-  intros H; unfold convergente_frame in H.
-  apply not_all_ex_not in H; destruct H as [w1];
-  apply not_all_ex_not in H; destruct H as [w2];
-  apply not_all_ex_not in H; destruct H as [w3].
   apply ex_not_not_all.
-  exists(fun _ x => R f w3 x \/ R f w2 x).
+  exists (fun _ x => ~ R f w3 x).
   apply ex_not_not_all.
   exists [! #0 !].
-  intros H2; unfold fun_validation in H2; simpl in H2.
-  destruct H2 with (w1) (w2).
-  - exists w2; split.
+  intros H5; unfold validate_model in H5; simpl in H5.
+  destruct H5 with (w1) (w3).
+  - simpl; exists w2; split.
     + eapply not_ex_all_not in H;
       apply imply_to_and in H;
-      destruct H as [H0 H1]; destruct H0; assumption.
-    + intros w4 H4; right; assumption.
-  - eapply not_ex_all_not in H; apply imply_to_and in H;
-    destruct H as [H0 H1]; destruct H0; assumption.
-  - rename x into w4.
-    clear H2. (*Isso não vai ajudar em nada e ocupa espaço no Proof View*)
-    apply not_ex_all_not with (n := w4) in H.
-    apply imply_to_and in H.
-    destruct H as [H H1]; destruct H as [H H']; destruct H0 as [H2 H3].
-    pose H1 as H4.
-    destruct H3.
-    firstorder.
-    (*super stuck*)
-Abort.
-
-(*
-Problema aqui: Chego num ponto onde não tenho informação suficiente 
-para fazer qualquer progresso na prova
-
-Mudando a função de valoração de antes pra uma implicação que diz que se há
-relacionamento de um lado, do outro não pode haver
-*)
-Theorem axiom_implies_convergent_frame'':
-  forall f,
-  (forall v p, [f -- v] |= [! <>[]p -> []<> p !]) ->
-  convergente_frame f.
-Proof.
-  intros f.
-  apply contra.
-  intros H; unfold convergente_frame in H.
-  apply not_all_ex_not in H; destruct H as [w1];
-  apply not_all_ex_not in H; destruct H as [w2];
-  apply not_all_ex_not in H; destruct H as [w3].
-  apply ex_not_not_all.
-  exists(fun _ w4 => (R f w3 w4 -> ~ R f w2 w4) \/ (R f w2 w4 -> ~ R f w3 w4)).
-  apply ex_not_not_all.
-  exists [! #0 !].
-  intros H2; unfold fun_validation in H2; simpl in H2.
-  destruct H2 with (w1) (w2).
-  - exists w2; split.
-    + eapply not_ex_all_not in H;
-      apply imply_to_and in H;
-      destruct H as [H0 H1]; destruct H0; assumption.
-    + intros w4 H4.
+      destruct H as [H1 H']; destruct H1 as [H1 H2]; assumption.
+    + intros w4 H4;
       eapply not_ex_all_not in H;
       apply imply_to_and in H;
-      destruct H as [H0 H1]; 
-      destruct H0.
-      apply not_and_or in H1.
-      destruct H1.
-      * apply H1 in H4; contradiction.
-      * left; intros; contradiction.
-  - eapply not_ex_all_not in H;
+      destruct H as [H1 H']; destruct H1 as [H1 H2];
+      apply not_and_or in H'; destruct H' as [H3 | H3].
+      * destruct H3; apply H4.
+      * assumption.
+  - simpl; 
+    eapply not_ex_all_not in H;
     apply imply_to_and in H;
-    destruct H as [H0 H1];
-    destruct H0; 
-    assumption.
-  - rename x into w4.
-    clear H2. (*Isso não vai ajudar em nada e ocupa espaço no Proof View*)
-    apply not_ex_all_not with (n := w4) in H.
-    apply imply_to_and in H.
-    destruct H as [H H1]; destruct H as [H H'].
-    destruct H0 as [H2 H3].
-    destruct H3.
-    + destruct H1; split.
-      * assumption.
-      * admit. (*não tem como provar isso*)
-    + destruct H1; split.
-      * assumption.
-      * admit. (*não tem como provar isso*)
-Abort.
+    destruct H as [H1 H']; destruct H1 as [H1 H2]; assumption.
+  - simpl in *; rename x into w4.
+    destruct H0; contradiction.
+    Unshelve. assumption. assumption. (*Coq não aceitou ; aqui*)
+Qed.
 
-Theorem axiom_implies_convergent_frame''':
-  forall f,
-  (forall v p, [f -- v] |= [! <>[]p -> []<>p !]) ->
-  convergente_frame f.
+Theorem modal_double_neg: 
+  forall M w p, (M ' w ||- [! ~~ p !]) -> (M ' w ||- p).
 Proof.
-  intros f.
-  apply contra.
-  intros H; unfold convergente_frame in H.
-  apply not_all_ex_not in H; destruct H as [w1].
-  apply not_all_ex_not in H; destruct H as [w2].
-  apply not_all_ex_not in H; destruct H as [w3].
-  apply ex_not_not_all.
-  exists(fun _ w4 => (R f w3 w4 /\ ~ R f w2 w4) \/ (R f w2 w4 /\ ~ R f w3 w4)).
-  apply ex_not_not_all.
-  exists [! #0 !].
-  intros H2; unfold fun_validation in H2; simpl in H2.
-  destruct H2 with (w1) (w2).
-  - exists w2; split.
-    + eapply not_ex_all_not in H;
-      apply imply_to_and in H;
-      destruct H as [H0 H1]; 
-      destruct H0; 
-      assumption.
-    + intros w4 H4.
-      eapply not_ex_all_not in H;
-      apply imply_to_and in H;
-      destruct H as [H0 H1]; 
-      destruct H0.
-      apply not_and_or in H1.
-      destruct H1.
-      * apply H1 in H4; contradiction.
-      * right; split; assumption.
-  - eapply not_ex_all_not in H;
-    apply imply_to_and in H;
-    destruct H as [H0 H1];
-    destruct H0; 
-    assumption.
-  - rename x into w4.
-    clear H2. (*Isso não vai ajudar em nada e ocupa espaço no Proof View*)
-    apply not_ex_all_not with (n := w4) in H.
-    apply imply_to_and in H.
-    destruct H as [H H1]; destruct H as [H H'].
-    destruct H0 as [H2 H3].
-    destruct H3 as [H3 | H3].
-    (*stuck*)
-    (*dar destruct em H1 não muda em nada*)
+  intros M w p H; simpl in H; apply NNPP; apply H.
+Qed.
+
+Theorem modal_contra: 
+  forall M p q,
+  (M |= [! ~ p -> ~ q !]) -> (M |= [! q -> p !]).
+Proof.
+  intros M p q H w1 H1.
+  unfold validate_model in H; simpl in *.
+  apply modal_double_neg; intros H2.
+  apply H in H2; apply H2 in H1; contradiction.
+Qed.
+
+Lemma and_to_imply: 
+  forall P Q:Prop, P /\ ~ Q -> ~ (P -> Q).
+Proof.
+  intros P Q [H1 H2] H3; apply H3 in H1; contradiction.
+Qed.
+
+Theorem noetherian_frame_implies_axiomGL:
+  forall f,
+  noetherian_frame f ->
+  forall v p,
+  [f -- v] |= [! []([]p -> p) -> []p !].
+Proof.
+  intros f H v p.
+  apply modal_contra.
+  intros w H1; simpl in w, H1.
+  apply not_all_ex_not in H1; destruct H1 as [w1 H1];
+  apply imply_to_and in H1; destruct H1 as [H1 H2].
+  set (S := fun w1 => R f w w1 /\ ([f -- v] ' w1 ||- [! ~ p !])).
+  destruct H as [H H'];
+  destruct H' with S as [w2 [[H3 H4] H5]]; try (exists w1; split; trivial).
+  unfold S in H5; clear S.
+  simpl; apply ex_not_not_all.
+  exists w2.
+  intros H6; simpl in H6.
+  apply H6 in H3; try eauto.
+  intros w3 H7.
+  assert (H8: [f-- v] ' w2 ||- [! [] p -> p !]) by (intros ?H; apply H6; assumption);
+  assert (H9: [f-- v] ' w2 ||- [! ~ [] p !]) by (intros H9; apply H8 in H9; contradiction).
+  simpl in H9; apply not_all_ex_not in H9;
+  destruct H9 as [w4 H9];
+  apply imply_to_and in H9.
+  assert (H10: (R f w2 w4 /\ ~([f--v] ' w4 ||- p)) -> (R f w2 w4 /\ ([f--v] ' w4 ||- [! ~ p !]))) by (easy);
+  apply H10 in H9; clear H10.
+  assert (H10: R f w w4) by (apply H with (w:=w) (w':=w2) (w'':=w4); easy).
+  destruct H9;
+  assert (H11: R f w w4 /\ ([f--v] ' w4 ||- [! ~ p !])) by (easy).
+  apply H5 in H11;
+  contradiction.
+Qed.
+
+Lemma GL_implies_4: 
+  forall f v p,
+  ([f -- v] |= [! []([]p -> p) -> []p !]) ->
+  ([f -- v] |= [! []p -> [][]p !]).
+Proof.
+  intros f v p H. 
+  unfold validate_model in *; simpl in *.
+  intros w1 H1 w2 H2 w3 H3.
+  pose H2 as H2'; apply H1 in H2'.
+  eapply H.
+  - intros w4 H4 H5. admit.
+  - admit.  
+Admitted.
+
+Theorem axiomGL_implies_noetherian_frame:
+  forall f,
+  (forall v p, [f -- v] |= [! []([]p -> p) -> []p !]) ->
+  noetherian_frame f.
+Proof.
+  intros f H.
+  unfold noetherian_frame; split.
+  - apply axiom4_implies_transitive_frame; intros; 
+    apply GL_implies_4; apply H.
+  - generalize dependent H; apply contra; intros H.  
 Abort.
