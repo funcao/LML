@@ -48,7 +48,7 @@ Inductive deduction (A: axiom -> Prop): theory -> modalFormula -> Prop :=
   | Prem: forall (t: theory)
                  (f: modalFormula)
                  (i: nat),
-        (nth_error t i = Some f) -> deduction A t f
+          (nth_error t i = Some f) -> deduction A t f
   (* Axiom. *)
   | Ax: forall (t: theory)
                (a: axiom)
