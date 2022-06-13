@@ -367,7 +367,7 @@ Proof.
   set (S := fun w1 => R f w w1 /\ ([f -- v] ' w1 ||- [! ~ p !])).
   destruct H as [H H'];
   destruct H' with S as [w2 [[H3 H4] H5]]; try (exists w1; split; trivial).
-  unfold S in H5; clear S.
+  clear H'; unfold S in H5; clear S.
   simpl; apply ex_not_not_all.
   exists w2.
   intros H6; simpl in H6.
@@ -395,10 +395,10 @@ Proof.
   intros f v p H. 
   unfold validate_model in *; simpl in *.
   intros w1 H1 w2 H2 w3 H3.
-  pose H2 as H2'; apply H1 in H2'.
-  eapply H.
-  - intros w4 H4 H5. admit.
-  - admit.  
+  move w2 after H1;
+  move w3 after H1.
+  pose H2 as H4; apply H1 in H4.
+
 Admitted.
 
 Theorem axiomGL_implies_noetherian_frame:
@@ -410,5 +410,21 @@ Proof.
   unfold noetherian_frame; split.
   - apply axiom4_implies_transitive_frame; intros; 
     apply GL_implies_4; apply H.
-  - generalize dependent H; apply contra; intros H.  
+  - generalize dependent H; apply contra; intros H.
+    unfold conversely_well_founded_frame in H.
+    apply not_all_ex_not in H; destruct H as [S].
+    apply imply_to_and in H; destruct H as [H' H].
+    destruct H' as [w H'].
+    apply not_ex_all_not with(n:=w) in H.
+    apply not_and_or in H; destruct H; try contradiction.
+    apply not_all_ex_not in H.
+    destruct H as [w1 H].
+    apply imply_to_and in H.
+    destruct H as [H'' H]; apply NNPP in H.
+    move w1 after H'.
+    apply ex_not_not_all.
+    exists (fun _ x => ~ R f w x). (*essa função está certamente errada*)
+    apply ex_not_not_all.
+    exists [! #0 !].
+    intros H1; unfold validate_model in H1; simpl in H1.
 Abort.

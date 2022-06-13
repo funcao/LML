@@ -194,10 +194,10 @@ End Lindebaum'.
   P/ todo conjunto Gamma, se ele é consistente então existe um conjunto
   maximal consistente Delta que contém Gamma
 *)
-Lemma Lindenbaum: 
-  forall A Gamma, 
-  Consistent A Gamma -> 
-  exists Delta, 
+Lemma Lindenbaum:
+  forall A Gamma,
+  Consistent A Gamma ->
+  exists Delta,
   (Maximal_Consistent A Delta /\ subset Gamma Delta).
 Proof.
   admit.

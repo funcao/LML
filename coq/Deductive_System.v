@@ -44,26 +44,26 @@ Definition instantiate (a: axiom): modalFormula :=
   end.
 
 Inductive deduction (A: axiom -> Prop): theory -> modalFormula -> Prop :=
-(* Premise. *)
-| Prem: forall (t: theory)
-               (f: modalFormula)
-               (i: nat),
+  (* Premise. *)
+  | Prem: forall (t: theory)
+                 (f: modalFormula)
+                 (i: nat),
         (nth_error t i = Some f) -> deduction A t f
-(* Axiom. *)
-| Ax: forall (t: theory)
-             (a: axiom)
-             (f: modalFormula),
-      A a -> instantiate a = f -> deduction A t f
-(* Modus Ponens. *)
-| Mp: forall (t: theory)
-             (f g: modalFormula)
-             (d1: deduction A t [! f -> g !])
-             (d2: deduction A t f),
-      deduction A t g
-(* Generalization. *)
-| Nec: forall (t: theory)
-              (f: modalFormula)
-              (d1: deduction A t f),
+  (* Axiom. *)
+  | Ax: forall (t: theory)
+               (a: axiom)
+               (f: modalFormula),
+        A a -> instantiate a = f -> deduction A t f
+  (* Modus Ponens. *)
+  | Mp: forall (t: theory)
+               (f g: modalFormula)
+               (d1: deduction A t [! f -> g !])
+               (d2: deduction A t f),
+        deduction A t g
+  (* Generalization. *)
+  | Nec: forall (t: theory)
+                (f: modalFormula)
+                (d1: deduction A t f),
         deduction A t [! []f !].
 
 Inductive K: axiom -> Prop :=

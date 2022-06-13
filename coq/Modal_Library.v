@@ -20,26 +20,26 @@ Inductive modalFormula: Set :=
   | Implies: modalFormula -> modalFormula -> modalFormula.
 
 (* Size modal formula *)
-Fixpoint modalSize (f:modalFormula) : nat :=
+Fixpoint modalSize (f:modalFormula): nat :=
   match f with 
-  | Lit      x     => 1
-  | Neg      p1    => 1 + (modalSize p1)
-  | Box      p1    => 1 + (modalSize p1)
-  | Dia      p1    => 1 + (modalSize p1)
-  | And      p1 p2 => 1 + (modalSize p1) + (modalSize p2)
-  | Or       p1 p2 => 1 + (modalSize p1) + (modalSize p2)
-  | Implies  p1 p2 => 1 + (modalSize p1) + (modalSize p2)
+  | Lit     x     => 1
+  | Neg     p1    => 1 + (modalSize p1)
+  | Box     p1    => 1 + (modalSize p1)
+  | Dia     p1    => 1 + (modalSize p1)
+  | And     p1 p2 => 1 + (modalSize p1) + (modalSize p2)
+  | Or      p1 p2 => 1 + (modalSize p1) + (modalSize p2)
+  | Implies p1 p2 => 1 + (modalSize p1) + (modalSize p2)
 end.
 
-Fixpoint literals (f:modalFormula) : set nat :=
+Fixpoint literals (f:modalFormula): set nat :=
   match f with 
-  | Lit      x     => set_add eq_nat_dec x (empty_set nat)
-  | Dia      p1    => literals p1
-  | Box      p1    => literals p1
-  | Neg      p1    => literals p1
-  | And      p1 p2 => set_union eq_nat_dec (literals p1) (literals p2)
-  | Or       p1 p2 => set_union eq_nat_dec (literals p1) (literals p2)
-  | Implies  p1 p2 => set_union eq_nat_dec (literals p1) (literals p2) 
+  | Lit     x     => set_add eq_nat_dec x (empty_set nat)
+  | Dia     p1    => literals p1
+  | Box     p1    => literals p1
+  | Neg     p1    => literals p1
+  | And     p1 p2 => set_union eq_nat_dec (literals p1) (literals p2)
+  | Or      p1 p2 => set_union eq_nat_dec (literals p1) (literals p2)
+  | Implies p1 p2 => set_union eq_nat_dec (literals p1) (literals p2) 
 end.
 
 Record Frame: Type := {
