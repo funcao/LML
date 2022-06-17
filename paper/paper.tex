@@ -95,6 +95,7 @@
 
 \usepackage{minted}
 \usepackage{bussproof}
+\usepackage{multirow}
 
 %%
 %% end of the preamble, start of the body of the document source.
@@ -369,8 +370,8 @@ $\varphi$, written $\Gamma\models\varphi$, iff $\forall \varphi' \in\Gamma .
 In this work, we consider Hilbert deductive systems for modal logics.
 Essentially, the considered system adds axioms for the modalities
 to the set of axioms for classical propositional logic.
-The most basic axiom is \textbf{K} which express that $\Box$ distributes
-over implication. Axiom of possibility states that $\Diamond$ distributes
+As examples of modalities axioms we mention \textbf{K}, which express that $\Box$ distributes
+over implication, and possibility which states that $\Diamond$ distributes
 over disjunction.
 \[
   \begin{array}{ll}
@@ -601,7 +602,28 @@ Inductive K: axiom -> Prop :=
   (** some code omitted *)
   | K_axK: forall p q, K (axK p q)
 \end{minted}
-
+Type \mintinline{coq}{K} is a predicate over axioms: it has one constructor for
+each of the valid axioms which form the system. Given a value
+of \mintinline{coq}{axiom}, a value of type \mintinline{coq}{K a} denotes a
+proof that a given axiom is part of the system \textbf{K}. This is the main
+trick used by the constructor \mintinline{coq}{Ax}, of type
+\mintinline{coq}{deduction}, to generically represent axioms for
+different systems of modal logics uniformly. In order to understand how it
+works, let us review its type (below, remeber that \mintinline{coq}{A : axiom -> Prop}
+denotes a system of axioms for modal logics):
+\begin{minted}{coq}
+Ax: forall (t: theory)
+           (a: axiom)
+           (f: form),
+           A a -> instantiate a = f -> deduction A t f
+\end{minted}
+Notice that the first parameter of constructor \mintinline{coq}{Ax} is a value
+of type \mintinline{coq}{A a}, which is only inhabited if the predicate
+\mintinline{coq}{A} holds for the axiom \mintinline{coq}{a}. Through this
+evidence, is possible to create the corresponding axiom formula instance by
+using function \mintinline{coq}{instantiate}. In this way, we are able to
+represent all systems of axioms for modal logics using a single constructor
+for its axioms.
 
 \paragraph{Properties}
 
@@ -618,12 +640,44 @@ The author made a Coq implementation of modal logic based on the S5 system,
 which consists of  the axioms $K$, $T$, $4$ and $5$. The objective was the
 modelling of two well known puzzles.
 Wind's formalization was separated into some components. The first consists in
-defining the syntax of formulas and the Kripke semantics. Next, the author uses
+defining the syntax of formulas and its Kripke semantics. Next, the author uses
 their definitions to give some examples of modal operators, worlds and how they
 interact with each other. Using the built machinery, the author developed
-introduction and elimination rules for modal logic and use them to model the
-wize man's and muddy children puzzles.
+introduction and elimination rules for modal logic operators and use them to
+model the wize man's and muddy children puzzles.
 
+A Coq formalization for modal systems $K$, $T$ and $K4$ was the subject of 
+Doczkal and Smolka's work. Author's interest was in the definition of dynamic
+and temporal logics. The development of the code establishes the construction
+and definitions of tactics, through lemmas propositional operators and relation
+properties were constructed. Each model was defined through structures, which
+consist of worlds, relationships and propositions~\cite{saarland}.
+
+Another proposal of formalizing modal logics was developed by Benzmüller and
+Paleo~\cite{Chris_Bruno}. Author's main objective is checking if current
+type theory-based proof assistants are suitable for modal logic reasoning.
+They defined a formalization of systems $K$ and $S5$ and built custom tactics
+which allows proofs using a natural deduction style.
+The authors argue that current proof assistants are a useful technology for
+reasoning about facts expressed using modal logics. 
+
+
+\vspace{0.5cm} {
+  \begin{table}[H]
+    \begin{tabular}{|c|c|c|c|c|c|c|c|c|}
+      \hline
+      \multirow{2}{*}{Authors} & \multicolumn{8}{c|}{Systems considered}         \\ \cline{2-9} 
+                               & K & D & B & T & K4 & K5 & S4 & S5 \\ \hline
+      Wind et. al.~\cite{dewind}     & X &   &   & X & X  & X  & X  &  X \\ \hline
+      Doczkal et. al.~\cite{saarland}   & X &   &   & X & X  &    &    &    \\ \hline
+      Benzmüller et. al.~\cite{Chris_Bruno}& X &   & X & X &  X &    &    & X  \\ \hline
+      This work         & X & X & X & X & X  &  X &  X & X  \\ \hline
+    \end{tabular}
+    \centering
+    \caption{Comparision with different Coq modal logics developements.}
+    \label{tab:comparacao_trabalhos_rel}
+  \end{table}
+}
 
 \section{Conclusion}\label{sec:conclusion}
 
