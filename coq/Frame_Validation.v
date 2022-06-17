@@ -387,17 +387,72 @@ Proof.
   contradiction.
 Qed.
 
-Lemma GL_implies_4: 
+Lemma GL_implies_4:  
   forall f v p,
   ([f -- v] |= [! []([]p -> p) -> []p !]) ->
   ([f -- v] |= [! []p -> [][]p !]).
 Proof.
-  intros f v p H. 
-  unfold validate_model in *; simpl in *.
-  intros w1 H1 w2 H2 w3 H3.
-  move w2 after H1;
-  move w3 after H1.
-  pose H2 as H4; apply H1 in H4.
+  intros f v p H.
+  
+  (*Step 0: |= X -> ((Y /\ Z) -> (Z /\ X)) -- Tautology*)
+  assert(H0: forall x y z, [f -- v] |= [! x -> ((y /\ z) -> (z /\ x)) !]) 
+    by (intros x y z w H0;split; destruct H1; trivial).
+
+  (*Step 1: |= [][]X /\ []X -> []([]X /\ X) -- Theorem*)
+  assert(H1: forall x, [f -- v] |= [! x -> ([]([]x /\ x) -> ([]x /\ x)) !])
+    by (intros x w H1 H2; simpl; split; [apply H2 | assumption]).
+
+  (*Step 2: (|= A -> B) -> (|= []A -> []B) -- Syntatic Property*)
+  assert(H2: forall x y, ([f -- v] |= [! x -> y !]) -> ([f -- v] |= [! []x -> []y !]))
+    by (intros x y H2 w H3 w1 H4; apply H2; apply H3; assumption).
+
+  (*Step 3: (|= []X /\ X -> []X) -- Tautology*)
+  assert(H3: forall x, ([f--v] |= [! []x /\ x -> []x !]))
+    by (intros ?x ?w H3; apply H3).
+
+  (*Step 4: Prove an instance of Step 0*)
+  assert(H4: [f -- v] |= [! p -> (([][]p /\ []p) -> ([]p /\ p)) !])
+    by (apply H0 with (x:=[!p!]) (y:=[![][]p!]) (z:=[![]p!])); 
+  clear H0.
+  
+  (*Step 5: Apply Step 1 on Step 4*)
+  assert(H5: [f -- v] |= [! p -> ([]([]p /\ p) -> ([]p /\ p)) !]) 
+    by (apply H1); 
+  clear H4; clear H1.
+
+  (*Step 6: Apply Step 2 on Step 5*)
+  assert(H6: [f -- v] |= [! []p -> []( ([]([]p /\ p) -> ([]p /\ p)) ) !]) 
+    by (apply H2; assumption);
+  clear H5.
+
+  (*Step 7: Prove an instance of GL*)
+  assert(H7: [f -- v] |= [! []([]([]p /\ p) -> ([]p /\ p)) -> []([]p /\ p) !])
+    by (admit);
+  clear H.
+
+  (*Step 8: From Step 6 and Step 7, prove |= []p -> []([]p /\ p) 
+  by transitivity of -> *)
+  assert(H8: [f -- v] |= [! []p -> []([]p /\ p) !])
+    by (admit);
+  clear H6; clear H7.
+
+  (*Step 9: Prove an instance of Step 3*)
+  assert(H9: [f--v] |= [! []p /\ p -> []p !]) 
+    by (apply H3 with (x:=p));
+  clear H3.
+
+  (*Step 10: Apply Step 2 on Step 9*)
+  assert(H10: [f--v] |= [! []([]p /\ p) -> [][]p !])
+    by (auto);
+  clear H2; clear H9.
+
+  (*Step 11: From Step 8 and 10, prove |= []p -> [][]p
+  by transitivity of ->*)
+  assert(H11: [f--v] |= [! []p -> [][]p !])
+    by (admit);
+  clear H8; clear H10.
+  
+  assumption.
 
 Admitted.
 
@@ -410,21 +465,36 @@ Proof.
   unfold noetherian_frame; split.
   - apply axiom4_implies_transitive_frame; intros; 
     apply GL_implies_4; apply H.
-  - generalize dependent H; apply contra; intros H.
-    unfold conversely_well_founded_frame in H.
-    apply not_all_ex_not in H; destruct H as [S].
-    apply imply_to_and in H; destruct H as [H' H].
-    destruct H' as [w H'].
-    apply not_ex_all_not with(n:=w) in H.
-    apply not_and_or in H; destruct H; try contradiction.
-    apply not_all_ex_not in H.
-    destruct H as [w1 H].
-    apply imply_to_and in H.
-    destruct H as [H'' H]; apply NNPP in H.
-    move w1 after H'.
-    apply ex_not_not_all.
-    exists (fun _ x => ~ R f w x). (*essa função está certamente errada*)
-    apply ex_not_not_all.
-    exists [! #0 !].
-    intros H1; unfold validate_model in H1; simpl in H1.
-Abort.
+  - generalize dependent H; apply contra; intros H;
+    unfold conversely_well_founded_frame in H;
+    apply not_all_ex_not in H; destruct H as [S];
+    apply imply_to_and in H; destruct H as [H'' H].
+    assert(H0: forall w, S w -> exists w', ~ (S w' -> ~ R f w w')). (*S não tem elemento máximo*)
+    + intros w2 H3.
+      apply not_ex_all_not with(n:=w2) in H;
+      apply not_and_or in H; destruct H; try contradiction.
+      apply not_all_ex_not in H;
+      destruct H as [w1 H].
+      exists w1; apply H.
+    + destruct H'' as [w H'']; apply not_ex_all_not with(n:=w) in H.
+      apply not_and_or in H; destruct H; try contradiction.
+      apply not_all_ex_not in H;
+      destruct H as [w1 H];
+      apply imply_to_and in H;
+      destruct H as [H''' H]; apply NNPP in H.
+      apply ex_not_not_all;
+      exists (fun _ x => ~ S x);
+      apply ex_not_not_all;
+      exists [! #0 !].
+      intros H1; unfold validate_model in H1; simpl in H1.
+      assert (H2: ~ ([f--(fun _ x => ~ S x)] ' w ||- [! []#0 !])) by (intros H2; apply H2 in H; contradiction);
+      simpl in H2.
+      destruct H1 with (w) (w1); try assumption.
+      intros w2 H3 H4 H5.
+      apply H0 in H5.
+      destruct H5 as [w3 H5].
+      apply imply_to_and in H5.
+      destruct H5 as [H5 H6]; apply NNPP in H6.
+      apply H4 in H6;
+      contradiction.
+Qed.

@@ -107,9 +107,11 @@ Print reflect. *)
 coverter Props para Bools de forma alguma,
 nesse caso, muda o Delta p/ uma função de bool e adapta o código
 de acordo com o necessário [?]
+
 Definition Consistent' (A: axiom -> Prop) (G : theory) : Prop := 
   forall p,
   ~ (A; G |-- [! p /\ ~p !]).
+
 Definition Maximal_Consistent' (A: axiom -> Prop) (G : theory) : Prop :=
   forall p,
   ~(In [! p !] G /\  In [! ~ p !] G) /\ Consistent A G.

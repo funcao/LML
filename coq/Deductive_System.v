@@ -64,7 +64,7 @@ Inductive deduction (A: axiom -> Prop): theory -> modalFormula -> Prop :=
   | Nec: forall (t: theory)
                 (f: modalFormula)
                 (d1: deduction A t f),
-        deduction A t [! []f !].
+         deduction A t [! []f !].
 
 Inductive K: axiom -> Prop :=
   | K_ax1: forall φ ψ, K (ax1 φ ψ)
