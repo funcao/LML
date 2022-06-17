@@ -387,7 +387,7 @@ Proof.
   contradiction.
 Qed.
 
-Lemma GL_implies_4:  
+Lemma GL_implies_4:
   forall f v p,
   ([f -- v] |= [! []([]p -> p) -> []p !]) ->
   ([f -- v] |= [! []p -> [][]p !]).
@@ -418,7 +418,7 @@ Proof.
   (*Step 5: Apply Step 1 on Step 4*)
   assert(H5: [f -- v] |= [! p -> ([]([]p /\ p) -> ([]p /\ p)) !]) 
     by (apply H1); 
-  clear H4; clear H1.
+  clear H1; clear H4.
 
   (*Step 6: Apply Step 2 on Step 5*)
   assert(H6: [f -- v] |= [! []p -> []( ([]([]p /\ p) -> ([]p /\ p)) ) !]) 
