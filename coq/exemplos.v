@@ -27,8 +27,8 @@ Proof.
   apply Nec; auto.
   (* Step 5. *)
   assert (K4; nil |-- [! []psi -> []([]psi -> P) !]) as H5.
-  apply modal_axK; try repeat constructor.
-  exact H3.
+  apply modal_axK in H4; try repeat constructor.
+  exact H4.
   (* Step 6. *)
   assert (K4; nil |-- [! []([]psi -> P) -> [][]psi -> []P !]) as H6.
   eapply Ax with (a := axK ?[X] ?[Y]); try repeat constructor.
