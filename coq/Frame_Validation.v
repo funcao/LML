@@ -1,4 +1,4 @@
-Require Import Modal_Library Modal_Notations Classical.
+Require Import Modal_Library Modal_Notations Modal_Tactics Classical.
 
 Theorem contra:
   forall P Q,
@@ -433,7 +433,7 @@ Proof.
   (*Step 8: From Step 6 and Step 7, prove |= []p -> []([]p /\ p) 
   by transitivity of -> *)
   assert(H8: [f -- v] |= [! []p -> []([]p /\ p) !])
-    by (admit);
+    by (eapply modal_impl_transitivity; split; [exact H6 | exact H7]);
   clear H6; clear H7.
 
   (*Step 9: Prove an instance of Step 3*)
@@ -449,7 +449,7 @@ Proof.
   (*Step 11: From Step 8 and 10, prove |= []p -> [][]p
   by transitivity of ->*)
   assert(H11: [f--v] |= [! []p -> [][]p !])
-    by (admit);
+    by (eapply modal_impl_transitivity; split; [exact H8 | exact H10]);
   clear H8; clear H10.
   
   assumption.

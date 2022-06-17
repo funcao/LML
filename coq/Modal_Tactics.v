@@ -109,3 +109,12 @@ Proof.
   - assumption.
   - reflexivity.
 Defined.
+
+Lemma modal_impl_transitivity:
+  forall f v a b c,
+  ( ([f--v] |= [! a -> b !]) /\ ([f--v] |= [! b -> c !])) ->
+  (  [f--v] |= [! a -> c !]).
+Proof.
+  intros f v a b c [H1 H2] w H3.
+  apply H2; apply H1; assumption.
+Defined.
