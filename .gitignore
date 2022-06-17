@@ -44,3 +44,4 @@ CoqMakefile.conf
 *.out
 coq/.coq-native
 coq/.makefile.d
+coq/makefile.conf
