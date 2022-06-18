@@ -95,6 +95,7 @@
 
 \usepackage{minted}
 \usepackage{bussproof}
+\usepackage{multirow}
 
 %%
 %% end of the preamble, start of the body of the document source.
@@ -111,6 +112,7 @@
 %% "authornote" and "authornotemark" commands
 %% used to denote shared contribution to the research.
 \author{Ariel Agne da Silveira}
+\author{Miguel}
 \author{Paulo Torrens}
 \author{Karina Roggia}
 \author{Rodrigo Ribeiro}
@@ -188,21 +190,21 @@ components. A key aspect of the design of such programs is how to ensure that
 a failure of a single component does not compromise the whole system.
 The main difficulty is such formalization tasks is how to guarantee correct
 error detection and that its corresponding fix will ensure that the software
-sill continue to work under abnormal conditions. One way to express such
+still continue to work under abnormal conditions. One way to express such
 requirements is using \emph{modal logics}, which can specify communication
 patterns and knowledge in software agents~\cite{Huth_Ryan}.
 
 While modal logics allow the modelling of such requirements, proving properties
 about them may be a hard task without proper tool support. There are some
 dedicated provers for modal logics~\cite{Gleissner17,Mora11}, but we believe
-that using mature tools, like a proof assistant, are a better option, for
+that using mature tools, like a proof assistant, are a better option for
 verifying facts using modal logics. We justify this choice by: 1) the recent
 successful histories on verification of software and
 mathematics~\cite{Leroy09,Klein10,Gonthier13,Gonthier08}; 2) There is a growing
 community of developers using such tools thanks to 
 textbooks on the subject~\cite{Nipkow14,Bertot10,Chlipala13} which allows
 newbies to join the game of formal verification and 3) The custom automation
-facilities that current proof assistants support, allows that trivial facts can
+facilities supported by current proof assistants allows that trivial facts can
 be proved using decision procedures, relieving the user from writing proof
 scripts for formulas that can be checked automatically.
 
@@ -216,8 +218,10 @@ More specifically, we contribute:
 \begin{itemize}
   \item We define a \emph{deep embedding} of modal logic syntax in Coq and
     define its Kripke semantics.
-  \item We model the Hilbert deductive systems K, D, B, T, K4, K5, S4 and S5
-    in Coq and prove its soundness with respect to Kripke semantics.
+  \item We model the Hilbert deductive systems as a Coq inductive type that is
+    parameterized by different axiom systems like K, D, B, T, K4, K5, S4 and S5
+    and prove its soundness with respect to Kripke semantics. We also
+    discuss the current status of the formalization of the completeness result.
   \item We show a proof of the L\"ob's theorem using the Hilbert deductive system
     developed in our library.
 \end{itemize}
@@ -281,7 +285,7 @@ when there exists \mintinline{coq}{t: P -> Q} in the typing context and the
 current goal is \mintinline{coq}{Q}. Thus, \mintinline{coq}{apply H'} changes the goal
 from \mintinline{coq}{C} to \mintinline{coq}{B} and \mintinline{coq}{apply H}
 changes the goal to \mintinline{coq}{A}. Tactic \mintinline{coq}{assumption}
-traverses the typing context to find a hypothesis that matches with the goal.
+traverses the typing context to find a hypothesis that matches the goal.
 
 We define next a proof of the previous propositional logical formula
 that, in contrast to the previous proof, that was built using tactics
@@ -307,8 +311,8 @@ proposition may be true in some world, but false in another one. The versions of
 modal logics considered in this work extends traditional propositional logics
 with two operators on propositions: $\Box$ (box) and $\Diamond$ (diamond).
 The syntax of modal logic formulas are defined by the following context free
-grammar (where $\circ \in\{\land,\lor,\to,\leftrightarrow\}$, $\mathcal{P} = \{A,B,C,...\}$ is
-the enumerable set of propositional variables):
+grammar (where $\circ \in\{\land,\lor,\to,\leftrightarrow\}$ and
+$\mathcal{P} = \{A,B,C,...\}$ is the enumerable set of propositional variables):
 \[
   \begin{array}{lcl}
     \varphi & ::= & \bot\,|\,\top\,|\,A\,|\,\neg\varphi\,|\,\varphi\circ\varphi\,|\,\Box\varphi\,|\,\Diamond\varphi
@@ -326,7 +330,7 @@ A \emph{frame} $\mathcal{F} = \langle W, R \rangle$ consists of a pair formed by
 a non-empty set of worlds, $W$, and a binary accessibility relation between
 worlds, $R \subseteq W \times W$. A pair $w_1Rw_2$ denotes that world $w_2$ is
 accessible from $w_1$. A model $\mathcal{M} = \langle \mathcal{F}, \mathcal{V} \rangle$
-of a frame $\mathcal{F}$ and a total labeling function
+is formed by a frame $\mathcal{F}$ and a total labeling function
 $\mathcal{V} : \mathcal{P}\times W\to \{F,T\}$, which assigns
 a truth value to a propositional variable at a given world, i.e. when $w \in \mathcal{V}(A)$
 for some $A \in\mathcal{P}$, we say that $A$ holds in $w$. The satisfiability of a formula
@@ -364,10 +368,11 @@ $\varphi$, written $\Gamma\models\varphi$, iff $\forall \varphi' \in\Gamma .
 \mathcal{M} \models \varphi' \to \mathcal{M} \models \varphi$, for some model $\mathcal{M}$.
 
 In this work, we consider Hilbert deductive systems for modal logics.
-Essentially, the considered system adds two axioms for the modalities
+Essentially, the considered system adds axioms for the modalities
 to the set of axioms for classical propositional logic.
-The included axioms express that $\Box$ distributes over implication and
-$\Diamond$ over disjunction.
+As examples of modalities axioms we mention \textbf{K}, which express that $\Box$ distributes
+over implication, and possibility which states that $\Diamond$ distributes
+over disjunction.
 \[
   \begin{array}{ll}
     \textbf{K}           & \Box(A \to B) \to (\Box A \to \Box B)\\
@@ -394,15 +399,42 @@ and a rule that allows to conclude formulas with necessity.
 The set of axioms and the two previous rules forms a sound and complete Hilbert-style
 deductive system for modal logics~\cite{blackburn}.
 
-A central aspect in the study of modal logics is the properties of its
-accessibility relations.
+A central aspect in the study of modal logics is the so-called \emph{frame
+  correspondence}, which is a relationship between the
+accessibility relation and the truth of certain formulas in frames containing
+it. As an example, consider a frame $\mathcal{F} = \langle W,R
+\rangle$ in which the relation $R$ is reflexive: $\forall w \in W. wRw$, i.e.
+every world is accessible from itself. In such frame when $\Box A$ holds at
+a world $w$, $w$ itself is among the accessible worlds at which $A$ must be true.
+In this way, if the accessibility relation $R$ is reflexive, then whatever world
+$w$ and formula $\varphi$ we take, the formula $\Box \varphi \to \varphi$ will
+be true there. Example of properties that characterize certain formula schemas are
+presented in the table below.
 
+\begin{figure}[H]
+\begin{tabular}{|c|c|}
+  \hline
+  Property of $R$                          & Formula schema \\ \hline
+  reflexive: $\forall w.wRw$               & $\Box A \to A$ \\ 
+  serial: $\forall w\exists w'. wRw'$      & $\Box A \to \Diamond A$ \\
+  symmetric: $\forall w\,w'.wRw' \to w'Rw$ & $A \to \Box\Diamond A$ \\
+  \hline
+\end{tabular}
+\end{figure}
+There are other properties of interest for a relation $R$ like being
+transitive, functional, euclidean, and so on. More about the correspondence
+of frames and deductive systems properties can be found elsewhere~\cite{Chellas,blackburn}.
 
 \section{Embedding Modal Logic in Coq}\label{sec:implementation}
 
 In this section, we describe the implementation details of our modal logic
 library in Coq. We start by describing the structure of formula syntax and the
 representation of frames and models, needed to define the Kripke semantics.
+Next, we define a modular Hilbert-style deductive system. The modularization is
+obtained by parameterizing it by a set of axioms used. This allow us to
+generalize results about derivations to several deductive systems, independently
+of the axioms used. We conclude by discussing the soundness, the current
+status of the completeness and the frame correspondence proofs.
 
 \paragraph{Syntax and semantics of modal logics}
 In order to implement our library, we use a \emph{deep embedding} of
@@ -449,7 +481,7 @@ for propositional logics connectives for brevity. The interesting parts are for
 variables (constructor \mintinline{coq}{Lit}) which uses the labelling function
 \mintinline{coq}{v} from the model \mintinline{coq}{M}. The meaning of
 modalities $\Box$ and $\Diamond$ are represented by a quantifying over worlds
-and use the accessibility relation $R$. 
+using the accessibility relation $R$. 
 \begin{minted}{coq}
 Fixpoint formula_valuation (M: Model)
                            (w: W (F M))
@@ -462,14 +494,11 @@ Fixpoint formula_valuation (M: Model)
   | Dia     psi
      => exists w': W (F M), R (F M) w w' /\
                    formula_valuation M w' psi
-  (** some code omitted* )
+  (** some code omitted *)
   end.
 \end{minted}
 In order to ease the task of writing formulas and its semantics properties, we
 define Coq notations that mimics the standard way of writing them.
-
-\paragraph{Systems for modal logic}
-
 
 \paragraph{The Hilbert deductive system}
 Basically, a Hilbert-style deductive system allows the use of on four
@@ -478,7 +507,7 @@ possibilities in a proof: 1) the use of a hypothesis; 2) use of an axiom;
 rule. The inductive type \mintinline{coq}{deduction} encodes these possibilities
 as its constructors. The \mintinline{coq}{deduction} type is parameterized by
 axioms that form a system for modal logics. In this way, our definition can be
-used in several systems of modal logic.
+used by several systems of modal logic.
 \begin{minted}{coq}
 Inductive deduction (A: axiom -> Prop)
                            : theory -> form -> Prop :=
@@ -506,9 +535,30 @@ Inductive deduction (A: axiom -> Prop)
 \end{minted}
 The constructors \mintinline{coq}{Prem}, \mintinline{coq}{Mp} and \mintinline{coq}{Nec}
 represent rules for hypothesis, modus ponens and generalization, respectively.
-The \mintinline{coq}{Ax} constructor deserves a bit of explanation. Function
-\mintinline{coq}{instantiate} build a formula from a given axiom set for a given
-system represented by a theory, which parameterizes our deduction type.
+Before discuss the rule for axioms, we need to discuss how axioms are
+represented in our library. The inductive type \mintinline{coq}{axiom} specifies
+the different axioms supported by our library.
+\begin{minted}{coq}
+Inductive axiom : Set :=
+  | ax1   : modalFormula -> modalFormula -> axiom
+  | ax2   : modalFormula -> modalFormula ->
+                            modalFormula -> axiom
+  (** some code omitted *)
+  | axK   : modalFormula -> modalFormula -> axiom
+  | axPos : modalFormula -> modalFormula -> axiom
+  | axT   : modalFormula -> axiom
+  | axB   : modalFormula -> axiom
+  | axK4  : modalFormula -> axiom
+  | axD   : modalFormula -> axiom
+  | axK5  : modalFormula -> axiom.
+\end{minted}
+Each constructor of type \mintinline{coq}{axiom} represents an axiom and
+its type stores the subformulas which compose the axiom. The type has
+17 constructors: the first 10 consists encode axioms for propositional logics
+and the last 7 are for different formulas taken as axioms by systems of modal logics.
+Axioms are built using the function \mintinline{coq}{instantiate}, which
+receives an axiom and build its corresponding formula by pattern matching as
+follows:
 \begin{minted}{coq}
 Definition instantiate (a: axiom): modalFormula :=
   match a with
@@ -527,9 +577,56 @@ Definition instantiate (a: axiom): modalFormula :=
 \end{minted}
 Notation \mintinline{coq}{[! p !]} is used to write modal logic formulas using a
 syntax closer to mathematical practice using Coq. This is necessary to avoid
-ambiguities, since some symbols are also used by Coq's syntax.
+parsing ambiguities, since some symbols are also used by Coq's syntax.
 Modalities $\Box$ and $\Diamond$ are denoted by \mintinline{coq}{[]}
 and \mintinline{coq}{<>}, respectively.
+
+The \mintinline{coq}{Ax} constructor uses the \mintinline{coq}{instantiate} to
+create a formula instance from using a given system, represented as a predicate
+\mintinline{coq}{A : axiom -> Prop}, which parameterizes our deduction type. An
+axiom \mintinline{coq}{a} is valid within a system \mintinline{coq}{A} whenever
+the type \mintinline{coq}{A a} is inhabited, i.e. it is not empty. Next, we
+detail the representation of different systems of modal logic in our library.
+
+\paragraph{Systems of modal logics} In order to use the deductive system to
+check the provability of formulas, we need to specify the axioms that are
+included in the system. Our approach is we represent to define predicates
+which denote each system. The simplest set of axioms is usually refereed as
+\textbf{K} and it includes the axiom $\Box(A \to B) \to (\Box A \to \Box B)$
+and all the axioms for propositional logic. We represent system \textbf{K}
+by the following inductive type:
+\begin{minted}{coq}
+Inductive K: axiom -> Prop :=
+  | K_ax1: forall p q, K (ax1 p q)
+  | K_ax2: forall p q r, K (ax2 p q r)
+  (** some code omitted *)
+  | K_axK: forall p q, K (axK p q)
+\end{minted}
+Type \mintinline{coq}{K} is a predicate over axioms: it has one constructor for
+each of the valid axioms which form the system. Given a value
+of \mintinline{coq}{axiom}, a value of type \mintinline{coq}{K a} denotes a
+proof that a given axiom is part of the system \textbf{K}. This is the main
+trick used by the constructor \mintinline{coq}{Ax}, of type
+\mintinline{coq}{deduction}, to generically represent axioms for
+different systems of modal logics uniformly. In order to understand how it
+works, let us review its type (below, remeber that \mintinline{coq}{A : axiom -> Prop}
+denotes a system of axioms for modal logics):
+\begin{minted}{coq}
+Ax: forall (t: theory)
+           (a: axiom)
+           (f: form),
+           A a -> instantiate a = f -> deduction A t f
+\end{minted}
+Notice that the first parameter of constructor \mintinline{coq}{Ax} is a value
+of type \mintinline{coq}{A a}, which is only inhabited if the predicate
+\mintinline{coq}{A} holds for the axiom \mintinline{coq}{a}. Through this
+evidence, is possible to create the corresponding axiom formula instance by
+using function \mintinline{coq}{instantiate}. In this way, we are able to
+represent all systems of axioms for modal logics using a single constructor
+for its axioms.
+
+\paragraph{Properties}
+
 
 \section{Case Study}\label{sec:case}
 
@@ -543,12 +640,44 @@ The author made a Coq implementation of modal logic based on the S5 system,
 which consists of  the axioms $K$, $T$, $4$ and $5$. The objective was the
 modelling of two well known puzzles.
 Wind's formalization was separated into some components. The first consists in
-defining the syntax of formulas and the Kripke semantics. Next, the author uses
+defining the syntax of formulas and its Kripke semantics. Next, the author uses
 their definitions to give some examples of modal operators, worlds and how they
 interact with each other. Using the built machinery, the author developed
-introduction and elimination rules for modal logic and use them to model the
-wize man's and muddy children puzzles.
+introduction and elimination rules for modal logic operators and use them to
+model the wize man's and muddy children puzzles.
 
+A Coq formalization for modal systems $K$, $T$ and $K4$ was the subject of 
+Doczkal and Smolka's work. Author's interest was in the definition of dynamic
+and temporal logics. The development of the code establishes the construction
+and definitions of tactics, through lemmas propositional operators and relation
+properties were constructed. Each model was defined through structures, which
+consist of worlds, relationships and propositions~\cite{saarland}.
+
+Another proposal of formalizing modal logics was developed by Benzmüller and
+Paleo~\cite{Chris_Bruno}. Author's main objective is checking if current
+type theory-based proof assistants are suitable for modal logic reasoning.
+They defined a formalization of systems $K$ and $S5$ and built custom tactics
+which allows proofs using a natural deduction style.
+The authors argue that current proof assistants are a useful technology for
+reasoning about facts expressed using modal logics. 
+
+
+\vspace{0.5cm} {
+  \begin{table}[H]
+    \begin{tabular}{|c|c|c|c|c|c|c|c|c|}
+      \hline
+      \multirow{2}{*}{Authors} & \multicolumn{8}{c|}{Systems considered}         \\ \cline{2-9} 
+                               & K & D & B & T & K4 & K5 & S4 & S5 \\ \hline
+      Wind et. al.~\cite{dewind}     & X &   &   & X & X  & X  & X  &  X \\ \hline
+      Doczkal et. al.~\cite{saarland}   & X &   &   & X & X  &    &    &    \\ \hline
+      Benzmüller et. al.~\cite{Chris_Bruno}& X &   & X & X &  X &    &    & X  \\ \hline
+      This work         & X & X & X & X & X  &  X &  X & X  \\ \hline
+    \end{tabular}
+    \centering
+    \caption{Comparision with different Coq modal logics developements.}
+    \label{tab:comparacao_trabalhos_rel}
+  \end{table}
+}
 
 \section{Conclusion}\label{sec:conclusion}
 
