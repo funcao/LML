@@ -388,11 +388,11 @@ Proof.
 Qed.
 
 Lemma GL_implies_4:
-  forall f v p,
-  ([f -- v] |= [! []([]p -> p) -> []p !]) ->
-  ([f -- v] |= [! []p -> [][]p !]).
+  forall f v,
+  (forall q, [f -- v] |= [! []([]q -> q) -> []q !]) ->
+  (forall p, [f -- v] |= [! []p -> [][]p !]).
 Proof.
-  intros f v p H.
+  intros f v H p.
   
   (*Step 0: |= X -> ((Y /\ Z) -> (Z /\ X)) -- Tautology*)
   assert(H0: forall x y z, [f -- v] |= [! x -> ((y /\ z) -> (z /\ x)) !]) 
@@ -427,7 +427,7 @@ Proof.
 
   (*Step 7: Prove an instance of GL*)
   assert(H7: [f -- v] |= [! []([]([]p /\ p) -> ([]p /\ p)) -> []([]p /\ p) !])
-    by (admit);
+    by (apply H with (q:=[! []p /\ p !]));
   clear H.
 
   (*Step 8: From Step 6 and Step 7, prove |= []p -> []([]p /\ p) 
@@ -454,7 +454,7 @@ Proof.
   
   assumption.
 
-Admitted.
+Qed.
 
 Theorem axiomGL_implies_noetherian_frame:
   forall f,
