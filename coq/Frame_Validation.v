@@ -388,67 +388,67 @@ Proof.
 Qed.
 
 Lemma GL_implies_4:
-  forall f v,
-  (forall q, [f -- v] |= [! []([]q -> q) -> []q !]) ->
-  (forall p, [f -- v] |= [! []p -> [][]p !]).
+  forall M,
+  (forall q, M |= [! []([]q -> q) -> []q !]) ->
+  (forall p, M |= [! []p -> [][]p !]).
 Proof.
-  intros f v H p.
+  intros M H p.
   
   (*Step 0: |= X -> ((Y /\ Z) -> (Z /\ X)) -- Tautology*)
-  assert(H0: forall x y z, [f -- v] |= [! x -> ((y /\ z) -> (z /\ x)) !]) 
+  assert(H0: forall x y z, M |= [! x -> ((y /\ z) -> (z /\ x)) !]) 
     by (intros x y z w H0;split; destruct H1; trivial).
 
   (*Step 1: |= [][]X /\ []X -> []([]X /\ X) -- Theorem*)
-  assert(H1: forall x, [f -- v] |= [! x -> ([]([]x /\ x) -> ([]x /\ x)) !])
+  assert(H1: forall x, M |= [! x -> ([]([]x /\ x) -> ([]x /\ x)) !])
     by (intros x w H1 H2; simpl; split; [apply H2 | assumption]).
 
   (*Step 2: (|= A -> B) -> (|= []A -> []B) -- Syntatic Property*)
-  assert(H2: forall x y, ([f -- v] |= [! x -> y !]) -> ([f -- v] |= [! []x -> []y !]))
+  assert(H2: forall x y, (M |= [! x -> y !]) -> (M |= [! []x -> []y !]))
     by (intros x y H2 w H3 w1 H4; apply H2; apply H3; assumption).
 
   (*Step 3: (|= []X /\ X -> []X) -- Tautology*)
-  assert(H3: forall x, ([f--v] |= [! []x /\ x -> []x !]))
+  assert(H3: forall x, (M |= [! []x /\ x -> []x !]))
     by (intros ?x ?w H3; apply H3).
 
   (*Step 4: Prove an instance of Step 0*)
-  assert(H4: [f -- v] |= [! p -> (([][]p /\ []p) -> ([]p /\ p)) !])
+  assert(H4: M |= [! p -> (([][]p /\ []p) -> ([]p /\ p)) !])
     by (apply H0 with (x:=[!p!]) (y:=[![][]p!]) (z:=[![]p!])); 
   clear H0.
   
   (*Step 5: Apply Step 1 on Step 4*)
-  assert(H5: [f -- v] |= [! p -> ([]([]p /\ p) -> ([]p /\ p)) !]) 
+  assert(H5: M |= [! p -> ([]([]p /\ p) -> ([]p /\ p)) !]) 
     by (apply H1); 
   clear H1; clear H4.
 
   (*Step 6: Apply Step 2 on Step 5*)
-  assert(H6: [f -- v] |= [! []p -> []( ([]([]p /\ p) -> ([]p /\ p)) ) !]) 
+  assert(H6: M |= [! []p -> []( ([]([]p /\ p) -> ([]p /\ p)) ) !]) 
     by (apply H2; assumption);
   clear H5.
 
   (*Step 7: Prove an instance of GL*)
-  assert(H7: [f -- v] |= [! []([]([]p /\ p) -> ([]p /\ p)) -> []([]p /\ p) !])
+  assert(H7: M |= [! []([]([]p /\ p) -> ([]p /\ p)) -> []([]p /\ p) !])
     by (apply H with (q:=[! []p /\ p !]));
   clear H.
 
   (*Step 8: From Step 6 and Step 7, prove |= []p -> []([]p /\ p) 
   by transitivity of -> *)
-  assert(H8: [f -- v] |= [! []p -> []([]p /\ p) !])
+  assert(H8: M |= [! []p -> []([]p /\ p) !])
     by (eapply modal_impl_transitivity; split; [exact H6 | exact H7]);
   clear H6; clear H7.
 
   (*Step 9: Prove an instance of Step 3*)
-  assert(H9: [f--v] |= [! []p /\ p -> []p !]) 
+  assert(H9: M |= [! []p /\ p -> []p !]) 
     by (apply H3 with (x:=p));
   clear H3.
 
   (*Step 10: Apply Step 2 on Step 9*)
-  assert(H10: [f--v] |= [! []([]p /\ p) -> [][]p !])
+  assert(H10: M |= [! []([]p /\ p) -> [][]p !])
     by (auto);
   clear H2; clear H9.
 
   (*Step 11: From Step 8 and 10, prove |= []p -> [][]p
   by transitivity of ->*)
-  assert(H11: [f--v] |= [! []p -> [][]p !])
+  assert(H11: M |= [! []p -> [][]p !])
     by (eapply modal_impl_transitivity; split; [exact H8 | exact H10]);
   clear H8; clear H10.
   
