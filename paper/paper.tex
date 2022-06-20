@@ -131,7 +131,7 @@
 \begin{abstract}
   This work describes an encoding of modal logics using the Coq proof assistant.
   Our formalization differs from previous attempts by providing a uniform
-  representation of several systems for modal logics using Coq's rich type
+  representation of several systems for modal logic using Coq's rich type
   structure. We illustrate the usefulness of our library in a formalization of
   L\"ob's theorem which closely follows a classical proof of this result.
 \end{abstract}
@@ -802,9 +802,9 @@ which allows proofs using a natural deduction style.
 The authors argue that current proof assistants are a useful technology for
 reasoning about facts expressed using modal logics. 
 
-The next table summarizes the different systems of modal logics considered by
-previous works.
 
+The next table summarizes the formalized modal logics systems by our library
+and related works.
 \vspace{0.5cm} {
   \begin{table}[H]
     \begin{tabular}{|c|c|c|c|c|c|c|c|c|c|}
@@ -821,6 +821,48 @@ previous works.
     \label{tab:comparacao_trabalhos_rel}
   \end{table}
 }
+All developments considered systems K, T and K4 and the unique formalization that
+includes system GL is the library described in this work.
+
+\paragraph{Applications of modal logics in semantics} Another application of
+modal logics is its use for reasoning about programming languages semantics.
+Dynamic logic was introduced by Pratt in late 70's as modal logic for reasoning
+about programs~\cite{Pratt76,Pratt80}. The key idea on dynamic logic is to express the
+Hoare triples by a modality meaning ``after a program $p$ executes, formula
+$\varphi$ will be true''. The programming languages considered in Pratt's
+original work are composed by an assignment and regular language operators
+(union, concatenation and Kleene star)~\cite{Pratt76}.
+
+An application of modal logic IS5 as a type system for a distributed
+programming language was proposed in~\cite{Murphy04}. 
+In that work, modalities are used to represent types for mobile code
+and remote addresses. Murphy et. al defined the language by interpreting
+the possible worlds of the intutionistic modal logic IS5 to be nodes on a
+network and the modalities $\Box$ and $\Diamond$ to reflect mobility and
+locality, respectively. Authors develop an operational semantics and show
+that their formalization is type-safe.
+
+The application of a multimodal separation logic for the semantics of low-level
+was the subject of Dockins et. al. work~\cite{Dockins08}. In that work, authors
+combine several modal operators that do not need to satisfy the same frame
+conditions and seperation logics for reasoning about non-trivial subsets of
+low-level programming languages. Authors developed their formalization through a
+shallow embedding in Coq proof assistant and provide two case studies: one is
+the verification of a simple low-level virtual machine, called the list machine
+benchmark and the other is the subset of Sequential Cminor.
+
+A model for recursive, impredicatively quantified types with mutable references
+was studied by Appel et. al.~\cite{Appel07}. His interest in formalizing such
+advanced typing concepts was in the context of typed assembly languages.
+Authors stabilished a semantic type soundness proof by defining a Kripke-style 
+semantics of the G\"odel-L\"ob logic of provability. All their definitions were
+mechanized through a shallow embedding in Coq.
+
+The embedding of modal linear logic in Coq was the subject of
+Sadrzadeh's work~\cite{Soton03}. Like our work, Sadrzadeh's uses a
+deep-embedding approach and assumes that all modalities are reflexive
+and transitive. Using her embedding, Sadrzadeh shows some proofs of classical
+logic puzzles.
 
 \section{Conclusion}\label{sec:conclusion}
 
