@@ -7,7 +7,7 @@ Definition fixed_point S g :=
   (* TODO: we should improve the notation here! *)
   (S; g |-- And (Implies p (f (Box p))) (Implies (f (Box p)) p)).
 
-Example Lob:
+Theorem Lob:
   (* Löb's theorem is provable in K4 (assuming fixed points). *)
   forall P,
   fixed_point K4 nil ->
@@ -34,39 +34,27 @@ Proof.
   eapply Ax with (a := axK ?[X] ?[Y]); try repeat constructor.
   (* Step 7. *)
   assert (K4; nil |-- [! []psi -> [][]psi -> []P !]) as H7.
-  eapply modal_compose; try repeat constructor.
-  exact H5.
-  exact H6.
+  eapply modal_compose; try repeat constructor ; try eassumption.
   (* Step 8. *)
   assert (K4; nil |-- [! []psi -> [][]psi !]) as H8.
   apply modal_axK4; try constructor 2.
   (* Step 9. *)
   assert (K4; nil |-- [! []psi -> []P !]) as H9.
-  eapply modal_ax2; try repeat constructor.
-  exact H7.
-  exact H8.
+  eapply modal_ax2; try repeat constructor ; try eassumption.
   (* Step 10. *)
   assert (K4; nil |-- [! []psi -> P !]) as H10.
-  eapply modal_compose; try repeat constructor.
-  exact H9.
-  exact H1.
+  eapply modal_compose; try repeat constructor ; try eassumption.
   (* Step 11. *)
   assert (K4; nil |-- [! ([]psi -> P) -> psi !]) as H11.
-  apply modal_ax6 in H2; try repeat constructor.
-  exact H2.
+  apply modal_ax6 in H2; try repeat constructor ; try eassumption.
   (* Step 12. *)
   assert (K4; nil |-- psi) as H12.
-  eapply Mp.
-  exact H11.
-  exact H10.
+  eapply Mp ; try eassumption.
   (* Step 13. *)
   assert (K4; nil |-- [! []psi !]) as H13.
-  apply Nec.
-  exact H12.
+  apply Nec ; try eassumption.
   (* Step 14. *)
-  eapply Mp.
-  exact H10.
-  exact H13.
+  eapply Mp ; try eassumption.
 Qed.
 
 Example Ex1:
