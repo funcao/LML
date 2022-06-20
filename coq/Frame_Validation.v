@@ -205,7 +205,7 @@ Proof.
   unfold functional_frame in H.
   simpl in H1.
   destruct H1 as [w3 H1]; destruct H1 as [H1 H3].
-  assert (H4: R (f) w1 w2 /\ R f w1 w3) by (split; assumption).
+  assert (H4: R f w1 w2 /\ R f w1 w3) by (split; assumption).
   apply H in H4; subst; assumption.
 Qed.
 
@@ -345,12 +345,6 @@ Proof.
   unfold validate_model in H; simpl in *.
   apply modal_double_neg; intros H2.
   apply H in H2; apply H2 in H1; contradiction.
-Qed.
-
-Lemma and_to_imply: 
-  forall P Q:Prop, P /\ ~ Q -> ~ (P -> Q).
-Proof.
-  intros P Q [H1 H2] H3; apply H3 in H1; contradiction.
 Qed.
 
 Theorem noetherian_frame_implies_axiomGL:
