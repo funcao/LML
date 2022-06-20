@@ -4,7 +4,7 @@ Theorem contra:
   forall P Q,
   (~ P -> ~ Q) -> (Q -> P).
 Proof.
-  intros. apply NNPP. intro. apply H in H1. contradiction.
+  intros. apply NNPP. tauto.
 Qed.
 
 Theorem reflexive_frame_implies_axiomT:
@@ -310,7 +310,7 @@ Proof.
   apply ex_not_not_all.
   exists [! #0 !].
   intros H5; unfold validate_model in H5; simpl in H5.
-  destruct H5 with (w1) (w3).
+  destruct H5 with w1 w3.
   - simpl; exists w2; split.
     + eapply not_ex_all_not in H;
       apply imply_to_and in H;
@@ -319,16 +319,15 @@ Proof.
       eapply not_ex_all_not in H;
       apply imply_to_and in H;
       destruct H as [H1 H']; destruct H1 as [H1 H2];
-      apply not_and_or in H'; destruct H' as [H3 | H3].
-      * destruct H3; apply H4.
-      * assumption.
+      apply not_and_or in H'; destruct H' as [H3 | H3];
+      try eauto.
   - simpl; 
     eapply not_ex_all_not in H;
     apply imply_to_and in H;
     destruct H as [H1 H']; destruct H1 as [H1 H2]; assumption.
   - simpl in *; rename x into w4.
     destruct H0; contradiction.
-    Unshelve. assumption. assumption. (*Coq não aceitou ; aqui*)
+    Unshelve. assumption. assumption.
 Qed.
 
 Theorem modal_double_neg: 
@@ -344,7 +343,7 @@ Proof.
   intros M p q H w1 H1.
   unfold validate_model in H; simpl in *.
   apply modal_double_neg; intros H2.
-  apply H in H2; apply H2 in H1; contradiction.
+  apply H in H2; contradiction.
 Qed.
 
 Theorem noetherian_frame_implies_axiomGL:
@@ -463,7 +462,7 @@ Proof.
     unfold conversely_well_founded_frame in H;
     apply not_all_ex_not in H; destruct H as [S];
     apply imply_to_and in H; destruct H as [H'' H].
-    assert(H0: forall w, S w -> exists w', ~ (S w' -> ~ R f w w')). (*S não tem elemento máximo*)
+    assert(H0: forall w, S w -> exists w', ~ (S w' -> ~ R f w w')).
     + intros w2 H3.
       apply not_ex_all_not with(n:=w2) in H;
       apply not_and_or in H; destruct H; try contradiction.

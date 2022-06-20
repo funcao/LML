@@ -348,7 +348,7 @@ Definition conversely_well_founded_frame (F: Frame): Prop :=
 Definition noetherian_frame (F: Frame): Prop :=
   transitivity_frame F /\ conversely_well_founded_frame F.
 
-(* Equivalencia lógica *)
+(* Logical Equivalence *)
 Definition entails_modal (Γ: theory) (φ: modalFormula): Prop :=
   forall M,
   theoryModal M Γ -> 

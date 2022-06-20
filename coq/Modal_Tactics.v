@@ -112,8 +112,8 @@ Defined.
 
 Lemma modal_impl_transitivity:
   forall M a b c,
-  ( (M |= [! a -> b !]) /\ (M |= [! b -> c !])) ->
-  (  M |= [! a -> c !]).
+  (M |= [! a -> b !]) /\ (M |= [! b -> c !]) ->
+  (M |= [! a -> c !]).
 Proof.
   intros M a b c [H1 H2] w H3.
   apply H2; apply H1; assumption.
