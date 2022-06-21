@@ -183,7 +183,7 @@ system~\cite{Klein10}, it is possible to formalize and verify highly complex com
 systems.
 
 Although there are some dedicated provers for modal logics~\cite{Gleissner17,Mora11},
-we believe that using mature tools, like a proof assistant, are a better option for
+we believe that using mature tools, like a proof assistant, is a better option for
 verifying facts using modal logics. We justify this choice by: 1) the recent
 successful histories on verification of software and
 mathematics~\cite{Leroy09,Klein10,Gonthier13,Gonthier08}; 2) There is a growing
@@ -460,8 +460,8 @@ representation of frames and models, needed to define the Kripke semantics.
 Next, we define a modular Hilbert-style deductive system. The modularization is
 obtained by parameterizing it by a set of axioms used. This allows us to
 generalize results about derivations to several deductive systems, independently
-of the axioms used. We conclude by discussing the soundness, the current
-status of the completeness and the frame correspondence proofs.
+of the axioms used. We conclude by discussing the soundness and the frame
+correspondence proofs.
 
 \paragraph{Syntax and semantics of modal logics}
 In order to implement our library, we use a \emph{deep embedding} of
@@ -528,7 +528,7 @@ In order to ease the task of writing formulas and its semantics properties, we
 define Coq notations that mimics the standard way of writing them.
 
 \paragraph{The Hilbert deductive system}
-Basically, a Hilbert-style deductive system allows the use of on four
+Basically, a Hilbert-style deductive system allows using one out of four
 possibilities in a proof: 1) the use of a hypothesis; 2) use of an axiom;
 3) use of the modus ponens rule or 4) the use of the generalization (necessity)
 rule. The inductive type \mintinline{coq}{deduction} encodes these possibilities
@@ -562,7 +562,7 @@ Inductive deduction (A: axiom -> Prop)
 \end{minted}
 The constructors \mintinline{coq}{Prem}, \mintinline{coq}{Mp} and \mintinline{coq}{Nec}
 represent rules for hypothesis, modus ponens and generalization, respectively.
-Before discuss the rule for axioms, we need to discuss how axioms are
+Before discuss the \mintinline{coq}{Ax}, we need to discuss how axioms are
 represented in our library. The inductive type \mintinline{coq}{axiom} specifies
 the different axioms supported by our library.
 \begin{minted}{coq}
@@ -608,12 +608,12 @@ Modalities $\Box$ and $\Diamond$ are denoted by \mintinline{coq}{[]}
 and \mintinline{coq}{<>}, respectively.
 
 The \mintinline{coq}{Ax} constructor uses the \mintinline{coq}{instantiate}
-function to create a formula instance from using a given system,
+function to create a formula instance from a given system,
 represented as a predicate
-\mintinline{coq}{A : axiom -> Prop}, which parameterizes our deduction type. An
+\mintinline{coq}{A : axiom -> Prop} which parameterizes our deduction type. An
 axiom \mintinline{coq}{a} is valid within a system \mintinline{coq}{A} whenever
 the type \mintinline{coq}{A a} is inhabited, i.e. it is not empty. Next, we
-detail the representation of different systems of modal logic in our library.
+describe how to represent different systems of modal logic.
 
 \paragraph{Systems of modal logics} In order to use the deductive system to
 check the provability of formulas, we need to specify the axioms that are
@@ -636,7 +636,7 @@ proof that a given axiom is part of the system \textbf{K}. This is the main
 trick used by the constructor \mintinline{coq}{Ax}, of type
 \mintinline{coq}{deduction}, to generically represent axioms for
 different systems of modal logics uniformly. In order to understand how it
-works, let us review its type (below, remeber that \mintinline{coq}{A : axiom -> Prop}
+works, let us review its type (below, remember that \mintinline{coq}{A : axiom -> Prop}
 denotes a system of axioms for modal logics):
 \begin{minted}{coq}
 Ax: forall (t: theory)
@@ -644,7 +644,7 @@ Ax: forall (t: theory)
            (f: form),
            A a -> instantiate a = f -> deduction A t f
 \end{minted}
-Notice that the first parameter of constructor \mintinline{coq}{Ax} is a value
+Note that the first parameter of constructor \mintinline{coq}{Ax} is a value
 of type \mintinline{coq}{A a}, which is only inhabited if the predicate
 \mintinline{coq}{A} holds for the axiom \mintinline{coq}{a}. Through this
 evidence, is possible to create the corresponding axiom formula instance by
