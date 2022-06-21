@@ -10,8 +10,6 @@
 <!--ts-->
    * [Abstract](#Abstract)
    * [Technology](#Technology)
-   * [License](#tabela-de-conteudos)
-   * [Authors](#Authors)
 <!--te-->
 
 ## Abstract
@@ -19,34 +17,3 @@ The modelling of certain types of computational systems with classical logic inc
 
 ## Technology
 - [Coq](https://coq.inria.fr/)
-
-## License
-
-[BSD-2-Clause](https://github.com/arielsilveira/ModalLibrary/blob/master/LICENSE)
-
-## Authors
----
-Search Group: [FUNÇÃO](https://www.udesc.br/cct/funcao)
-
-<table>
-    <tr>
-        <td>
-            <img style="border-radius: 50%;" src="https://avatars1.githubusercontent.com/u/19842910?v=4" width="100px;" alt="">
-            <br/>
-            <sub>Author: <a href="github.com/arielsilveira"><b>Ariel Agne da Silveira</b></sub> </a>
-        </td>
-        <td>
-            <img style="border-radius: 50%;" src="https://avatars2.githubusercontent.com/u/6727632?v=4" width="100px;" alt="">
-            <br/>
-            <sub>Advisor: <a href="github.com/kaqui"><b>Karina Girardi Roggia</b></sub> </a>
-        </td>
-        <td>
-            <img style="border-radius: 50%;" src="https://avatars3.githubusercontent.com/u/394865?v=4" width="100px;" alt="">
-            <br/>
-            <sub>Co-Advisor: <a href="github.com/takanuva"><b>Paulo Henrique Torrens</b></sub> </a>
-        </td>
-    </tr>
-</table>
-
-
-<!-- [![Gmail Badge](https://img.shields.io/badge/-ariel.agne95@gmail.com-c14438?style=flat-square&logo=Gmail&logoColor=white&link=mailto:tgmarinho@gmail.com)](mailto:ariel.agne95@gmail.com) -->
