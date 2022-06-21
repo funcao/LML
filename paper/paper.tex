@@ -196,7 +196,7 @@ scripts for formulas that can be checked automatically.
 
 In this context, the present work aims to contribute by constructing a library
 that formalize a family of modal logics and its related properties in Coq.
-By using such a library, a developer could use all Coq's resources to prove
+By using such a library, a developer could use all of Coq's resources to prove
 modal logics facts.
 
 
@@ -247,14 +247,14 @@ More specifically, we contribute:
     parameterized by different axiom systems like K, D, B, T, K4, K5, S4, S5 and GL
     and prove its soundness with respect to Kripke semantics.
     We also formalize several frame correspondence results.
-  \item We show a proof of the L\"ob's theorem using the Hilbert deductive system
+  \item We show a proof of L\"ob's theorem using the Hilbert deductive system
     developed in our library.
 \end{itemize}
 
 The rest of this work is organized as follows: Section~\ref{sec:background} provides
 brief introduction on modal logics and the Coq proof assistant. Details about
 the implementation of our Coq library are presented in
-Section~\ref{sec:implementation}. A case study in proving the L\"ob's theorem is
+Section~\ref{sec:implementation}. A case study in proving L\"ob's theorem is
 the subject of Section~\ref{sec:case}. Related works are discussed
 on Section~\ref{sec:related} and Section~\ref{sec:conclusion} draws some conclusions and
 provide some pointers for future works.
@@ -264,7 +264,7 @@ provide some pointers for future works.
 \paragraph{An overview of Coq proof assistant.}
 
 Coq is a proof assistant based on the calculus of inductive
-constructions (CIC)~\cite{manual_cic}, a higher order typed
+constructions (CIC)~\cite{manual_cic}, a higher-order typed
 $\lambda$-calculus extended with inductive definitions.  Theorem
 proving in Coq follows the ideas of the so-called
 ``BHK-cor\-res\-pon\-dence''\footnote{Abbreviation of Brouwer, Heyting,
@@ -279,10 +279,10 @@ However, writing a proof term whose type is that of a logical formula
 can be a hard task, even for very simple propositions.  In order to
 make the writing of complex proofs easier, Coq provides
 \emph{tactics}, which are commands that can be used to construct proof
-terms in a more user friendly way.
+terms in a more user-friendly way.
 
-As a tiny example, consider the task of proving the following simple
-formula of propositional logic:
+As a tiny example, consider the task of proving the following 
+formula of the propositional logic:
 \[
 (A \to B)\to (B\to C) \to A \to C
 \]
@@ -326,7 +326,7 @@ However, even for very simple theorems, coding a definition directly
 as a Coq term can be a hard task. Because of this, the use of tactics
 has become the standard way of proving theorems in Coq. Furthermore,
 the Coq proof assistant provides not only a great number of tactics
-but also a domain specific language for scripted proof automation,
+but also a domain-specific language for scripted proof automation,
 called $\mathcal{L}$tac. Details about $\mathcal{L}$tac and Coq can be found
 in~\cite{Chlipala13,Bertot10,manual_coq}.
 
@@ -435,7 +435,7 @@ every world is accessible from itself. In such frame when $\Box A$ holds at
 a world $w$, $w$ itself is among the accessible worlds at which $A$ must be true.
 In this way, if the accessibility relation $R$ is reflexive, then whatever world
 $w$ and formula $\varphi$ we take, the formula $\Box \varphi \to \varphi$ will
-be true there. Example of properties that characterize certain formula schemas are
+be true there. Examples of properties that characterize certain formula schemas are
 presented in the table below.
 
 \begin{figure}[H]
@@ -464,7 +464,7 @@ of the axioms used. We conclude by discussing the soundness and the frame
 correspondence proofs.
 
 \paragraph{Syntax and semantics of modal logics}
-In order to implement our library, we use a \emph{deep embedding} of
+To implement our library, we use a \emph{deep embedding} of
 formulas, i.e. we represent formulas as the following Coq inductive datatype.
 \begin{minted}{coq}
 Inductive form : Set :=
@@ -492,7 +492,7 @@ Record Frame : Type := {
   R : W -> W -> Prop;
 }.
 \end{minted}
-A model is denoted by another record formed by a frame and a labelling function,
+A model is denoted by another record formed by a frame and a labeling function,
 which assign the truth value of a variable at a given world.
 \begin{minted}{coq}
 Record Model : Type := {
@@ -500,12 +500,12 @@ Record Model : Type := {
   v : nat -> (W F) -> Prop; 
 }.
 \end{minted}
-Note that the type of the labelling function \mintinline{coq}{v} ensures that it
+Note that the type of the labeling function \mintinline{coq}{v} ensures that it
 refers to a world from the set of possible worlds in the frame
 \mintinline{coq}{F}. The encoding of the Kripke semantics is done by a Coq function
 that implements the relation of Figure~\ref{fig:kripke}. We omit the code
 for propositional logics connectives for brevity. The interesting parts are for
-variables (constructor \mintinline{coq}{Lit}) which uses the labelling function
+variables (constructor \mintinline{coq}{Lit}) which uses the labeling function
 \mintinline{coq}{v} from the model \mintinline{coq}{M}. The meaning of
 modalities $\Box$ and $\Diamond$ are represented by a quantifying over worlds
 using the accessibility relation $R$. 
@@ -528,9 +528,9 @@ In order to ease the task of writing formulas and its semantics properties, we
 define Coq notations that mimics the standard way of writing them.
 
 \paragraph{The Hilbert deductive system}
-Basically, a Hilbert-style deductive system allows using one out of four
-possibilities in a proof: 1) the use of a hypothesis; 2) use of an axiom;
-3) use of the modus ponens rule or 4) the use of the generalization (necessity)
+Basically, a Hilbert-style deductive system allows the use of four
+possibilities in a proof: 1) the use of a hypothesis; 2) the use of an axiom;
+3) the use of the modus ponens rule or 4) the use of the generalization (necessity)
 rule. The inductive type \mintinline{coq}{deduction} encodes these possibilities
 as its constructors. The \mintinline{coq}{deduction} type is parameterized by
 axioms that form a system for modal logics. In this way, our definition can be
@@ -562,7 +562,7 @@ Inductive deduction (A: axiom -> Prop)
 \end{minted}
 The constructors \mintinline{coq}{Prem}, \mintinline{coq}{Mp} and \mintinline{coq}{Nec}
 represent rules for hypothesis, modus ponens and generalization, respectively.
-Before discuss the \mintinline{coq}{Ax}, we need to discuss how axioms are
+Before discussing the \mintinline{coq}{Ax}, we need to discuss how axioms are
 represented in our library. The inductive type \mintinline{coq}{axiom} specifies
 the different axioms supported by our library.
 \begin{minted}{coq}
@@ -583,7 +583,7 @@ its type stores the subformulas which compose the axiom. The type has
 17 constructors: the first 10 consists encode axioms for propositional logics
 and the last 7 are for different formulas taken as axioms by systems of modal logics.
 Axioms are built using the function \mintinline{coq}{instantiate}, which
-receives an axiom and build its corresponding formula by pattern matching as
+receives an axiom and builds its corresponding formula by pattern matching as
 follows:
 \begin{minted}{coq}
 Definition instantiate (a: axiom): modalFormula :=
@@ -685,7 +685,7 @@ as an axiom in the system.  While the proof that a certain property in a frame
 implies the correspondent axiom is usually  direct, the inverse often needs
 more effort. On the Coq proofs developed for this work,  the former case is
 mostly unfoldings, simplifications and applications of premises
-while the latter, appart from the necessity and burden of a proof by contraposition, 
+while the latter, apart from the necessity and burden of a proof by contraposition, 
 requires the construction of a witness valuation function. 
 Nevertheless, all Coq's proofs are fairly similar to the respective
 ``pen and paper'' proofs that  can be found in the literature. 
@@ -696,7 +696,7 @@ seriality, functionality, density, convergency, and converse well-foundness.
 \section{Case Study}\label{sec:case}
 
 In this section we describe a case study of the defined modal logic library.
-We proved the L\"ob theorem in the system K4 with modal fixed points.
+We proved L\"ob theorem in the system K4 with modal fixed points.
 The importance of L\"ob's theorem is due to its use in provability
 logic~\cite{boolos_1994} to abstract details from encodings in G\"odel's
 incompleteness results.
@@ -850,7 +850,7 @@ snippet.
   eapply Mp ; try eassumption.
 \end{minted}
 
-\noindent This concludes the formalization of the L\"ob's theorem using
+\noindent This concludes the formalization of L\"ob's theorem using
 the developed library.
 
 \section{Related work}\label{sec:related}
@@ -861,7 +861,7 @@ The formalization of epistemic modal logic in Coq was the subject of Wind's
 work~\cite{dewind}.
 The author made a Coq implementation of modal logic based on the S5 system,
 which consists of  the axioms $K$, $T$, $4$ and $5$. The objective was the
-modelling of two well known puzzles.
+modeling of two well known puzzles.
 Wind's formalization was separated into some components. The first consists in
 defining the syntax of formulas and its Kripke semantics. Next, the author uses
 their definitions to give some examples of modal operators, worlds and how they
@@ -971,7 +971,7 @@ representation of deduction we are able to prove the soundness theorem and
 apply it on proving L\"ob's theorem.
 
 As future work we intend to prove the completeness result for the Hilbert
-deduction system, include support for multimodalities (fusion of modal logics)
+deduction system, including support for multimodalities (fusion of modal logics)
 and non-normal modal logic systems.
 
 \bibliographystyle{ACM-Reference-Format}
