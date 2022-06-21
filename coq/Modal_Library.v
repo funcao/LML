@@ -29,7 +29,7 @@ Fixpoint modalSize (f:modalFormula): nat :=
   | And     p1 p2 => 1 + (modalSize p1) + (modalSize p2)
   | Or      p1 p2 => 1 + (modalSize p1) + (modalSize p2)
   | Implies p1 p2 => 1 + (modalSize p1) + (modalSize p2)
-  end.
+end.
 
 Fixpoint literals (f:modalFormula): set nat :=
   match f with 
@@ -40,7 +40,7 @@ Fixpoint literals (f:modalFormula): set nat :=
   | And     p1 p2 => set_union eq_nat_dec (literals p1) (literals p2)
   | Or      p1 p2 => set_union eq_nat_dec (literals p1) (literals p2)
   | Implies p1 p2 => set_union eq_nat_dec (literals p1) (literals p2) 
-  end.
+end.
 
 Record Frame: Type := {
   W: Set;
@@ -336,23 +336,19 @@ Definition convergente_frame (F: Frame): Prop :=
   R F w y) -> 
   (R F x z /\ R F y z).
 
-Arguments transp {A}.
-
-Definition contained_function {T} (S R: T -> T -> Prop): Prop :=
-  forall w1 w2, S w1 w2 -> R w1 w2.
-
-Definition well_founded_frame (F: Frame) (R: relation (W F)): Prop :=
-  forall S: relation (W F),
-  (exists w1 w2, S w1 w2 -> contained_function S R) ->
-  exists w1, forall w2, ~ S w2 w1.
+Definition SubsetOfW (F: Frame): Type :=
+  W F -> Prop.
 
 Definition conversely_well_founded_frame (F: Frame): Prop :=
-  well_founded_frame F (transp (R F)).
+  (* Set-theoretic definition: *)
+  forall X: SubsetOfW F, (exists x, X x) -> 
+  exists w1, X w1 /\ forall w2, X w2 -> 
+  ~ (R F w1 w2).
 
 Definition noetherian_frame (F: Frame): Prop :=
   transitivity_frame F /\ conversely_well_founded_frame F.
 
-(* Logical equivalence *)
+(* Logical Equivalence *)
 Definition entails_modal (Γ: theory) (φ: modalFormula): Prop :=
   forall M,
   theoryModal M Γ -> 
