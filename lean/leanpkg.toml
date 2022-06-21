@@ -1,8 +1,0 @@
-[package]
-name = "modal"
-version = "0.1"
-lean_version = "leanprover-community/lean:3.42.1"
-path = "src"
-
-[dependencies]
-mathlib = {git = "https://github.com/leanprover-community/mathlib", rev = "c5bf4808289689195303a62b3d17912b92d235e9"}
