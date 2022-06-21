@@ -2,7 +2,7 @@ Require Import Modal_Library Modal_Notations Modal_Tactics Classical.
 
 Theorem contra:
   forall P Q,
-  (~ P -> ~ Q) -> (Q -> P).
+  (~P -> ~Q) -> (Q -> P).
 Proof.
   intros. apply NNPP. tauto.
 Qed.
@@ -51,7 +51,7 @@ Proof.
   simpl in H1.
   apply H1.
   unfold transitivity_frame in H.
-  apply H with (w:=w1) (w':=w2) (w'':=w3).
+  apply H with (w := w1) (w' := w2) (w'' := w3).
   split; assumption.
 Qed.
 
