@@ -1,12 +1,3 @@
-(*  
-    Name: Ariel Agne da Silveira
-
-    Advisor: Karina Girardi Roggia
-    Co-Advisor: Paulo Torrens
-
-    Minion: Miguel
-*)
-
 Require Import Arith List ListSet Notations Classical Relations.
 Export ListNotations.
 

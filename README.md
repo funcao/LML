@@ -10,7 +10,6 @@
 <!--ts-->
    * [Abstract](#Abstract)
    * [Technology](#Technology)
-   * [License](#tabela-de-conteudos)
 <!--te-->
 
 ## Abstract
@@ -18,7 +17,3 @@ The modelling of certain types of computational systems with classical logic inc
 
 ## Technology
 - [Coq](https://coq.inria.fr/)
-
-## License
-
-[BSD-2-Clause](https://github.com/arielsilveira/ModalLibrary/blob/master/LICENSE)
