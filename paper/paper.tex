@@ -259,6 +259,9 @@ the subject of Section~\ref{sec:case}. Related works are discussed
 on Section~\ref{sec:related} and Section~\ref{sec:conclusion} draws some conclusions and
 provide some pointers for future works.
 
+All source code in this article has been formalized in Coq version 8.15.0 and it
+is available at~\cite{modal-coq-lib}.
+
 \section{Background}\label{sec:background}
 
 \paragraph{An overview of Coq proof assistant.}
@@ -968,11 +971,14 @@ normal modal logics in Coq. Our approach is able to represent uniformly
 deduction over different modal logic systems by using different axiom sets
 as a predicate parameter in the deduction inductive type. Using this generic
 representation of deduction we are able to prove the soundness theorem and
-apply it on proving L\"ob's theorem.
+apply it on proving L\"ob's theorem. All source code in this article has
+been formalized in Coq version 8.15.0 and it is available at~\cite{modal-coq-lib}.
+
 
 As future work we intend to prove the completeness result for the Hilbert
-deduction system, including support for multimodalities (fusion of modal logics)
-and non-normal modal logic systems.
+deduction system and continue the development of our library by including
+support for multimodalities (fusion of modal logics) and non-normal modal
+logic systems.
 
 \bibliographystyle{ACM-Reference-Format}
 \bibliography{references}
