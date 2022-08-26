@@ -7,54 +7,62 @@ Definition fixed_point S g :=
   (* TODO: we should improve the notation here! *)
   (S; g |-- And (Implies p (f (Box p))) (Implies (f (Box p)) p)).
 
+Definition subset {T} (P: T -> Prop) (Q: T -> Prop): Prop :=
+  forall x, P x -> Q x.
+
+(* Some quick automation! *)
+Local Hint Unfold subset: modal.
+Local Hint Constructors K: modal.
+Local Hint Constructors K4: modal.
+
 Theorem Lob:
-  (* Löb's theorem is provable in K4 (assuming fixed points). *)
+  (* Löb's theorem is provable in any superset of K4 with fixed points. *)
+  forall A,
+  subset K4 A /\ fixed_point A nil ->
   forall P,
-  fixed_point K4 nil ->
-  (K4; nil |-- [! []P -> P !]) ->
-  (K4; nil |-- [! P !]).
+  (A; nil |-- [! []P -> P !]) ->
+  (A; nil |-- [! P !]).
 Proof.
   (* Step 1. *)
-  intros P FP H1.
+  intros A [I FP] P H1.
   (* Step 2. *)
   destruct FP with (fun X => [! X -> P !]) as (psi, H2).
   (* Step 3. *)
-  assert (K4; nil |-- [! psi -> []psi -> P !]) as H3.
-  apply modal_ax5 in H2; try repeat constructor.
-  exact H2.
+  assert (A; nil |-- [! psi -> []psi -> P !]) as H3.
+  apply modal_ax5 in H2; auto with modal.
   (* Step 4. *)
-  assert (K4; nil |-- [! [](psi -> []psi -> P) !]) as H4.
+  assert (A; nil |-- [! [](psi -> []psi -> P) !]) as H4.
   apply Nec; auto.
   (* Step 5. *)
-  assert (K4; nil |-- [! []psi -> []([]psi -> P) !]) as H5.
-  apply modal_axK in H4; try repeat constructor.
-  exact H4.
+  assert (A; nil |-- [! []psi -> []([]psi -> P) !]) as H5.
+  apply modal_axK in H4; auto with modal.
   (* Step 6. *)
-  assert (K4; nil |-- [! []([]psi -> P) -> [][]psi -> []P !]) as H6.
-  eapply Ax with (a := axK ?[X] ?[Y]); try repeat constructor.
+  assert (A; nil |-- [! []([]psi -> P) -> [][]psi -> []P !]) as H6.
+  eapply Ax with (a := axK ?[X] ?[Y]); auto with modal.
+  reflexivity.
   (* Step 7. *)
-  assert (K4; nil |-- [! []psi -> [][]psi -> []P !]) as H7.
-  eapply modal_compose; try repeat constructor ; try eassumption.
+  assert (A; nil |-- [! []psi -> [][]psi -> []P !]) as H7.
+  eapply modal_compose; eauto with modal.
   (* Step 8. *)
-  assert (K4; nil |-- [! []psi -> [][]psi !]) as H8.
-  apply modal_axK4; try constructor 2.
+  assert (A; nil |-- [! []psi -> [][]psi !]) as H8.
+  apply modal_axK4; auto with modal.
   (* Step 9. *)
-  assert (K4; nil |-- [! []psi -> []P !]) as H9.
-  eapply modal_ax2; try repeat constructor ; try eassumption.
+  assert (A; nil |-- [! []psi -> []P !]) as H9.
+  eapply modal_ax2; eauto with modal.
   (* Step 10. *)
-  assert (K4; nil |-- [! []psi -> P !]) as H10.
-  eapply modal_compose; try repeat constructor ; try eassumption.
+  assert (A; nil |-- [! []psi -> P !]) as H10.
+  eapply modal_compose; eauto with modal.
   (* Step 11. *)
-  assert (K4; nil |-- [! ([]psi -> P) -> psi !]) as H11.
-  apply modal_ax6 in H2; try repeat constructor ; try eassumption.
+  assert (A; nil |-- [! ([]psi -> P) -> psi !]) as H11.
+  apply modal_ax6 in H2; auto with modal.
   (* Step 12. *)
-  assert (K4; nil |-- psi) as H12.
-  eapply Mp ; try eassumption.
+  assert (A; nil |-- psi) as H12.
+  eapply Mp; try eassumption.
   (* Step 13. *)
-  assert (K4; nil |-- [! []psi !]) as H13.
-  apply Nec ; try eassumption.
+  assert (A; nil |-- [! []psi !]) as H13.
+  apply Nec; try assumption.
   (* Step 14. *)
-  eapply Mp ; try eassumption.
+  eapply Mp; eassumption.
 Qed.
 
 Example Ex1:
