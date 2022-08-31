@@ -520,8 +520,8 @@ Record Model: Type := {
 \end{minted}
 Note that the type of the labeling function \mintinline{coq}{v} ensures that it
 refers to a world from the set of possible worlds in the frame
-\mintinline{coq}{F} (we recall that \mintinline{coq}{W F} is Coq's syntax for
-accessing field \mintinline{coq}{W} from the record \mintinline{coq}{F}). The encoding of the Kripke semantics is done by a Coq function
+\mintinline{coq}{F}\footnote{We recall that \mintinline{coq}{W F} is Coq's syntax for
+accessing field \mintinline{coq}{W} from the record \mintinline{coq}{F}.}. The encoding of the Kripke semantics is done by a Coq function
 that implements the relation of Figure~\ref{fig:kripke}. We omit the code
 for propositional logics connectives for brevity. The interesting parts are for
 variables (constructor \mintinline{coq}{Lit}) which uses the labeling function
@@ -1004,7 +1004,7 @@ logic systems, along with improving usability through proof automation.
 \begin{acks}
   The present work was supported by Fundação de Amparo à Pesquisa de Minas
   Gerais (FAPEMIG) under grant APQ-01683-21 and Fundação de Amparo à Pesquisa de
-  Santa Catarina (FAPESC) under grant XXXX.
+  Santa Catarina (FAPESC) under grant 2021TR961.
 \end{acks}
 
 
