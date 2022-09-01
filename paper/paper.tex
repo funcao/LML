@@ -498,7 +498,12 @@ Most constructors of the type have an immediate meaning, since they represent
 connectives of propositional logics. The constructor \mintinline{coq}{Lit}
 is used to construct propositional variables; constructor \mintinline{coq}{Box}
 denotes the modal operator $\Box$ and \mintinline{coq}{Dia}, the operator
-$\Diamond$.
+$\Diamond$. Furthermore, the type \mintinline{coq}{theory} is defined as a list
+of formulas.
+
+\begin{minted}{coq}
+Definition theory := list form.
+\end{minted}
 
 Before defining the Kripke semantics, we need to represent the model used to
 interpret a modal logic formula. We encode a frame by a record formed by
@@ -552,8 +557,8 @@ possibilities in a proof: 1) the use of a hypothesis; 2) the use of an axiom;
 3) the use of the modus ponens rule or 4) the use of the generalization (necessity)
 rule. The inductive type \mintinline{coq}{deduction} encodes these possibilities
 as its constructors. The \mintinline{coq}{deduction} type is parameterized by
-axioms that form a system for modal logics. In this way, our definition can be
-used by several systems of modal logic.
+the set of axioms that form a system for some modal logic. In this way, our definition can be
+used by several systems alike.
 \begin{minted}{coq}
 Inductive deduction (A: axiom -> Prop)
                            : theory -> form -> Prop :=
@@ -605,7 +610,7 @@ Axioms are built using the function \mintinline{coq}{instantiate}, which
 receives an axiom and builds its corresponding formula by pattern matching as
 follows:
 \begin{minted}{coq}
-Definition instantiate (a: axiom): modalFormula :=
+Definition instantiate (a: axiom): form :=
   match a with
   | ax1    p   q
      => [! p -> (q -> p) !]
