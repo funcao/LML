@@ -25,7 +25,7 @@ Proof.
   exact H1.
 Qed.
 
-Variable P: nat -> modalFormula.
+Variable P: nat -> formula.
 Variable Gamma: theory.
 Variable A: axiom -> Prop.
 
@@ -96,7 +96,7 @@ End Lindebaum.
 
 Section Lindebaum'.
 
-(*Inductive deduction (A: axiom -> Prop): theory -> modalFormula -> Prop*)
+(*Inductive deduction (A: axiom -> Prop): theory -> formula -> Prop*)
 (*Isso é um problema*)
 
 (* Print filter.
@@ -117,9 +117,9 @@ Definition Maximal_Consistent' (A: axiom -> Prop) (G : theory) : Prop :=
   ~(In [! p !] G /\  In [! ~ p !] G) /\ Consistent A G.
 *)
 
-Variable P: nat -> modalFormula. 
+Variable P: nat -> formula. 
 Variable A: axiom -> Prop.
-Variable Gamma: modalFormula -> Prop. (*X -> Prop == Conjunto de X*)
+Variable Gamma: formula -> Prop. (*X -> Prop == Conjunto de X*)
 (*Variable G: Consistent A Gamma. Essa definição não funciona com a formulação
                                   atual de Gamma*)
 
@@ -129,7 +129,7 @@ Inductive Singleton {T} (t: T): T -> Prop := (*conjunto de um único*)
 Definition Union {T} (A B: T -> Prop): T -> Prop :=
   fun t => A t \/ B t.
 
-Fixpoint Delta (n: nat): modalFormula -> Prop := (*arrumar vc pra ver*)
+Fixpoint Delta (n: nat): formula -> Prop := (*arrumar vc pra ver*)
   match n with                                   (*consistencia*)
   | 0   => Gamma
   | S n => Union (Delta n) (Singleton (P n))
@@ -166,7 +166,7 @@ Inductive UnionOf {I} {T} (S: I -> T -> Prop): T -> Prop :=
     forall i: I,
     Subset (S i) (UnionOf S).
 
-Definition MaxDelta: modalFormula -> Prop :=  UnionOf Delta.
+Definition MaxDelta: formula -> Prop :=  UnionOf Delta.
 
 Goal
   forall n,
@@ -179,7 +179,7 @@ Proof.
   assumption.
 Qed.
 
-Inductive FormulaSet: nat -> modalFormula -> Prop := (*deixando vc aqi*)
+Inductive FormulaSet: nat -> formula -> Prop := (*deixando vc aqi*)
   | FLit: forall n m, m < n -> FormulaSet n (P m)    (*por enquanto*)
   | FNeg: forall n f, 
                      FormulaSet n f -> (*mudar o n ?*)
