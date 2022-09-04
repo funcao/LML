@@ -483,14 +483,14 @@ correspondence proofs.
 To implement our library, we use a \emph{deep embedding} of
 formulas, i.e. we represent formulas as the following Coq inductive datatype.
 \begin{minted}{coq}
-Inductive form: Set :=
-| Lit    : nat          -> form
-| Neg    : form -> form
-| Box    : form -> form
-| Dia    : form -> form
-| And    : form -> form -> form
-| Or     : form -> form -> form
-| Implies: form -> form -> form.
+Inductive formula: Set :=
+| Lit    : nat -> formula
+| Neg    : formula -> formula
+| Box    : formula -> formula
+| Dia    : formula -> formula
+| And    : formula -> formula -> formula
+| Or     : formula -> formula -> formula
+| Implies: formula -> formula -> formula.
 \end{minted}
 Most constructors of the type have an immediate meaning, since they represent
 connectives of propositional logics. The constructor \mintinline{coq}{Lit}
@@ -500,7 +500,7 @@ $\Diamond$. Furthermore, the type \mintinline{coq}{theory} is defined as a list
 of formulas.
 
 \begin{minted}{coq}
-Definition theory := list form.
+Definition theory := list formula.
 \end{minted}
 
 Before defining the Kripke semantics, we need to represent the model used to
@@ -533,7 +533,7 @@ modalities $\Box$ and $\Diamond$ are represented by a quantifying over worlds
 using the accessibility relation $R$. 
 \begin{minted}{coq}
 Fixpoint formula_valuation (M: Model) (w: W (F M))
-                                 (phi: form): Prop :=
+                           (phi: formula): Prop :=
   match phi with
   | Lit     x
      => v M x w (* should be inhabited, i.e., true *)
@@ -558,27 +558,27 @@ as its constructors. The \mintinline{coq}{deduction} type is parameterized by
 the set of axioms that form a system for some modal logic. In this way, our definition can be
 used by several systems alike.
 \begin{minted}{coq}
-Inductive deduction (A: axiom -> Prop)
-                           : theory -> form -> Prop :=
+Inductive deduction (A: axiom -> Prop):
+                          theory -> formula -> Prop :=
   (* Premise. *)
   | Prem: forall (t: theory)
-                 (f: form)
+                 (f: formula)
                  (i: nat),
           (nth_error t i = Some f) -> deduction A t f
   (* Axiom. *)
   | Ax: forall (t: theory)
                (a: axiom)
-               (f: form),
+               (f: formula),
         A a -> instantiate a = f -> deduction A t f
   (* Modus Ponens. *)
   | Mp: forall (t: theory)
-               (f g: form)
+               (f g: formula)
                (d1: deduction A t (f -> g))
                (d2: deduction A t f),
         deduction A t g
   (* Generalization. *)
   | Nec: forall (t: theory)
-                (f: form)
+                (f: formula)
                 (d1: deduction A t f),
          deduction A t (Box f).
 \end{minted}
@@ -589,16 +589,16 @@ represented in our library. The inductive type \mintinline{coq}{axiom} specifies
 the different axioms supported by our library.
 \begin{minted}{coq}
 Inductive axiom: Set :=
-  | ax1  : form -> form -> axiom
-  | ax2  : form -> form -> form  -> axiom
+  | ax1  : formula -> formula -> axiom
+  | ax2  : formula -> formula -> formula  -> axiom
   (* some code omitted *)
-  | axK  : form -> form -> axiom
-  | axPos: form -> form -> axiom
-  | axT  : form -> axiom
-  | axB  : form -> axiom
-  | axK4 : form -> axiom
-  | axD  : form -> axiom
-  | axK5 : form -> axiom.
+  | axK  : formula -> formula -> axiom
+  | axPos: formula -> formula -> axiom
+  | axT  : formula -> axiom
+  | axB  : formula -> axiom
+  | axK4 : formula -> axiom
+  | axD  : formula -> axiom
+  | axK5 : formula -> axiom.
 \end{minted}
 Each constructor of type \mintinline{coq}{axiom} represents an axiom and
 its type stores the subformulas which compose the axiom. The type has
@@ -608,7 +608,7 @@ Axioms are built using the function \mintinline{coq}{instantiate}, which
 receives an axiom and builds its corresponding formula by pattern matching as
 follows:
 \begin{minted}{coq}
-Definition instantiate (a: axiom): form :=
+Definition instantiate (a: axiom): formula :=
   match a with
   | ax1    p   q
      => [! p -> (q -> p) !]
@@ -663,7 +663,7 @@ denotes a system of axioms for modal logics):
 \begin{minted}{coq}
 Ax: forall (t: theory)
            (a: axiom)
-           (f: form),
+           (f: formula),
            A a -> instantiate a = f -> deduction A t f
 \end{minted}
 Note that the first parameter of constructor \mintinline{coq}{Ax} is a value
@@ -966,9 +966,8 @@ was the subject of Dockins et. al. work~\cite{Dockins08}. In that work, authors
 combine several modal operators that do not need to satisfy the same frame
 conditions and seperation logics for reasoning about non-trivial subsets of
 low-level programming languages. Authors developed their formalization through a
-shallow embedding in Coq proof assistant and provide two case studies: one is
-the verification of a simple low-level virtual machine, and the other is the
-subset of Sequential Cminor.
+shallow embedding in Coq proof assistant and provide two case studies:
+the verification of a low-level virtual machine and a C-like language.
 
 A model for recursive, impredicatively quantified types with mutable references
 was studied by Appel et. al.~\cite{Appel07}. Their interest in formalizing such
