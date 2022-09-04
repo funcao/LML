@@ -162,8 +162,8 @@ October 6--7, 2022, Virtual Event, Brazil}
 
 The start of modal logics can be traced back to Lewis and his definition of 
 logical systems with strict implication instead of material implication \cite{Lewis1918}.
-Based in this work~\cite{Lewis1932}, independently of classical propositional logic,
-defined the systems $\mathsf{S1}$--$\mathsf{S5}$, where $\mathsf{S4}$ and $\mathsf{S5}$
+Based in this work, independently of classical propositional logic,
+defined the systems $\mathsf{S1}$--$\mathsf{S5}$~\cite{Lewis1932}, where $\mathsf{S4}$ and $\mathsf{S5}$
 are well known normal modal systems. It was, in fact, G{\"o}del that had the idea 
 to build a modal logic system as an extension of the classical propositional calculus, 
 when constructing a system similar to $\mathsf{S4}$ in \cite{Godel1933}.
@@ -529,7 +529,7 @@ that implements the relation of Figure~\ref{fig:kripke}. We omit the code
 for propositional logics connectives for brevity. The interesting parts are for
 variables (constructor \mintinline{coq}{Lit}) which uses the labeling function
 \mintinline{coq}{v} from the model \mintinline{coq}{M}. The meaning of
-modalities $\Box$ and $\Diamond$ are represented by a quantifying over worlds
+modalities $\Box$ and $\Diamond$ are represented by quantifying over worlds
 using the accessibility relation $R$. 
 \begin{minted}{coq}
 Fixpoint formula_valuation (M: Model) (w: W (F M))
@@ -602,10 +602,10 @@ Inductive axiom: Set :=
 \end{minted}
 Each constructor of type \mintinline{coq}{axiom} represents an axiom and
 its type stores the subformulas which compose the axiom. The type has
-17 constructors: the first 10 consists encode axioms for propositional logics
-and the last 7 are for different formulas taken as axioms by systems of modal logics.
-Axioms are built using the function \mintinline{coq}{instantiate}, which
-receives an axiom and builds its corresponding formula by pattern matching as
+17 constructors: the first 10 encode axioms for propositional logics
+and, the last 7 are for different formulas which are taken as axioms by common
+systems of modal logic. Axioms are built using the function \mintinline{coq}{instantiate},
+which receives an axiom and builds a corresponding formula by pattern matching as
 follows:
 \begin{minted}{coq}
 Definition instantiate (a: axiom): formula :=
@@ -674,15 +674,15 @@ using function \mintinline{coq}{instantiate}. In this way, we are able to
 represent all systems of axioms for modal logics using a single constructor
 for its axioms.
 
-\paragraph{Properties} A key property of the Hilbert deductive system formalized
-in our library is its soundness. If a formula $\varphi$ is derived from a
-context $\Gamma$, i.e. $\Gamma\vdash\varphi$, then $\varphi$ is entailed from
-the set $\Gamma$, i.e. $\Gamma\models\varphi$. The Coq statement of the soundness
-result is:
+\paragraph{Properties} A key property of the Hilbert deductive system as formalized
+in our library is its soundness (through system K). If a formula $\varphi$ is derived from a
+context $\Gamma$, i.e. $\Gamma\vdash\varphi$, then $\varphi$ is entailed within the deep embedding
+from the set of hypotheses $\Gamma$, i.e. $\Gamma\models\varphi$. The Coq statement for the soundness
+result is given as follow:
 
 \begin{minted}{coq}
 Theorem soundness:
-  forall G p, (K ; G |-- p) -> (G ||= p).
+  forall G p, (K; G |-- p) -> (G ||= p).
 \end{minted}
 
 The proof proceeds by induction on the derivation of $\Gamma \vdash\varphi$ and
@@ -693,12 +693,12 @@ As example, the following is the statement for modus ponens case.
 \begin{minted}{coq}
 Lemma Modus_Ponens_soundness:
   forall M w p q,
-  ((M ' w ||- p) /\
-  (M ' w ||- [! p -> q !])) ->
+  (M ' w ||- p) /\ (M ' w ||- [! p -> q !]) ->
   (M ' w ||- q).
 \end{minted}
 All these lemmas are direct consequences from the definitions of the Kripke
-semantics and entailment.
+semantics and entailment. We note that system K is used as it doesn't impose
+any restrictions on the frame.
 
 \paragraph{Frame Correspondence} 
 As already mentioned, there are some modal formula schemas that correspond
@@ -710,47 +710,48 @@ mostly unfoldings, simplifications and applications of premises
 while the latter, apart from the necessity and burden of a proof by contraposition, 
 requires the construction of a witness valuation function. 
 Nevertheless, all Coq's proofs are fairly similar to the respective
-``pen and paper'' proofs that  can be found in the literature. 
-Our work proves the correspondence for the  following properties in
-accessibility relations: reflexivity, transitivity, symmetry,  euclidean,
-seriality, functionality, density, convergency, and converse well-foundness.
+``pen and paper'' proofs found in the literature. 
+Our work proves correspondence for the following properties: reflexivity,
+transitivity, symmetry,  euclidean, seriality, functionality, density, convergency,
+and converse well-foundness.
 
 \section{Case Study}\label{sec:case}
 
-In this section we describe a case study of the defined modal logic library.
-We proved L\"ob theorem in the system K4 with modal fixed points.
+In this section we describe a case study of the defined modal logic library:
+a proof L\"ob theorem in an extension of system K4 with modal fixed points.
 The importance of L\"ob's theorem is due to its use in provability
-logic~\cite{boolos_1994} to abstract details from encodings in G\"odel's
+logic~\cite{boolos_1994}, used to abstract details from encodings in G\"odel's
 incompleteness results.
 
-In order to prove L\"ob's theorem proof we need to encode modal
-fixed points. Let $\varphi(A)$ be a formula with only one propositional variable
-$A$. We define as a modal fixed point of $\varphi$ is a sentence $\Psi$ such that
+In order to state L\"ob's theorem we need a way to encode modal
+fixed points. Formally, let $\varphi(X)$ be a formula with only one propositional variable
+$X$. The modal fixed point of $\varphi$ is then a formula $\Psi$ such that such that
 $\Psi \leftrightarrow \varphi(\Box \Psi)$.
-We represent the modal fixed points by definition \mintinline{coq}{fixed_point},
-which is parameterized by a system for modal logics, \mintinline{coq}{S}, and a
-theory, \mintinline{coq}{g}, and encodes the logical equivalence between a
-formula \mintinline{coq}{p} and its fixpoint \mintinline{coq}{f ([] p)}. 
+We represent the existence of modal fixed points for all one-variable formulas by a definition \mintinline{coq}{fixed_point},
+which is parameterized by a system of modal logic, \mintinline{coq}{S}, and a
+theory, \mintinline{coq}{g}, and encodes the logical equivalence demonstrating
+that \mintinline{coq}{p} is a modal fixed point for \mintinline{coq}{f}.
 \begin{minted}{coq}
-  Definition fixed_point S g
-      := forall f, exists p,
-             (S ; g |-- [! (p <-> f ([] p)) !]).
+  Definition fixed_point S g: Prop :=
+    forall f, exists p,
+    (S; g |-- [! (p <-> f ([]p)) !]).
 \end{minted}
 
-\noindent Using the definition of fixed points, we can state L\"ob's theorem as follows:
+\noindent We can now write down L\"ob's theorem as follows:
 
 \begin{minted}{coq}
-  Theorem Lob: forall P, fixed_point K4 nil ->
-               (K4; nil |-- [! []P -> P !]) ->
-               (K4; nil |-- [! P !]).
+  Theorem Lob:
+    forall A, subset K4 A /\ fixed_point A nil ->
+    forall P, (A; nil |-- [! []P -> P !]) ->
+              (A; nil |-- [! P !]).
 \end{minted}
 
 \noindent The proof starts by assuming an arbitrary formula $P$, the existence of modal fixed
-points and that $\Box P \to P$ is provable in K4. These deduction steps
+points and that $\Box P \to P$ is provable with axioms A. These deduction steps
 are performed by the following tactic:
 
 \begin{minted}{coq}
-  intros P FP H1.
+  intros A [I FP] P H1.
 \end{minted}
 
 \noindent Next, from the existence of modal fixed points for every formula,
@@ -758,29 +759,29 @@ we know that there is a formula $\Psi$ such that $\Psi \leftrightarrow (\Box
 \Psi \to P)$. The following tactic performs this step of reasoning.
 
 \begin{minted}{coq}
-  destruct FP with (fun A => [! A -> P !]) as (psi, H2).
+  destruct FP with (fun X => [! X -> P !]) as (psi, H2).
 \end{minted}
 
 \noindent Now, we are able to deduce that $\Psi \to (\Box \Psi\to P)$ from the previous
 step result as follows:
 
 \begin{minted}{coq}
-  assert (K4; nil |-- [! psi -> []psi -> P !]) as H3.
-  apply modal_ax5 in H2; try repeat constructor ;
-     try eassumption.
+  assert (A; nil |-- [! psi -> []psi -> P !]) as H3.
+  apply modal_ax5 in H2; auto with modal.
 \end{minted}
 
 \noindent The \mintinline{coq}{assert} tactic allows the definition of
 auxiliary proof goals. In the previous code piece, we specified
 $\vdash \Psi \to (\Box \Psi \to P)$ as a new goal which
 generates a new proof hypothesis named \mintinline{coq}{H3}. The
-deduction of this fact is immediate from K4 axioms.
+deduction of this fact is immediate from K4 axioms, of which A is a superset.
+We use some basic automation to move on.
 
 From $\vdash \Psi \to (\Box \Psi \to P)$ and the necessitation
 rule, we can deduce $\vdash \Box (\Psi \to (\Box \Psi \to P))$
 using the following tactics:
 \begin{minted}{coq}
-  assert (K4; nil |-- [! [](psi -> []psi -> P) !])
+  assert (A; nil |-- [! [](psi -> []psi -> P) !])
     as H4.
   apply Nec; auto.
 \end{minted}
@@ -790,10 +791,9 @@ using the following tactics:
 \mintinline{coq}{assert} tactic.
 
 \begin{minted}{coq}
-  assert (K4; nil |-- [! []psi -> []([]psi -> P) !])
+  assert (A; nil |-- [! []psi -> []([]psi -> P) !])
     as H5.
-  apply modal_axK in H4; try repeat constructor ;
-    try eassumption.
+  apply modal_axK in H4; auto with modal.
 \end{minted}
 
 \noindent The next proof step involves showing that
@@ -801,10 +801,10 @@ $\vdash \Box (\Box \Psi \to P)\to (\Box \Box \Psi \to \Box P)$ holds
 by axiom \textbf{K}.
 
 \begin{minted}{coq}
-  assert (K4; nil |-- [! []([]psi -> P) ->
-                      [][]psi -> []P !]) as H6.
-  eapply Ax with (a := axK ?[X] ?[Y]);
-     try repeat constructor.
+  assert (A; nil |-- [! []([]psi -> P) ->
+                          [][]psi -> []P !]) as H6.
+  eapply Ax with (a := axK ?[X] ?[Y]); auto with modal.
+  reflexivity.
 \end{minted}
 
 \noindent Using $\vdash \Box (\Box \Psi \to P)\to (\Box \Box \Psi \to \Box P)$ and
@@ -813,54 +813,59 @@ $\vdash \Box \Psi \to \Box \Box \Psi \to \Box P$ using transitivity of
 implication.
 
 \begin{minted}{coq}
-  assert (K4; nil |-- [! []psi -> [][]psi -> []P !])
+  assert (A; nil |-- [! []psi -> [][]psi -> []P !])
     as H7.
-  eapply modal_compose; try repeat constructor ;
-    try eassumption.
+  eapply modal_compose; eauto with modal.
 \end{minted}
 
 \noindent Now, we can show that $\vdash\Box\Psi\to\Box\Box\Psi$ using
-the axioms of K4. The next snippet of tactics perform this
+the axiom K4 of A. The next snippet of tactics perform this
 reasoning step.
 
 \begin{minted}{coq}
-  assert (K4; nil |-- [! []psi -> [][]psi !]) as H8.
-  apply modal_axK4; try constructor 2.
+  assert (A; nil |-- [! []psi -> [][]psi !]) as H8.
+  apply modal_axK4; auto with modal.
 \end{minted}
 
-\noindent From $\vdash \Box\Psi \to \Box P$ and $\vdash \Box P \to P$, we can
+\noindent From the previou two hypotheses we gather necessary info to derive
+$\vdash \Box \Psi \to P$, using a propositional axiom.
+
+\begin{minted}{coq}
+  assert (A; nil |-- [! []psi -> []P !]) as H9.
+  eapply modal_ax2; eauto with modal.
+\end{minted}
+
+\noindent Then, from $\vdash \Box\Psi \to \Box P$ and $\vdash \Box P \to P$, we can
 conclude $\vdash \Box \Psi \to P$, by composition of implication as
 follows.
 
 \begin{minted}{coq}
-  assert (K4; nil |-- [! []psi -> P !]) as H10.
-    eapply modal_compose; try repeat constructor ;
-      try eassumption.
+  assert (A; nil |-- [! []psi -> P !]) as H10.
+  eapply modal_compose; eauto with modal.
 \end{minted}
 
 \noindent Next, we can conclude $\vdash \Box (\Psi \to P) \to \Psi$ from
-$\Psi \leftrightarrow (\Box \Psi \to P)$ and the axioms of K4 using
+$\Psi \leftrightarrow (\Box \Psi \to P)$ using
 the following tactics:
 
 \begin{minted}{coq}
-  assert (K4; nil |-- [! ([]psi -> P) -> psi !]) as H11.
-  apply modal_ax6 in H2; try repeat constructor ;
-     try eassumption.
+  assert (A; nil |-- [! ([]psi -> P) -> psi !]) as H11.
+  apply modal_ax6 in H2; auto with modal.
 \end{minted}
 
-\noindent From $\vdash (\Box\Psi \to P) \to \Psi$ and $\vdash \Box \Psi \to P$
+\noindent Now, from $\vdash (\Box\Psi \to P) \to \Psi$ and $\vdash \Box \Psi \to P$
 we can conclude $\vdash \Psi$ by modus ponens.
 
 \begin{minted}{coq}
-  assert (K4; nil |-- psi) as H12.
-  eapply Mp ; try eassumption.
+  assert (A; nil |-- psi) as H12.
+  eapply Mp; try eassumption.
 \end{minted}
 
 \noindent By necessitation rule, we can deduce $\vdash \Box \Psi$
 
 \begin{minted}{coq}
-  assert (K4; nil |-- [! []psi !]) as H13.
-  apply Nec ; try eassumption.
+  assert (A; nil |-- [! []psi !]) as H13.
+  apply Nec; try eassumption.
 \end{minted}
 
 \noindent Finally, the desired conclusion $\vdash P$ follows from
@@ -869,11 +874,11 @@ and $\vdash \Box \Psi$, as presented by the next tactics
 snippet.
 
 \begin{minted}{coq}
-  eapply Mp ; try eassumption.
+  eapply Mp; try eassumption.
 \end{minted}
 
 \noindent This concludes the formalization of L\"ob's theorem using
-the developed library.
+the developed library, in a Hilbert style proof.
 
 \section{Related work}\label{sec:related}
 
@@ -961,7 +966,7 @@ network and the modalities $\Box$ and $\Diamond$ to reflect mobility and
 locality, respectively. Authors develop an operational semantics and show
 that their formalization is type-safe.
 
-The application of a multimodal separation logic for the semantics of low-level
+The application of a multimodal separation logic for the semantics of low-level languages
 was the subject of Dockins et. al. work~\cite{Dockins08}. In that work, authors
 combine several modal operators that do not need to satisfy the same frame
 conditions and seperation logics for reasoning about non-trivial subsets of
@@ -974,12 +979,12 @@ was studied by Appel et. al.~\cite{Appel07}. Their interest in formalizing such
 advanced typing concepts was in the context of typed assembly languages.
 The authors stabilished a semantic type soundness proof by defining a Kripke-style 
 semantics of the G\"odel-L\"ob logic of provability. All their definitions were
-mechanized through a shallow embedding in Coq.
+also mechanized through a shallow embedding in Coq.
 
 Finally, given that a deep embedding for the modal logic was used, it's
 natural to wonder how that might interact with the program extraction feature. The
 reader might refer to~\cite{Kavvos16c}, which presents a survey on the computational
-interpretation of several modal logic systems. Whether or not the current implementation
+interpretation of several modal logic systems. Whether or not our current implementation
 is suitable for extraction is left for future work.
 
 % The embedding of modal linear logic in Coq was the subject of
