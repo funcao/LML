@@ -256,11 +256,11 @@ More specifically, we contribute:
 \begin{itemize}
   \item We define a \emph{deep embedding} of modal logic syntax in Coq and
     define its Kripke semantics.
-  \item We model the Hilbert deductive systems as a Coq inductive type that is
+  \item We model the Hilbert deductive system as a Coq inductive type that is
     parameterized by different axiom systems like K, D, B, T, K4, K5, S4, S5 and GL,
     and prove its soundness with respect to Kripke semantics.
-    We also formalize several frame correspondence results.
-  \item We show a proof of L\"ob's theorem using the Hilbert deductive system
+    In such, we also formalize several frame correspondence results.
+  \item As an example of usage, we show a proof of L\"ob's theorem using the deductive system
     developed in our library.
 \end{itemize}
 
@@ -283,7 +283,7 @@ Coq is a proof assistant based on the calculus of inductive
 constructions (CIC)~\cite{manual_cic}, a higher-order typed
 $\lambda$-calculus extended with inductive definitions.  Theorem
 proving in Coq follows the ideas of the so-called
-``BHK-cor\-res\-pon\-dence''\footnote{Abbreviation of Brouwer, Heyting,
+``BHK-in\-ter\-pre\-ta\-tion''\footnote{Abbreviation of Brouwer, Heyting,
   Kolmogorov, de Bruijn and Martin-L\"of Correspondence. This is also
   known as the Curry-Howard isomorphism.}, where types represent
 logical formulas, $\lambda$-terms represent proofs
@@ -292,7 +292,7 @@ proof of a given formula corresponds to checking if the term that
 represents the proof has the type corresponding to the given formula.
 
 However, writing a proof term whose type is that of a logical formula
-can be a hard task, even for very simple propositions.  In order to
+can be challenging, even for very simple propositions.  In order to
 make the writing of complex proofs easier, Coq provides
 \emph{tactics}, which are commands that can be used to construct proof
 terms in a more user-friendly way.
@@ -348,22 +348,22 @@ in~\cite{Chlipala13,Bertot10,manual_coq}.
 
 \paragraph{An overview of modal logic.} Modal logics are designed for reasoning
 about truth across various --- abstract --- worlds. In such logics, a
-proposition may be true in some world, but false in another one. The versions of
-modal logics considered in this work extends traditional propositional logics
+proposition may be true in some world, but false in another one. The systems of
+modal logic considered in this work extend traditional propositional logic
 with two operators on propositions: $\Box$ (box) and $\Diamond$ (diamond).
-The syntax of modal logic formulas are defined by the following context free
+The syntax for modal logic formulas are defined by the following context free
 grammar (where $\circ \in\{\land,\lor,\to,\leftrightarrow\}$ and
 $\mathcal{P} = \{A,B,C,...\}$ is the enumerable set of propositional variables):
 \[
   \begin{array}{lcl}
-    \varphi & ::= & A\,|\,\neg\varphi\,|\,\varphi\circ\varphi\,|\,\Box\varphi\,|\,\Diamond\varphi
+    \varphi & ::= & \mathcal{P}\,|\,\neg\varphi\,|\,\varphi\circ\varphi\,|\,\Box\varphi\,|\,\Diamond\varphi
   \end{array}  
 \]
 Intuitively, the semantics of the operator $\Box$ is similar to an universal
-quantifier, since it express \emph{necessity}: $\Box\,\varphi$ is true at the
-current world iff $\varphi$ is true at all worlds accessible from the current
-world. Similarly, the semantics of operator
-$\Diamond$ is that a formula $\Diamond\varphi$ is true at the current
+quantifier, since it expresses \emph{necessity}: $\Box\,\varphi$ is true in the
+current world iff $\varphi$ is true in every world accessible from the current
+one. Similarly, the semantics of operator
+$\Diamond$ is that a formula $\Diamond\varphi$ is true in the current
 world iff $\varphi$ is \emph{possible}, i.e. true in at least some world
 accessible from the current world.
 
