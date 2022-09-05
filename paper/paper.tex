@@ -375,7 +375,7 @@ a non-empty set of worlds, $W$, and a binary accessibility relation between
 worlds, $R \subseteq W \times W$. A pair $w_1Rw_2$ denotes that world $w_2$ is
 accessible from $w_1$. A model $\mathcal{M} = \langle \mathcal{F}, \mathcal{V} \rangle$
 is formed by a frame $\mathcal{F}$ and a total labeling function
-$\mathcal{V} : \mathcal{P}\times W\to \{F,T\}$, which assigns
+$\mathcal{V} : \mathcal{P}\to 2^W$, which assigns
 a truth value to a propositional variable at a given world, i.e. when $w \in \mathcal{V}(A)$
 for some $A \in\mathcal{P}$, we say that $A$ holds in $w$. The satisfiability of a formula
 in a given world is defined by inductive relation $\mathcal{M}\,;\,w\models \varphi$ as
@@ -385,7 +385,7 @@ that $\mathcal{M}\,;\,w\models \varphi$ does not hold):
 \begin{figure}[H]
 \begin{enumerate}
   % \item $\mathcal{M}\,;\,w\not\models \bot$ and $\mathcal{M}\,;\,w\models \top$;
-  \item $\mathcal{M}\,;\,w\models A$ iff $\mathcal{V}(A,w) = T$;
+  \item $\mathcal{M}\,;\,w\models A$ iff $w \in \mathcal{V}(A)$;
   \item $\mathcal{M}\,;\,w\models \neg\varphi$ iff $\mathcal{M}\,;\,w\not\models\varphi$;
   \item $\mathcal{M}\,;\,w\models \varphi_1 \land \varphi_2$ iff
     $\mathcal{M}\,;\,w\models\varphi_1$ and $\mathcal{M}\,;\,w\models\varphi_2$;
@@ -421,7 +421,7 @@ over disjunction.
   \begin{array}{ll}
     \textbf{K} & \Box(\varphi_1 \to \varphi_2) \to (\Box \varphi_1 \to \Box \varphi_2)\\
     \textbf{Possibility} & \Diamond (\varphi_1 \lor \varphi_2) \to
-                           (\Diamond \varphi_2 \lor \Diamond \varphi_2)\\
+                           (\Diamond \varphi_1 \lor \Diamond \varphi_2)\\
   \end{array}
 \]
 Apart from the axioms, we also need \emph{modus ponens} and necessitation rules.
@@ -440,7 +440,7 @@ Apart from the axioms, we also need \emph{modus ponens} and necessitation rules.
     \DisplayProof
 \end{tabular}
 \end{figure}
-The set of axioms and the two previous rules forms a sound and complete Hilbert-style
+The set of axioms and the two previous rules form a sound and complete Hilbert-style
 deductive system for modal logics~\cite{blackburn}.
 
 A central aspect in the study of modal logics is the so-called \emph{frame
@@ -448,8 +448,8 @@ A central aspect in the study of modal logics is the so-called \emph{frame
 accessibility relation and the truth of certain formulas in frames containing
 it. As an example, consider a frame $\mathcal{F} = \langle W,R
 \rangle$ in which the relation $R$ is reflexive: $\forall w \in W. wRw$, i.e.
-every world is accessible from itself. In such frame when $\Box A$ holds at
-a world $w$, $w$ itself is among the accessible worlds at which $A$ must be true.
+every world is accessible from itself. In such frame when $\Box A$ holds in
+a world $w$, $w$ itself is among the accessible worlds in which $A$ must be true.
 In this way, if the accessibility relation $R$ is reflexive, then whatever world
 $w$ and formula $\varphi$ we take, the formula $\Box \varphi \to \varphi$ will
 be true there. Examples of properties that characterize certain formula schemas are
