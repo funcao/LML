@@ -270,10 +270,10 @@ the implementation of our Coq library are presented in
 Section~\ref{sec:implementation}. A case study in proving L\"ob's theorem is
 the subject of Section~\ref{sec:case}. Related works are discussed
 on Section~\ref{sec:related} and Section~\ref{sec:conclusion} draws some conclusions and
-provide some pointers for future works.
+provide some pointers for future work.
 
-All source code in this article has been formalized in Coq version 8.15.0 and it
-is available at~\cite{modal-coq-lib}.
+All source code in this article has been formalized in Coq version 8.15 and
+is available at \url{https://github.com/funcao/ModalLibrary/} under a permissive free software license.
 
 \section{Background}\label{sec:background}
 
@@ -308,7 +308,10 @@ Section EXAMPLE.
    Variables A B C: Prop.
    Theorem example: (A -> B) -> (B -> C) -> A -> C.
    Proof.
-       intros H H' HA. apply H'. apply H. assumption. 
+       intros H H' HA.
+       apply H'.
+       apply H.
+       assumption. 
    Qed.
 End EXAMPLE.
 \end{minted}
@@ -333,10 +336,8 @@ that, in contrast to the previous proof, that was built using tactics
 (\mintinline{coq}{intros}, \mintinline{coq}{apply} and \mintinline{coq}{assumption}), is coded
 directly as a function:
 \begin{minted}{coq}
-Definition example :(A -> B) -> (B -> C) -> A -> C :=
- fun (H: A -> B)
-     (H': B -> C)
-     (HA: A) => H' (H HA).
+Definition example: (A -> B) -> (B -> C) -> A -> C :=
+  fun (H: A -> B) (H': B -> C) (HA: A) => H' (H HA).
 \end{minted}
 However, even for very simple theorems, coding a definition directly
 as a Coq term can be a hard task. Because of this, the use of tactics
@@ -351,9 +352,9 @@ about truth across various --- abstract --- worlds. In such logics, a
 proposition may be true in some world, but false in another one. The systems of
 modal logic considered in this work extend traditional propositional logic
 with two operators on propositions: $\Box$ (box) and $\Diamond$ (diamond).
-The syntax for modal logic formulas are defined by the following context free
+The syntax for modal logic formulas is defined by the following context free
 grammar (where
-$\mathcal{P} = \{A,B,C,...\}$ is the enumerable set of propositional variables):
+$\mathcal{P} = \{A,B,C,...\}$ is the countable set of propositional variables):
 \[
   \begin{array}{lcl}
     \varphi & ::= & \mathcal{P}\,|\,\neg\varphi\,|\,\varphi\land\varphi\,|\,\varphi\lor\varphi\,|\,\varphi\to\varphi\,|\,\Box\varphi\,|\,\Diamond\varphi
@@ -365,7 +366,7 @@ current world iff $\varphi$ is true in every world accessible from the current
 one. Similarly, the semantics of operator
 $\Diamond$ is that a formula $\Diamond\varphi$ is true in the current
 world iff $\varphi$ is \emph{possible}, i.e. true in at least some world
-accessible from the current world. We also write
+accessible from the current world. We the remaining of the paper, we also write
 $\phi_1\leftrightarrow\phi_2$ to mean $\phi_1\to\phi_2\land\phi_2\to\phi_1$.
 
 Formally, we can only interpret a formula with respect to a \emph{model}, which is
