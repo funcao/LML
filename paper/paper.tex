@@ -352,11 +352,11 @@ proposition may be true in some world, but false in another one. The systems of
 modal logic considered in this work extend traditional propositional logic
 with two operators on propositions: $\Box$ (box) and $\Diamond$ (diamond).
 The syntax for modal logic formulas are defined by the following context free
-grammar (where $\circ \in\{\land,\lor,\to,\leftrightarrow\}$ and
+grammar (where
 $\mathcal{P} = \{A,B,C,...\}$ is the enumerable set of propositional variables):
 \[
   \begin{array}{lcl}
-    \varphi & ::= & \mathcal{P}\,|\,\neg\varphi\,|\,\varphi\circ\varphi\,|\,\Box\varphi\,|\,\Diamond\varphi
+    \varphi & ::= & \mathcal{P}\,|\,\neg\varphi\,|\,\varphi\land\varphi\,|\,\varphi\lor\varphi\,|\,\varphi\to\varphi\,|\,\Box\varphi\,|\,\Diamond\varphi
   \end{array}  
 \]
 Intuitively, the semantics of the operator $\Box$ is similar to an universal
@@ -365,7 +365,8 @@ current world iff $\varphi$ is true in every world accessible from the current
 one. Similarly, the semantics of operator
 $\Diamond$ is that a formula $\Diamond\varphi$ is true in the current
 world iff $\varphi$ is \emph{possible}, i.e. true in at least some world
-accessible from the current world.
+accessible from the current world. We also write
+$\phi_1\leftrightarrow\phi_2$ to mean $\phi_1\to\phi_2\land\phi_2\to\phi_1$.
 
 Formally, we can only interpret a formula with respect to a \emph{model}, which is
 defined as follows.
@@ -383,7 +384,7 @@ that $\mathcal{M}\,;\,w\models \varphi$ does not hold):
 
 \begin{figure}[H]
 \begin{enumerate}
-  \item $\mathcal{M}\,;\,w\not\models \bot$ and $\mathcal{M}\,;\,w\models \top$;
+  % \item $\mathcal{M}\,;\,w\not\models \bot$ and $\mathcal{M}\,;\,w\models \top$;
   \item $\mathcal{M}\,;\,w\models A$ iff $\mathcal{V}(A,w) = T$;
   \item $\mathcal{M}\,;\,w\models \neg\varphi$ iff $\mathcal{M}\,;\,w\not\models\varphi$;
   \item $\mathcal{M}\,;\,w\models \varphi_1 \land \varphi_2$ iff
@@ -405,12 +406,12 @@ it holds on all models $\mathcal{M} = \langle \mathcal{F},\mathcal{V}\rangle$, i
 for any $\mathcal{M}$, we have that $\mathcal{M}\models\varphi$. A formula
 is valid, written $\models \varphi$, if it is valid in any frame $\mathcal{F}$.
 
-Using the semantics, we can define the concept of \emph{entailment}: Given a set
+Using the semantics, we can define the concept of \emph{entailment}: given a set
 of formulas $\Gamma$ and a formula $\varphi$, we say that $\Gamma$ entails
-$\varphi$, written $\Gamma\models\varphi$, iff $\forall \varphi' \in\Gamma .
-\mathcal{M} \models \varphi' \to \mathcal{M} \models \varphi$, for some model $\mathcal{M}$.
+$\varphi$, written $\Gamma\models\varphi$, iff $\forall \mathcal{M} . (\forall \varphi' \in\Gamma .
+\mathcal{M} \models \varphi') \to \mathcal{M} \models \varphi$.
 
-In this work, we consider Hilbert deductive systems for modal logics.
+In this work, we consider Hilbert deductive systems for modal logic.
 Essentially, the considered system adds axioms for the modalities
 to the set of axioms for classical propositional logic.
 As examples of modalities axioms we mention \textbf{K}, which express that $\Box$ distributes
