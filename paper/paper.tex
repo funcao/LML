@@ -149,11 +149,28 @@ October 6--7, 2022, Virtual Event, Brazil}
   L\"ob's theorem which closely follows a classical proof of this result.
 \end{abstract}
 
+\begin{CCSXML}
+  <ccs2012>
+    <concept>
+        <concept_id>10003752.10003790.10003793</concept_id>
+        <concept_desc>Theory of computation~Modal and temporal logics</concept_desc>
+        <concept_significance>500</concept_significance>
+        </concept>
+    <concept>
+        <concept_id>10003752.10003790.10002990</concept_id>
+        <concept_desc>Theory of computation~Logic and verification</concept_desc>
+        <concept_significance>500</concept_significance>
+        </concept>
+  </ccs2012>
+\end{CCSXML}
+
+\ccsdesc[500]{Theory of computation~Modal and temporal logics}
+\ccsdesc[500]{Theory of computation~Logic and verification}
 
 %%
 %% Keywords. The author(s) should pick words that accurately describe
 %% the work being presented. Separate the keywords with commas.
-\keywords{Modal logics, soundness, Coq proof assistant}
+\keywords{Modal logic, soundness, Coq proof assistant}
 
 \maketitle
 
@@ -291,13 +308,9 @@ logical formulas, $\lambda$-terms represent proofs
 proof of a given formula corresponds to checking if the term that
 represents the proof has the type corresponding to the given formula.
 
-However, writing a proof term whose type is that of a logical formula
-can be challenging, even for very simple propositions.  In order to
-make the writing of complex proofs easier, Coq provides
+In order to make writing proofs easier, Coq provides
 \emph{tactics}, which are commands that can be used to construct proof
-terms in a more user-friendly way.
-
-As a tiny example, consider the task of proving the following 
+terms in a more user-friendly way. As an example, consider the task of proving the following 
 formula of the propositional logic:
 \[
 (A \to B)\to (B\to C) \to A \to C
@@ -305,35 +318,35 @@ formula of the propositional logic:
 In Coq, such theorem can be expressed as:
 \begin{minted}{coq}
 Section EXAMPLE.
-   Variables A B C: Prop.
-   Theorem example: (A -> B) -> (B -> C) -> A -> C.
-   Proof.
-       intros H H' HA.
-       apply H'.
-       apply H.
-       assumption. 
-   Qed.
+  Variables A B C: Prop.
+  Theorem example: (A -> B) -> (B -> C) -> A -> C.
+  Proof.
+    intros H H' HA.
+    apply H'.
+    apply H.
+    assumption. 
+  Qed.
 End EXAMPLE.
 \end{minted}
-In the previous source code piece, we have defined a Coq section named
+In the above, we have defined a Coq section named
 \mintinline{coq}{EXAMPLE}\footnote{In Coq, we can use sections to delimit the
   scope of local variables.} which declares variables \mintinline{coq}{A},
 \mintinline{coq}{B} and \mintinline{coq}{C} as being propositions (i.e. with type
 \mintinline{coq}{Prop}). Tactic \mintinline{coq}{intros} introduces variables
-\mintinline{coq}{H}, \mintinline{coq}{H'} and \mintinline{coq}{HA} into the (typing) context,
-respectively with types \mintinline{coq}{A -> B}, \mintinline{coq}{B -> C} and
-\mintinline{coq}{A} and leaves goal \mintinline{coq}{C} to be proved. Tactic
+\mintinline{coq}{H}, \mintinline{coq}{H'} and \mintinline{coq}{HA} into the typing context,
+respectively with types \mintinline{coq}{A -> B}, \mintinline{coq}{B -> C}, and
+\mintinline{coq}{A}, and leaves goal \mintinline{coq}{C} to be proved. Tactic
 \mintinline{coq}{apply}, used with a term \mintinline{coq}{t}, generates goal
 \mintinline{coq}{P}
 when there exists \mintinline{coq}{t: P -> Q} in the typing context and the
 current goal is \mintinline{coq}{Q}. Thus, \mintinline{coq}{apply H'} changes the goal
 from \mintinline{coq}{C} to \mintinline{coq}{B} and \mintinline{coq}{apply H}
 changes the goal to \mintinline{coq}{A}. Tactic \mintinline{coq}{assumption}
-traverses the typing context to find a hypothesis that matches the goal.
+traverses the typing context to find a hypothesis that matches the goal,
+concluding the proof.
 
 We define next a proof of the previous propositional logical formula
-that, in contrast to the previous proof, that was built using tactics
-(\mintinline{coq}{intros}, \mintinline{coq}{apply} and \mintinline{coq}{assumption}), is coded
+that, in contrast to the previous proof, that was built using tactics, is coded
 directly as a function:
 \begin{minted}{coq}
 Definition example: (A -> B) -> (B -> C) -> A -> C :=
