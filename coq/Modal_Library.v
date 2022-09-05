@@ -1,17 +1,17 @@
 Require Import Arith List ListSet Notations Classical Relations.
 Export ListNotations.
 
-Inductive modalFormula: Set :=
-  | Lit    : nat -> modalFormula
-  | Neg    : modalFormula -> modalFormula
-  | Box    : modalFormula -> modalFormula
-  | Dia    : modalFormula -> modalFormula
-  | And    : modalFormula -> modalFormula -> modalFormula
-  | Or     : modalFormula -> modalFormula -> modalFormula
-  | Implies: modalFormula -> modalFormula -> modalFormula.
+Inductive formula: Set :=
+  | Lit    : nat -> formula
+  | Neg    : formula -> formula
+  | Box    : formula -> formula
+  | Dia    : formula -> formula
+  | And    : formula -> formula -> formula
+  | Or     : formula -> formula -> formula
+  | Implies: formula -> formula -> formula.
 
 (* Size modal formula *)
-Fixpoint modalSize (f:modalFormula): nat :=
+Fixpoint modalSize (f: formula): nat :=
   match f with 
   | Lit     x     => 1
   | Neg     p1    => 1 + (modalSize p1)
@@ -22,7 +22,7 @@ Fixpoint modalSize (f:modalFormula): nat :=
   | Implies p1 p2 => 1 + (modalSize p1) + (modalSize p2)
 end.
 
-Fixpoint literals (f:modalFormula): set nat :=
+Fixpoint literals (f: formula): set nat :=
   match f with 
   | Lit     x     => set_add eq_nat_dec x (empty_set nat)
   | Dia     p1    => literals p1
@@ -43,7 +43,7 @@ Record Model: Type := {
   v: nat -> (W F) -> Prop
 }.
 
-Fixpoint fun_validation (M: Model) (w: W (F M)) (φ: modalFormula): Prop :=
+Fixpoint fun_validation (M: Model) (w: W (F M)) (φ: formula): Prop :=
   match φ with
   | Lit     x   => v M x w 
   | Box     ψ   => forall w', R (F M) w w' -> fun_validation M w' ψ
@@ -55,12 +55,12 @@ Fixpoint fun_validation (M: Model) (w: W (F M)) (φ: modalFormula): Prop :=
   end.
 
 (* Model satisfazibility *)
-Definition validate_model (M: Model) (φ: modalFormula): Prop :=
+Definition validate_model (M: Model) (φ: formula): Prop :=
   forall w, fun_validation M w φ.
 
 (******  Finite theories and entailment ******)
 
-Definition theory := list modalFormula.
+Definition theory := list formula.
 
 Fixpoint theoryModal (M: Model) (Γ: theory): Prop :=
   match Γ with
@@ -68,7 +68,7 @@ Fixpoint theoryModal (M: Model) (Γ: theory): Prop :=
   | h :: t => (validate_model M h) /\ (theoryModal M t)
   end.
 
-Definition entails (M: Model) (Γ: theory) (φ: modalFormula): Prop :=
+Definition entails (M: Model) (Γ: theory) (φ: formula): Prop :=
   theoryModal M Γ -> validate_model M φ.
 
 (***** structural properties of deduction ****)
@@ -340,10 +340,10 @@ Definition noetherian_frame (F: Frame): Prop :=
   transitivity_frame F /\ conversely_well_founded_frame F.
 
 (* Logical Equivalence *)
-Definition entails_modal (Γ: theory) (φ: modalFormula): Prop :=
+Definition entails_modal (Γ: theory) (φ: formula): Prop :=
   forall M,
   theoryModal M Γ -> 
   validate_model M φ.
 
-Definition equivalence (φ ψ: modalFormula): Prop := 
+Definition equivalence (φ ψ: formula): Prop := 
   (entails_modal [φ] ψ) /\ (entails_modal [ψ] φ).

@@ -48,17 +48,15 @@
 %% values in them; it is your responsibility as an author to replace
 %% the commands and values with those provided to you when you
 %% complete the rights form.
-\setcopyright{acmcopyright}
-\copyrightyear{2018}
-\acmYear{2018}
-\acmDOI{XXXXXXX.XXXXXXX}
-
-%% These commands are for a PROCEEDINGS abstract or paper.
-\acmConference[Conference acronym 'XX]{Make sure to enter the correct
-  conference title from your rights confirmation emai}{June 03--05,
-  2018}{Woodstock, NY}
+\copyrightyear{2022}
+\acmYear{2022}
+\setcopyright{acmcopyright}\acmConference[SBLP 2022]{XXVI Brazilian Symposium
+on Programming Languages}{October 6--7, 2022}{Virtual Event, Brazil}
+\acmBooktitle{XXVI Brazilian Symposium on Programming Languages (SBLP 2022),
+October 6--7, 2022, Virtual Event, Brazil}
 \acmPrice{15.00}
-\acmISBN{978-1-4503-XXXX-X/18/06}
+\acmDOI{10.1145/3561320.3561329}
+\acmISBN{978-1-4503-9744-5/22/10}
 
 
 %%
@@ -164,15 +162,15 @@
 
 The start of modal logics can be traced back to Lewis and his definition of 
 logical systems with strict implication instead of material implication \cite{Lewis1918}.
-Based in this work~\cite{Lewis1932}, independently of classical propositional logic,
-defined the systems $\mathsf{S1}$--$\mathsf{S5}$, where $\mathsf{S4}$ and $\mathsf{S5}$
+Based in this work, independently of classical propositional logic,
+defined the systems $\mathsf{S1}$--$\mathsf{S5}$~\cite{Lewis1932}, where $\mathsf{S4}$ and $\mathsf{S5}$
 are well known normal modal systems. It was, in fact, G{\"o}del that had the idea 
 to build a modal logic system as an extension of the classical propositional calculus, 
 when constructing a system similar to $\mathsf{S4}$ in \cite{Godel1933}.
 
 Despite that the original motivation of modal systems was to deal with strict implication, 
 for many years modal logic was seen as ``the logic of necessity and possibility''. 
-Only after the introduction of Kripke semantics they were seen also as ``simple yet
+Only after the introduction of Kripke semantics they were also seen as ``simple yet
 expressive languages for talking about relational structures''~\cite{Blackburn-ModalLogics}. 
 A great multitude of modal systems, with various kinds of modal operators, each of them with 
 different meanings or properties, have then been constructed in order to provide effective
@@ -183,8 +181,8 @@ The interpretation of modal logic simply as ``the logic of necessity'' restricts
 not only its applications but also the range of modal systems. In fact, modal logic 
 can also be seen as ``the study of \emph{modalities} -- logical operations that qualify 
 assertions about the truth of statements''~\cite{Goldblatt-MathofModality}. In this sense, 
-the necessitation rule (from $\varphi$ infers $\Box\varphi$) can be relaxed. This brings 
-a number of modal systems known as non-normal, whose semantics was defined only in the 
+the necessitation rule (from $\varphi$ infer $\Box\varphi$) may be relaxed. This brings 
+a number of modal systems known as non-normal, whose semantics were defined only in the 
 1970's by Montague~\cite{Montague1970} and Scott~\cite{Scott_AdviceModal1970}.
 
 Such wide range of highly expressive logical languages is the ideal tool to 
@@ -201,17 +199,17 @@ Although there are some dedicated provers for modal logics~\cite{Gleissner17,Mor
 we believe that using mature tools, like a proof assistant, is a better option for
 verifying facts using modal logics. We justify this choice by: 1) the recent
 successful histories on verification of software and
-mathematics~\cite{Leroy09,Klein10,Gonthier13,Gonthier08}; 2) There is a growing
+mathematics~\cite{Leroy09,Klein10,Gonthier13,Gonthier08}; 2) there is a growing
 community of developers using such tools thanks to 
 textbooks on the subject~\cite{Nipkow14,Bertot10,Chlipala13} which allows
-newbies to join the game of formal verification and 3) The custom automation
-facilities supported by current proof assistants allows that trivial facts can
-be proved using decision procedures, relieving the user from writing proof
+newcomers to join the game of formal verification; and 3) the custom automation
+facilities supported by current proof assistants allows for trivial facts to
+be proven using decision procedures, relieving the user from writing proof
 scripts for formulas that can be checked automatically.
 
 In this context, the present work aims to contribute by constructing a library
-that formalize a family of modal logics and its related properties in Coq.
-By using such a library, a developer could use all of Coq's resources to prove
+that formalizes a family of normal modal logics and their related properties in Coq.
+By using such a library, a developer may use all of Coq's resources to prove
 modal logics facts.
 
 
@@ -258,11 +256,11 @@ More specifically, we contribute:
 \begin{itemize}
   \item We define a \emph{deep embedding} of modal logic syntax in Coq and
     define its Kripke semantics.
-  \item We model the Hilbert deductive systems as a Coq inductive type that is
-    parameterized by different axiom systems like K, D, B, T, K4, K5, S4, S5 and GL
+  \item We model the Hilbert deductive system as a Coq inductive type that is
+    parameterized by different axiom systems like K, D, B, T, K4, K5, S4, S5 and GL,
     and prove its soundness with respect to Kripke semantics.
-    We also formalize several frame correspondence results.
-  \item We show a proof of L\"ob's theorem using the Hilbert deductive system
+    In such, we also formalize several frame correspondence results.
+  \item As an example of usage, we show a proof of L\"ob's theorem using the deductive system
     developed in our library.
 \end{itemize}
 
@@ -272,10 +270,10 @@ the implementation of our Coq library are presented in
 Section~\ref{sec:implementation}. A case study in proving L\"ob's theorem is
 the subject of Section~\ref{sec:case}. Related works are discussed
 on Section~\ref{sec:related} and Section~\ref{sec:conclusion} draws some conclusions and
-provide some pointers for future works.
+provide some pointers for future work.
 
-All source code in this article has been formalized in Coq version 8.15.0 and it
-is available at~\cite{modal-coq-lib}.
+All source code in this article has been formalized in Coq version 8.15 and
+is available at \url{https://github.com/funcao/ModalLibrary/} under a permissive free software license.
 
 \section{Background}\label{sec:background}
 
@@ -285,16 +283,16 @@ Coq is a proof assistant based on the calculus of inductive
 constructions (CIC)~\cite{manual_cic}, a higher-order typed
 $\lambda$-calculus extended with inductive definitions.  Theorem
 proving in Coq follows the ideas of the so-called
-``BHK-cor\-res\-pon\-dence''\footnote{Abbreviation of Brouwer, Heyting,
+``BHK-in\-ter\-pre\-ta\-tion''\footnote{Abbreviation of Brouwer, Heyting,
   Kolmogorov, de Bruijn and Martin-L\"of Correspondence. This is also
-  known as the Curry-Howard ``isomorphism''.}, where types represent
+  known as the Curry-Howard isomorphism.}, where types represent
 logical formulas, $\lambda$-terms represent proofs
 \cite{Bertot10} and the task of checking if a piece of text is a
 proof of a given formula corresponds to checking if the term that
 represents the proof has the type corresponding to the given formula.
 
 However, writing a proof term whose type is that of a logical formula
-can be a hard task, even for very simple propositions.  In order to
+can be challenging, even for very simple propositions.  In order to
 make the writing of complex proofs easier, Coq provides
 \emph{tactics}, which are commands that can be used to construct proof
 terms in a more user-friendly way.
@@ -307,10 +305,13 @@ formula of the propositional logic:
 In Coq, such theorem can be expressed as:
 \begin{minted}{coq}
 Section EXAMPLE.
-   Variables A B C : Prop.
-   Theorem example : (A -> B) -> (B -> C) -> A -> C.
+   Variables A B C: Prop.
+   Theorem example: (A -> B) -> (B -> C) -> A -> C.
    Proof.
-       intros H H' HA. apply H'. apply H. assumption. 
+       intros H H' HA.
+       apply H'.
+       apply H.
+       assumption. 
    Qed.
 End EXAMPLE.
 \end{minted}
@@ -335,10 +336,8 @@ that, in contrast to the previous proof, that was built using tactics
 (\mintinline{coq}{intros}, \mintinline{coq}{apply} and \mintinline{coq}{assumption}), is coded
 directly as a function:
 \begin{minted}{coq}
-Definition example :(A -> B) -> (B -> C) -> A -> C :=
- fun (H : A -> B)
-     (H' : B -> C)
-     (HA : A) => H' (H HA).
+Definition example: (A -> B) -> (B -> C) -> A -> C :=
+  fun (H: A -> B) (H': B -> C) (HA: A) => H' (H HA).
 \end{minted}
 However, even for very simple theorems, coding a definition directly
 as a Coq term can be a hard task. Because of this, the use of tactics
@@ -350,24 +349,25 @@ in~\cite{Chlipala13,Bertot10,manual_coq}.
 
 \paragraph{An overview of modal logic.} Modal logics are designed for reasoning
 about truth across various --- abstract --- worlds. In such logics, a
-proposition may be true in some world, but false in another one. The versions of
-modal logics considered in this work extends traditional propositional logics
+proposition may be true in some world, but false in another one. The systems of
+modal logic considered in this work extend traditional propositional logic
 with two operators on propositions: $\Box$ (box) and $\Diamond$ (diamond).
-The syntax of modal logic formulas are defined by the following context free
-grammar (where $\circ \in\{\land,\lor,\to,\leftrightarrow\}$ and
-$\mathcal{P} = \{A,B,C,...\}$ is the enumerable set of propositional variables):
+The syntax for modal logic formulas is defined by the following context free
+grammar (where
+$\mathcal{P} = \{A,B,C,...\}$ is the countable set of propositional variables):
 \[
   \begin{array}{lcl}
-    \varphi & ::= & A\,|\,\neg\varphi\,|\,\varphi\circ\varphi\,|\,\Box\varphi\,|\,\Diamond\varphi
+    \varphi & ::= & \mathcal{P}\,|\,\neg\varphi\,|\,\varphi\land\varphi\,|\,\varphi\lor\varphi\,|\,\varphi\to\varphi\,|\,\Box\varphi\,|\,\Diamond\varphi
   \end{array}  
 \]
 Intuitively, the semantics of the operator $\Box$ is similar to an universal
-quantifier, since it express \emph{necessity}: $\Box\,\varphi$ is true at the
-current world iff $\varphi$ is true at all worlds accessible from the current
-world. Similarly, the semantics of operator
-$\Diamond$ is that a formula $\Diamond\varphi$ is true at the current
+quantifier, since it expresses \emph{necessity}: $\Box\,\varphi$ is true in the
+current world iff $\varphi$ is true in every world accessible from the current
+one. Similarly, the semantics of operator
+$\Diamond$ is that a formula $\Diamond\varphi$ is true in the current
 world iff $\varphi$ is \emph{possible}, i.e. true in at least some world
-accessible from the current world.
+accessible from the current world. We the remaining of the paper, we also write
+$\phi_1\leftrightarrow\phi_2$ to mean $\phi_1\to\phi_2\land\phi_2\to\phi_1$.
 
 Formally, we can only interpret a formula with respect to a \emph{model}, which is
 defined as follows.
@@ -376,8 +376,7 @@ a non-empty set of worlds, $W$, and a binary accessibility relation between
 worlds, $R \subseteq W \times W$. A pair $w_1Rw_2$ denotes that world $w_2$ is
 accessible from $w_1$. A model $\mathcal{M} = \langle \mathcal{F}, \mathcal{V} \rangle$
 is formed by a frame $\mathcal{F}$ and a total labeling function
-$\mathcal{V} : \mathcal{P}\times W\to \{F,T\}$, which assigns
-a truth value to a propositional variable at a given world, i.e. when $w \in \mathcal{V}(A)$
+$\mathcal{V} : \mathcal{P}\to 2^W$, which indicates the set of worlds where each propositional variable holds, i.e. when $w \in \mathcal{V}(A)$
 for some $A \in\mathcal{P}$, we say that $A$ holds in $w$. The satisfiability of a formula
 in a given world is defined by inductive relation $\mathcal{M}\,;\,w\models \varphi$ as
 follows (notation $\mathcal{M}\,;\,w\not\models \varphi$ denotes
@@ -385,8 +384,8 @@ that $\mathcal{M}\,;\,w\models \varphi$ does not hold):
 
 \begin{figure}[H]
 \begin{enumerate}
-  \item $\mathcal{M}\,;\,w\not\models \bot$ and $\mathcal{M}\,;\,w\models \top$;
-  \item $\mathcal{M}\,;\,w\models A$ iff $\mathcal{V}(A,w) = T$;
+  % \item $\mathcal{M}\,;\,w\not\models \bot$ and $\mathcal{M}\,;\,w\models \top$;
+  \item $\mathcal{M}\,;\,w\models A$ iff $w \in \mathcal{V}(A)$;
   \item $\mathcal{M}\,;\,w\models \neg\varphi$ iff $\mathcal{M}\,;\,w\not\models\varphi$;
   \item $\mathcal{M}\,;\,w\models \varphi_1 \land \varphi_2$ iff
     $\mathcal{M}\,;\,w\models\varphi_1$ and $\mathcal{M}\,;\,w\models\varphi_2$;
@@ -407,12 +406,12 @@ it holds on all models $\mathcal{M} = \langle \mathcal{F},\mathcal{V}\rangle$, i
 for any $\mathcal{M}$, we have that $\mathcal{M}\models\varphi$. A formula
 is valid, written $\models \varphi$, if it is valid in any frame $\mathcal{F}$.
 
-Using the semantics, we can define the concept of \emph{entailment}: Given a set
+Using the semantics, we can define the concept of \emph{entailment}: given a set
 of formulas $\Gamma$ and a formula $\varphi$, we say that $\Gamma$ entails
-$\varphi$, written $\Gamma\models\varphi$, iff $\forall \varphi' \in\Gamma .
-\mathcal{M} \models \varphi' \to \mathcal{M} \models \varphi$, for some model $\mathcal{M}$.
+$\varphi$, written $\Gamma\models\varphi$, iff $\forall \mathcal{M} . (\forall \varphi' \in\Gamma .
+\mathcal{M} \models \varphi') \to \mathcal{M} \models \varphi$.
 
-In this work, we consider Hilbert deductive systems for modal logics.
+In this work, we consider Hilbert deductive systems for modal logic.
 Essentially, the considered system adds axioms for the modalities
 to the set of axioms for classical propositional logic.
 As examples of modalities axioms we mention \textbf{K}, which express that $\Box$ distributes
@@ -422,7 +421,7 @@ over disjunction.
   \begin{array}{ll}
     \textbf{K} & \Box(\varphi_1 \to \varphi_2) \to (\Box \varphi_1 \to \Box \varphi_2)\\
     \textbf{Possibility} & \Diamond (\varphi_1 \lor \varphi_2) \to
-                           (\Diamond \varphi_2 \lor \Diamond \varphi_2)\\
+                           (\Diamond \varphi_1 \lor \Diamond \varphi_2)\\
   \end{array}
 \]
 Apart from the axioms, we also need \emph{modus ponens} and necessitation rules.
@@ -441,7 +440,7 @@ Apart from the axioms, we also need \emph{modus ponens} and necessitation rules.
     \DisplayProof
 \end{tabular}
 \end{figure}
-The set of axioms and the two previous rules forms a sound and complete Hilbert-style
+The set of axioms and the two previous rules form a sound and complete Hilbert-style
 deductive system for modal logics~\cite{blackburn}.
 
 A central aspect in the study of modal logics is the so-called \emph{frame
@@ -449,8 +448,8 @@ A central aspect in the study of modal logics is the so-called \emph{frame
 accessibility relation and the truth of certain formulas in frames containing
 it. As an example, consider a frame $\mathcal{F} = \langle W,R
 \rangle$ in which the relation $R$ is reflexive: $\forall w \in W. wRw$, i.e.
-every world is accessible from itself. In such frame when $\Box A$ holds at
-a world $w$, $w$ itself is among the accessible worlds at which $A$ must be true.
+every world is accessible from itself. In such frame when $\Box A$ holds in
+a world $w$, $w$ itself is among the accessible worlds in which $A$ must be true.
 In this way, if the accessibility relation $R$ is reflexive, then whatever world
 $w$ and formula $\varphi$ we take, the formula $\Box \varphi \to \varphi$ will
 be true there. Examples of properties that characterize certain formula schemas are
@@ -485,65 +484,71 @@ correspondence proofs.
 To implement our library, we use a \emph{deep embedding} of
 formulas, i.e. we represent formulas as the following Coq inductive datatype.
 \begin{minted}{coq}
-Inductive form : Set :=
-| Lit     : nat          -> form
-| Neg     : form -> form
-| Box     : form -> form
-| Dia     : form -> form
-| And     : form -> form -> form
-| Or      : form -> form -> form
-| Implies : form -> form -> form.
+Inductive formula: Set :=
+| Lit    : nat -> formula
+| Neg    : formula -> formula
+| Box    : formula -> formula
+| Dia    : formula -> formula
+| And    : formula -> formula -> formula
+| Or     : formula -> formula -> formula
+| Implies: formula -> formula -> formula.
 \end{minted}
 Most constructors of the type have an immediate meaning, since they represent
-connectives of propositional logics. The constructor \mintinline{coq}{Lit}
+connectives of propositional logic. The constructor \mintinline{coq}{Lit}
 is used to construct propositional variables; constructor \mintinline{coq}{Box}
 denotes the modal operator $\Box$ and \mintinline{coq}{Dia}, the operator
-$\Diamond$.
+$\Diamond$. Furthermore, the type \mintinline{coq}{theory} is defined as a list
+of formulas.
+
+\begin{minted}{coq}
+Definition theory := list formula.
+\end{minted}
 
 Before defining the Kripke semantics, we need to represent the model used to
-interpret a modal logic formula. We encode a frame by a record formed by a
-a type \mintinline{coq}{W : Set} to represent the set of worlds and the
-accessibility relation is denoted by a type \mintinline{coq}{R : W -> W -> Prop}.
+interpret a modal logic formula. We encode a frame by a record formed by
+a type \mintinline{coq}{W: Set} to represent the set of worlds and an
+accessibility relation denoted by a type \mintinline{coq}{R: W -> W -> Prop}.
 \begin{minted}{coq}
-Record Frame : Type := {
-  W : Set;
-  R : W -> W -> Prop;
+Record Frame: Type := {
+  W: Set;
+  R: W -> W -> Prop;
 }.
 \end{minted}
-A model is denoted by another record formed by a frame and a labeling function,
-which assign the truth value of a variable at a given world.
+A model is then denoted by another record, formed by a frame and a labeling function,
+which assigns the truth value of a variable at a given world.
 \begin{minted}{coq}
-Record Model : Type := {
-  F : Frame; 
-  v : nat -> (W F) -> Prop; 
+Record Model: Type := {
+  F: Frame; 
+  v: nat -> (W F) -> Prop; 
 }.
 \end{minted}
 Note that the type of the labeling function \mintinline{coq}{v} ensures that it
 refers to a world from the set of possible worlds in the frame
-\mintinline{coq}{F}. The encoding of the Kripke semantics is done by a Coq function
+\mintinline{coq}{F}\footnote{We recall that \mintinline{coq}{W F} is Coq's syntax for
+accessing field \mintinline{coq}{W} from the record \mintinline{coq}{F}.}. The encoding of the Kripke semantics is done by a Coq function
 that implements the relation of Figure~\ref{fig:kripke}. We omit the code
 for propositional logics connectives for brevity. The interesting parts are for
 variables (constructor \mintinline{coq}{Lit}) which uses the labeling function
 \mintinline{coq}{v} from the model \mintinline{coq}{M}. The meaning of
-modalities $\Box$ and $\Diamond$ are represented by a quantifying over worlds
+modalities $\Box$ and $\Diamond$ is represented by quantifying over worlds
 using the accessibility relation $R$. 
 \begin{minted}{coq}
-Fixpoint formula_valuation (M: Model)
-                           (w: W (F M))
-                           (phi: form): Prop :=
+Fixpoint formula_valuation (M: Model) (w: W (F M))
+                           (phi: formula): Prop :=
   match phi with
-  | Lit     x            => v M x w 
+  | Lit     x
+     => v M x w (* should be inhabited, i.e., true *)
   | Box     psi
      => forall w': W (F M), R (F M) w w' ->
                             formula_valuation M w' psi
   | Dia     psi
      => exists w': W (F M), R (F M) w w' /\
-                   formula_valuation M w' psi
-  (** some code omitted *)
+                            formula_valuation M w' psi
+  (* some code omitted *)
   end.
 \end{minted}
 In order to ease the task of writing formulas and its semantics properties, we
-define Coq notations that mimics the standard way of writing them.
+define Coq notations that mimic the standard way of writing them.
 
 \paragraph{The Hilbert deductive system}
 Basically, a Hilbert-style deductive system allows the use of four
@@ -551,60 +556,60 @@ possibilities in a proof: 1) the use of a hypothesis; 2) the use of an axiom;
 3) the use of the modus ponens rule or 4) the use of the generalization (necessity)
 rule. The inductive type \mintinline{coq}{deduction} encodes these possibilities
 as its constructors. The \mintinline{coq}{deduction} type is parameterized by
-axioms that form a system for modal logics. In this way, our definition can be
-used by several systems of modal logic.
+the set of axioms that form a system for some modal logic. In this way, our definition can be
+used by several systems alike.
 \begin{minted}{coq}
-Inductive deduction (A: axiom -> Prop)
-                           : theory -> form -> Prop :=
+Inductive deduction (A: axiom -> Prop):
+                          theory -> formula -> Prop :=
   (* Premise. *)
   | Prem: forall (t: theory)
-                 (f: form)
+                 (f: formula)
                  (i: nat),
           (nth_error t i = Some f) -> deduction A t f
   (* Axiom. *)
   | Ax: forall (t: theory)
                (a: axiom)
-               (f: form),
+               (f: formula),
         A a -> instantiate a = f -> deduction A t f
   (* Modus Ponens. *)
   | Mp: forall (t: theory)
-               (f g: form)
-               (d1: deduction A t (f -> g))
+               (f g: formula)
+               (d1: deduction A t (Implies f g))
                (d2: deduction A t f),
         deduction A t g
   (* Generalization. *)
   | Nec: forall (t: theory)
-                (f: form)
+                (f: formula)
                 (d1: deduction A t f),
          deduction A t (Box f).
 \end{minted}
 The constructors \mintinline{coq}{Prem}, \mintinline{coq}{Mp} and \mintinline{coq}{Nec}
 represent rules for hypothesis, modus ponens and generalization, respectively.
-Before discussing the \mintinline{coq}{Ax}, we need to discuss how axioms are
+Before discussing the \mintinline{coq}{Ax} constructor, we need to discuss how axioms are
 represented in our library. The inductive type \mintinline{coq}{axiom} specifies
 the different axioms supported by our library.
 \begin{minted}{coq}
-Inductive axiom : Set :=
-  | ax1   : form -> form -> axiom
-  | ax2   : form -> form -> form  -> axiom
-  (** some code omitted *)
-  | axK   : form -> form -> axiom
-  | axPos : form -> form -> axiom
-  | axT   : form -> axiom
-  | axB   : form -> axiom
-  | axK4  : form -> axiom
-  | axD   : form -> axiom
-  | axK5  : form -> axiom.
+Inductive axiom: Set :=
+  | ax1  : formula -> formula -> axiom
+  | ax2  : formula -> formula -> formula  -> axiom
+  (* some code omitted *)
+  | axK  : formula -> formula -> axiom
+  | axPos: formula -> formula -> axiom
+  | axT  : formula -> axiom
+  | axB  : formula -> axiom
+  | axK4 : formula -> axiom
+  | axD  : formula -> axiom
+  | axK5 : formula -> axiom.
 \end{minted}
-Each constructor of type \mintinline{coq}{axiom} represents an axiom and
+Each constructor of type \mintinline{coq}{axiom} represents an axiom scheme and
 its type stores the subformulas which compose the axiom. The type has
-17 constructors: the first 10 consists encode axioms for propositional logics
-and the last 7 are for different formulas taken as axioms by systems of modal logics.
-Axioms are built using the function \mintinline{coq}{instantiate}, which
-receives an axiom and builds its corresponding formula by pattern matching as
+17 constructors: the first 10 encode axioms for propositional logic
+and, the last 7 are for different formulas which are taken as axioms by common
+systems of modal logic. Axioms are built using the function \mintinline{coq}{instantiate},
+which receives an axiom and builds a corresponding formula by pattern matching as
 follows:
 \begin{minted}{coq}
-Definition instantiate (a: axiom): modalFormula :=
+Definition instantiate (a: axiom): formula :=
   match a with
   | ax1    p   q
      => [! p -> (q -> p) !]
@@ -616,7 +621,7 @@ Definition instantiate (a: axiom): modalFormula :=
      => [! [] (p -> q) -> ([] p -> [] q) !]
   | axPos  p   q
      => [! <> (p \/ q) -> (<> p \/ <> q) !]
-  (** some code omitted *)
+  (* some code omitted *)
   end.
 \end{minted}
 Notation \mintinline{coq}{[! p !]} is used to write modal logic formulas using a
@@ -628,7 +633,7 @@ and \mintinline{coq}{<>}, respectively.
 The \mintinline{coq}{Ax} constructor uses the \mintinline{coq}{instantiate}
 function to create a formula instance from a given system,
 represented as a predicate
-\mintinline{coq}{A : axiom -> Prop} which parameterizes our deduction type. An
+\mintinline{coq}{A: axiom -> Prop} which parameterizes our deduction type. An
 axiom \mintinline{coq}{a} is valid within a system \mintinline{coq}{A} whenever
 the type \mintinline{coq}{A a} is inhabited, i.e. it is not empty. Next, we
 describe how to represent different systems of modal logic.
@@ -636,15 +641,15 @@ describe how to represent different systems of modal logic.
 \paragraph{Systems of modal logics} In order to use the deductive system to
 check the provability of formulas, we need to specify the axioms that are
 included in the system. Our approach is to define predicates
-which denote each system. The simplest set of axioms is usually refereed as
+which denote each system. The simplest set of axioms is usually referred as
 \textbf{K} and it includes the axiom $\Box(A \to B) \to (\Box A \to \Box B)$
 and all the axioms for propositional logic. We represent system \textbf{K}
-by the following inductive type:
+by the following inductive predicate:
 \begin{minted}{coq}
 Inductive K: axiom -> Prop :=
   | K_ax1: forall p q, K (ax1 p q)
   | K_ax2: forall p q r, K (ax2 p q r)
-  (** some code omitted *)
+  (* some code omitted *)
   | K_axK: forall p q, K (axK p q)
 \end{minted}
 Type \mintinline{coq}{K} is a predicate over axioms: it has one constructor for
@@ -654,31 +659,31 @@ proof that a given axiom is part of the system \textbf{K}. This is the main
 trick used by the constructor \mintinline{coq}{Ax}, of type
 \mintinline{coq}{deduction}, to generically represent axioms for
 different systems of modal logics uniformly. In order to understand how it
-works, let us review its type (below, remember that \mintinline{coq}{A : axiom -> Prop}
+works, let us review its type (below, remember that \mintinline{coq}{A: axiom -> Prop}
 denotes a system of axioms for modal logics):
 \begin{minted}{coq}
 Ax: forall (t: theory)
            (a: axiom)
-           (f: form),
+           (f: formula),
            A a -> instantiate a = f -> deduction A t f
 \end{minted}
-Note that the first parameter of constructor \mintinline{coq}{Ax} is a value
+Note that the fourth parameter of constructor \mintinline{coq}{Ax} is a value
 of type \mintinline{coq}{A a}, which is only inhabited if the predicate
 \mintinline{coq}{A} holds for the axiom \mintinline{coq}{a}. Through this
 evidence, is possible to create the corresponding axiom formula instance by
 using function \mintinline{coq}{instantiate}. In this way, we are able to
-represent all systems of axioms for modal logics using a single constructor
+represent all systems of axioms for modal logics using a single type
 for its axioms.
 
-\paragraph{Properties} A key property of the Hilbert deductive system formalized
-in our library is its soundness. If a formula $\varphi$ is derived from a
-context $\Gamma$, i.e. $\Gamma\vdash\varphi$, then $\varphi$ is entailed from
-the set $\Gamma$, i.e. $\Gamma\models\varphi$. The Coq statement of the soundness
-result is:
+\paragraph{Properties} A key property of the Hilbert deductive system as formalized
+in our library is its soundness (through system K). If a formula $\varphi$ is derived from a
+context $\Gamma$, i.e. $\Gamma\vdash\varphi$, then $\varphi$ is entailed within the deep embedding
+from the set of hypotheses $\Gamma$, i.e. $\Gamma\models\varphi$. The Coq statement for the soundness
+result is given as follow:
 
 \begin{minted}{coq}
 Theorem soundness:
-  forall G p, (K ; G |-- p) -> (G ||= p).
+  forall G p, (K; G |-- p) -> (G ||= p).
 \end{minted}
 
 The proof proceeds by induction on the derivation of $\Gamma \vdash\varphi$ and
@@ -689,64 +694,65 @@ As example, the following is the statement for modus ponens case.
 \begin{minted}{coq}
 Lemma Modus_Ponens_soundness:
   forall M w p q,
-  ((M ' w ||- p) /\
-  (M ' w ||- [! p -> q !])) ->
+  (M ' w ||- p) /\ (M ' w ||- [! p -> q !]) ->
   (M ' w ||- q).
 \end{minted}
 All these lemmas are direct consequences from the definitions of the Kripke
-semantics and entailment.
+semantics and entailment. We note that system K is used as it doesn't impose
+any restrictions on the frame.
 
 \paragraph{Frame Correspondence} 
 As already mentioned, there are some modal formula schemas that correspond
 to properties of the accessibility relation of a modal system, if we take them
 as an axiom in the system.  While the proof that a certain property in a frame
 implies the correspondent axiom is usually  direct, the inverse often needs
-more effort. On the Coq proofs developed for this work,  the former case is
+more effort. In the Coq proofs developed for this work,  the former case is
 mostly unfoldings, simplifications and applications of premises
 while the latter, apart from the necessity and burden of a proof by contraposition, 
 requires the construction of a witness valuation function. 
-Nevertheless, all Coq's proofs are fairly similar to the respective
-``pen and paper'' proofs that  can be found in the literature. 
-Our work proves the correspondence for the  following properties in
-accessibility relations: reflexivity, transitivity, symmetry,  euclidean,
-seriality, functionality, density, convergency, and converse well-foundness.
+Nevertheless, all Coq proofs are fairly similar to the respective
+``pen and paper'' proofs found in the literature. 
+Our work proves correspondence for the following properties: reflexivity,
+transitivity, symmetry,  euclidean, seriality, functionality, density, convergency,
+and converse well-foundness.
 
 \section{Case Study}\label{sec:case}
 
-In this section we describe a case study of the defined modal logic library.
-We proved L\"ob theorem in the system K4 with modal fixed points.
+In this section we describe a case study of the defined modal logic library:
+a proof L\"ob theorem in an extension of system K4 with modal fixed points.
 The importance of L\"ob's theorem is due to its use in provability
-logic~\cite{boolos_1994} to abstract details from encodings in G\"odel's
+logic~\cite{boolos_1994}, used to abstract details from encodings in G\"odel's
 incompleteness results.
 
-In order to prove L\"ob's theorem proof we need to encode modal
-fixed points. Let $\varphi(A)$ be a formula with only one propositional variable
-$A$. We define as a modal fixed point of $\varphi$ is a sentence $\Psi$ such that
+In order to state L\"ob's theorem we need a way to encode modal
+fixed points. Formally, let $\varphi(X)$ be a formula with only one propositional variable
+$X$. The modal fixed point of $\varphi$ is then a formula $\Psi$ such that such that
 $\Psi \leftrightarrow \varphi(\Box \Psi)$.
-We represent the modal fixed points by definition \mintinline{coq}{fixed_point},
-which is parameterized by a system for modal logics, \mintinline{coq}{S}, and a
-theory, \mintinline{coq}{g}, and encodes the logical equivalence between a
-formula \mintinline{coq}{p} and its fixpoint \mintinline{coq}{f ([] p)}. 
+We represent the existence of modal fixed points for all one-variable formulas by a definition \mintinline{coq}{fixed_point},
+which is parameterized by a system of modal logic, \mintinline{coq}{S}, and a
+theory, \mintinline{coq}{g}, and encodes the logical equivalence demonstrating
+that \mintinline{coq}{p} is a modal fixed point for \mintinline{coq}{f}.
 \begin{minted}{coq}
-  Definition fixed_point S g
-      := forall f, exists p,
-             (S ; g |-- [! (p <-> f ([] p)) !]).
+  Definition fixed_point S g: Prop :=
+    forall f, exists p,
+    (S; g |-- [! (p <-> f ([]p)) !]).
 \end{minted}
 
-\noindent Using the definition of fixed points, we can state L\"ob's theorem as follows:
+\noindent We can now write down L\"ob's theorem as follows:
 
 \begin{minted}{coq}
-  Theorem Lob: forall P, fixed_point K4 nil ->
-               (K4; nil |-- [! []P -> P !]) ->
-               (K4; nil |-- [! P !]).
+  Theorem Lob:
+    forall A, subset K4 A /\ fixed_point A nil ->
+    forall P, (A; nil |-- [! []P -> P !]) ->
+              (A; nil |-- [! P !]).
 \end{minted}
 
 \noindent The proof starts by assuming an arbitrary formula $P$, the existence of modal fixed
-points and that $\Box P \to P$ is provable in K4. These deduction steps
+points and that $\Box P \to P$ is provable with axioms A. These deduction steps
 are performed by the following tactic:
 
 \begin{minted}{coq}
-  intros P FP H1.
+  intros A [I FP] P H1.
 \end{minted}
 
 \noindent Next, from the existence of modal fixed points for every formula,
@@ -754,29 +760,29 @@ we know that there is a formula $\Psi$ such that $\Psi \leftrightarrow (\Box
 \Psi \to P)$. The following tactic performs this step of reasoning.
 
 \begin{minted}{coq}
-  destruct FP with (fun A => [! A -> P !]) as (psi, H2).
+  destruct FP with (fun X => [! X -> P !]) as (psi, H2).
 \end{minted}
 
 \noindent Now, we are able to deduce that $\Psi \to (\Box \Psi\to P)$ from the previous
 step result as follows:
 
 \begin{minted}{coq}
-  assert (K4; nil |-- [! psi -> []psi -> P !]) as H3.
-  apply modal_ax5 in H2; try repeat constructor ;
-     try eassumption.
+  assert (A; nil |-- [! psi -> []psi -> P !]) as H3.
+  apply modal_ax5 in H2; auto with modal.
 \end{minted}
 
 \noindent The \mintinline{coq}{assert} tactic allows the definition of
 auxiliary proof goals. In the previous code piece, we specified
 $\vdash \Psi \to (\Box \Psi \to P)$ as a new goal which
 generates a new proof hypothesis named \mintinline{coq}{H3}. The
-deduction of this fact is immediate from K4 axioms.
+deduction of this fact is immediate from K4 axioms, of which A is a superset.
+We use some basic automation to move on.
 
 From $\vdash \Psi \to (\Box \Psi \to P)$ and the necessitation
 rule, we can deduce $\vdash \Box (\Psi \to (\Box \Psi \to P))$
 using the following tactics:
 \begin{minted}{coq}
-  assert (K4; nil |-- [! [](psi -> []psi -> P) !])
+  assert (A; nil |-- [! [](psi -> []psi -> P) !])
     as H4.
   apply Nec; auto.
 \end{minted}
@@ -786,10 +792,9 @@ using the following tactics:
 \mintinline{coq}{assert} tactic.
 
 \begin{minted}{coq}
-  assert (K4; nil |-- [! []psi -> []([]psi -> P) !])
+  assert (A; nil |-- [! []psi -> []([]psi -> P) !])
     as H5.
-  apply modal_axK in H4; try repeat constructor ;
-    try eassumption.
+  apply modal_axK in H4; auto with modal.
 \end{minted}
 
 \noindent The next proof step involves showing that
@@ -797,10 +802,10 @@ $\vdash \Box (\Box \Psi \to P)\to (\Box \Box \Psi \to \Box P)$ holds
 by axiom \textbf{K}.
 
 \begin{minted}{coq}
-  assert (K4; nil |-- [! []([]psi -> P) ->
-                      [][]psi -> []P !]) as H6.
-  eapply Ax with (a := axK ?[X] ?[Y]);
-     try repeat constructor.
+  assert (A; nil |-- [! []([]psi -> P) ->
+                          [][]psi -> []P !]) as H6.
+  eapply Ax with (a := axK ?[X] ?[Y]); auto with modal.
+  reflexivity.
 \end{minted}
 
 \noindent Using $\vdash \Box (\Box \Psi \to P)\to (\Box \Box \Psi \to \Box P)$ and
@@ -809,54 +814,59 @@ $\vdash \Box \Psi \to \Box \Box \Psi \to \Box P$ using transitivity of
 implication.
 
 \begin{minted}{coq}
-  assert (K4; nil |-- [! []psi -> [][]psi -> []P !])
+  assert (A; nil |-- [! []psi -> [][]psi -> []P !])
     as H7.
-  eapply modal_compose; try repeat constructor ;
-    try eassumption.
+  eapply modal_compose; eauto with modal.
 \end{minted}
 
 \noindent Now, we can show that $\vdash\Box\Psi\to\Box\Box\Psi$ using
-the axioms of K4. The next snippet of tactics perform this
+the axiom K4 of A. The next snippet of tactics perform this
 reasoning step.
 
 \begin{minted}{coq}
-  assert (K4; nil |-- [! []psi -> [][]psi !]) as H8.
-  apply modal_axK4; try constructor 2.
+  assert (A; nil |-- [! []psi -> [][]psi !]) as H8.
+  apply modal_axK4; auto with modal.
 \end{minted}
 
-\noindent From $\vdash \Box\Psi \to \Box P$ and $\vdash \Box P \to P$, we can
+\noindent From the previou two hypotheses we gather necessary info to derive
+$\vdash \Box \Psi \to P$, using a propositional axiom.
+
+\begin{minted}{coq}
+  assert (A; nil |-- [! []psi -> []P !]) as H9.
+  eapply modal_ax2; eauto with modal.
+\end{minted}
+
+\noindent Then, from $\vdash \Box\Psi \to \Box P$ and $\vdash \Box P \to P$, we can
 conclude $\vdash \Box \Psi \to P$, by composition of implication as
 follows.
 
 \begin{minted}{coq}
-  assert (K4; nil |-- [! []psi -> P !]) as H10.
-    eapply modal_compose; try repeat constructor ;
-      try eassumption.
+  assert (A; nil |-- [! []psi -> P !]) as H10.
+  eapply modal_compose; eauto with modal.
 \end{minted}
 
 \noindent Next, we can conclude $\vdash \Box (\Psi \to P) \to \Psi$ from
-$\Psi \leftrightarrow (\Box \Psi \to P)$ and the axioms of K4 using
+$\Psi \leftrightarrow (\Box \Psi \to P)$ using
 the following tactics:
 
 \begin{minted}{coq}
-  assert (K4; nil |-- [! ([]psi -> P) -> psi !]) as H11.
-  apply modal_ax6 in H2; try repeat constructor ;
-     try eassumption.
+  assert (A; nil |-- [! ([]psi -> P) -> psi !]) as H11.
+  apply modal_ax6 in H2; auto with modal.
 \end{minted}
 
-\noindent From $\vdash (\Box\Psi \to P) \to \Psi$ and $\vdash \Box \Psi \to P$
+\noindent Now, from $\vdash (\Box\Psi \to P) \to \Psi$ and $\vdash \Box \Psi \to P$
 we can conclude $\vdash \Psi$ by modus ponens.
 
 \begin{minted}{coq}
-  assert (K4; nil |-- psi) as H12.
-  eapply Mp ; try eassumption.
+  assert (A; nil |-- psi) as H12.
+  eapply Mp; try eassumption.
 \end{minted}
 
 \noindent By necessitation rule, we can deduce $\vdash \Box \Psi$
 
 \begin{minted}{coq}
-  assert (K4; nil |-- [! []psi !]) as H13.
-  apply Nec ; try eassumption.
+  assert (A; nil |-- [! []psi !]) as H13.
+  apply Nec; try eassumption.
 \end{minted}
 
 \noindent Finally, the desired conclusion $\vdash P$ follows from
@@ -865,22 +875,22 @@ and $\vdash \Box \Psi$, as presented by the next tactics
 snippet.
 
 \begin{minted}{coq}
-  eapply Mp ; try eassumption.
+  eapply Mp; try eassumption.
 \end{minted}
 
 \noindent This concludes the formalization of L\"ob's theorem using
-the developed library.
+the developed library, in a Hilbert style proof.
 
 \section{Related work}\label{sec:related}
 
-\paragraph{Formalizations of modal logics on proof assistants}
+\paragraph{Formalizations of modal logics in proof assistants}
 
-The formalization of epistemic modal logic in Coq was the subject of Wind's
+The formalization of epistemic modal logic in Coq was the subject of de Wind's
 work~\cite{dewind}.
 The author made a Coq implementation of modal logic based on the S5 system,
 which consists of  the axioms $K$, $T$, $4$ and $5$. The objective was the
 modeling of two well known puzzles.
-Wind's formalization was separated into some components. The first consists in
+De Wind's formalization was separated into some components. The first consists in
 defining the syntax of formulas and its Kripke semantics. Next, the author uses
 their definitions to give some examples of modal operators, worlds and how they
 interact with each other. Using the built machinery, the author developed
@@ -888,7 +898,7 @@ introduction and elimination rules for modal logic operators and use them to
 model the wize man's and muddy children puzzles.
 
 A Coq formalization for modal systems $K$, $T$ and $K4$ was the subject of 
-Doczkal and Smolka's work. Author's interest was in the definition of dynamic
+Doczkal and Smolka's work. The authors' interest was in the definition of dynamic
 and temporal logics. The development of the code establishes the construction
 and definitions of tactics, through lemmas propositional operators and relation
 properties were constructed. Each model was defined through structures, which
@@ -905,27 +915,27 @@ reasoning about facts expressed using modal logics.
 The development of a completeness proof for modal logic S5 in Lean proof
 assistant was the subject of the Bentzen's work~\cite{Bentzen2021}. The author
 follows the approach due to Henkin for S5 completeness and it depends on
-the \texttt{mathlib}, the Lean's library of mathematical results~\cite{mathlib20}. 
+\texttt{mathlib}, the Lean's library of mathematical results~\cite{mathlib20}. 
 
-Maggesi et. al. developed a formalization of the completeness proof for GL using
+Maggesi et al. developed a formalization of the completeness proof for GL using
 the HOL light theorem prover~\cite{Maggesi21}. The authors argue that using the
 standard Henkin strategy does not work in GL without modifications. The core idea of
-Maggesi et. al. strategy was building maximal consistent lists in terms of
+Maggesi et al. strategy was building maximal consistent lists in terms of
 components of the given formula non-proven in the calculus.
 
-The next table summarizes the formalized modal logics systems by our library
-and related works.
+The following table summarizes the formalized modal logics systems by our library
+and related works:
 \vspace{0.5cm} {
   \begin{table}[H]
     \begin{tabular}{|c|c|c|c|c|c|c|c|c|c|}
       \hline
       \multirow{2}{*}{Authors} & \multicolumn{9}{c|}{Systems considered} \\ \cline{2-10} 
                                & K & D & B & T & K4 & K5 & S4 & S5 & GL\\ \hline
-      Wind et. al.~\cite{dewind}     & X &   &   & X & X  & X  & X  &  X & \\ \hline
-      Doczkal et. al.~\cite{saarland}   & X &   &   & X & X  &    &    &  &  \\ \hline
-      Benzmüller et. al.~\cite{Chris_Bruno}& X &   & X & X &  X &    &    & X &  \\ \hline
+      Wind et al.~\cite{dewind}     & X &   &   & X & X  & X  & X  &  X & \\ \hline
+      Doczkal et al.~\cite{saarland}   & X &   &   & X & X  &    &    &  &  \\ \hline
+      Benzmüller et al.~\cite{Chris_Bruno}& X &   & X & X &  X &    &    & X &  \\ \hline
       Bentzen~\cite{Bentzen2021} & X & & & X & & X & X & X & \\ \hline
-      Maggesi et. al.~\cite{Maggesi21} & X & & & & & & & & X \\ \hline
+      Maggesi et al.~\cite{Maggesi21} & X & & & & & & & & X \\ \hline
       This work         & X & X & X & X & X  &  X &  X & X  & X \\ \hline
     \end{tabular}
     \centering
@@ -934,7 +944,7 @@ and related works.
   \end{table}
 }
 
-As we can see, as far we know, our work is the unique formalization that covers systems
+As we can see, as far we know, our work is the only formalization that covers systems
 K, D, B, T, K4, K5, S4, S5 and GL. Also, since our deduction is
 parameterized by system of axioms considered, it can be used to represent any
 system of normal modal logics, unlike any other formalizations found in the literature.
@@ -942,36 +952,41 @@ system of normal modal logics, unlike any other formalizations found in the lite
 \paragraph{Applications of modal logics in semantics} Another application of
 modal logics is its use for reasoning about programming languages semantics.
 Dynamic logic was introduced by Pratt in late 70's as modal logic for reasoning
-about programs~\cite{Pratt76,Pratt80}. The key idea on dynamic logic is to express the
+about programs~\cite{Pratt76,Pratt80}. The key idea of dynamic logic is to express the
 Hoare triples by a modality meaning ``after a program $p$ executes, formula
 $\varphi$ will be true''. The programming languages considered in Pratt's
-original work are composed by an assignment and regular language operators
+original work are composed by assignment and regular language operators
 (union, concatenation and Kleene star)~\cite{Pratt76}.
 
 An application of modal logic IS5 as a type system for a distributed
 programming language was proposed in~\cite{Murphy04}. 
 In that work, modalities are used to represent types for mobile code
-and remote addresses. Murphy et. al defined the language by interpreting
+and remote addresses. Murphy et al defined the language by interpreting
 the possible worlds of the intutionistic modal logic IS5 to be nodes on a
 network and the modalities $\Box$ and $\Diamond$ to reflect mobility and
 locality, respectively. Authors develop an operational semantics and show
 that their formalization is type-safe.
 
-The application of a multimodal separation logic for the semantics of low-level
-was the subject of Dockins et. al. work~\cite{Dockins08}. In that work, authors
+The application of a multimodal separation logic for the semantics of low-level languages
+was the subject of Dockins et al.'s work~\cite{Dockins08}. In that work, authors
 combine several modal operators that do not need to satisfy the same frame
 conditions and seperation logics for reasoning about non-trivial subsets of
 low-level programming languages. Authors developed their formalization through a
-shallow embedding in Coq proof assistant and provide two case studies: one is
-the verification of a simple low-level virtual machine, called the list machine
-benchmark and the other is the subset of Sequential Cminor.
+shallow embedding in Coq proof assistant and provide two case studies:
+the verification of a low-level virtual machine and a C-like language.
 
 A model for recursive, impredicatively quantified types with mutable references
-was studied by Appel et. al.~\cite{Appel07}. His interest in formalizing such
+was studied by Appel et al.~\cite{Appel07}. Their interest in formalizing such
 advanced typing concepts was in the context of typed assembly languages.
 The authors stabilished a semantic type soundness proof by defining a Kripke-style 
 semantics of the G\"odel-L\"ob logic of provability. All their definitions were
-mechanized through a shallow embedding in Coq.
+also mechanized through a shallow embedding in Coq.
+
+Finally, given that a deep embedding for the modal logic was used, it's
+natural to wonder how that might interact with the program extraction feature. The
+reader might refer to~\cite{Kavvos16c}, which presents a survey on the computational
+interpretation of several modal logic systems. Whether or not our current implementation
+is suitable for extraction is left for future work.
 
 % The embedding of modal linear logic in Coq was the subject of
 % Sadrzadeh's work~\cite{Soton03}. Like our work, Sadrzadeh's uses a
@@ -982,23 +997,23 @@ mechanized through a shallow embedding in Coq.
 \section{Conclusion}\label{sec:conclusion}
 
 In this work, we presented a sound deep embedding of arbitrary
-normal modal logics in Coq. Our approach is able to represent uniformly
-deduction over different modal logic systems by using different axiom sets
+normal modal logics in Coq. Our approach is able to represent deduction
+uniformly over different modal logic systems by using different axiom sets
 as a predicate parameter in the deduction inductive type. Using this generic
-representation of deduction we are able to prove the soundness theorem and
-apply it on proving L\"ob's theorem. All source code in this article has
-been formalized in Coq version 8.15.0 and it is available at~\cite{modal-coq-lib}.
-
+representation of deduction we are able to prove a soundness theorem, and, in
+order to demonstrate the applicability of the proposed work, prove L\"ob's theorem
+by assuming fixed points. % All source code in this article has
+% been formalized in Coq version 8.15.0 and it is available at~\cite{modal-coq-lib}.
 
 As future work we intend to prove the completeness result for the Hilbert
 deduction system and continue the development of our library by including
 support for multimodalities (fusion of modal logics) and non-normal modal
-logic systems.
+logic systems, along with improving usability through proof automation.
 
 \begin{acks}
   The present work was supported by Fundação de Amparo à Pesquisa de Minas
   Gerais (FAPEMIG) under grant APQ-01683-21 and Fundação de Amparo à Pesquisa de
-  Santa Catarina (FAPESC) under grant XXXX.
+  Santa Catarina (FAPESC). %under grant 2021TR961.
 \end{acks}
 
 

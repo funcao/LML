@@ -2,26 +2,26 @@ Require Import Modal_Library Modal_Notations List Classical Logic Equality.
 
 (**** HILBERT SYSTEM (axiomatic method) ****)
 Inductive axiom : Set :=
-  | ax1   : modalFormula -> modalFormula -> axiom
-  | ax2   : modalFormula -> modalFormula -> modalFormula -> axiom
-  | ax3   : modalFormula -> modalFormula -> axiom
-  | ax4   : modalFormula -> modalFormula -> axiom
-  | ax5   : modalFormula -> modalFormula -> axiom
-  | ax6   : modalFormula -> modalFormula -> axiom
-  | ax7   : modalFormula -> modalFormula -> axiom
-  | ax8   : modalFormula -> modalFormula -> axiom
-  | ax9   : modalFormula -> modalFormula -> modalFormula -> axiom
-  | ax10  : modalFormula -> modalFormula -> axiom
-  | axK   : modalFormula -> modalFormula -> axiom
-  | axPos : modalFormula -> modalFormula -> axiom
-  | axT   : modalFormula -> axiom
-  | axB   : modalFormula -> axiom
-  | axK4  : modalFormula -> axiom
-  | axD   : modalFormula -> axiom
-  | axK5  : modalFormula -> axiom
-  | axGL  : modalFormula -> axiom.
+  | ax1  : formula -> formula -> axiom
+  | ax2  : formula -> formula -> formula -> axiom
+  | ax3  : formula -> formula -> axiom
+  | ax4  : formula -> formula -> axiom
+  | ax5  : formula -> formula -> axiom
+  | ax6  : formula -> formula -> axiom
+  | ax7  : formula -> formula -> axiom
+  | ax8  : formula -> formula -> axiom
+  | ax9  : formula -> formula -> formula -> axiom
+  | ax10 : formula -> formula -> axiom
+  | axK  : formula -> formula -> axiom
+  | axPos: formula -> formula -> axiom
+  | axT  : formula -> axiom
+  | axB  : formula -> axiom
+  | axK4 : formula -> axiom
+  | axD  : formula -> axiom
+  | axK5 : formula -> axiom
+  | axGL : formula -> axiom.
 
-Definition instantiate (a: axiom): modalFormula :=
+Definition instantiate (a: axiom): formula :=
   match a with
   | ax1   φ ψ   => [! φ -> (ψ -> φ) !]
   | ax2   φ ψ Ɣ => [! (φ -> (ψ -> Ɣ)) -> ((φ -> ψ) -> (φ -> Ɣ)) !]
@@ -43,26 +43,26 @@ Definition instantiate (a: axiom): modalFormula :=
   | axGL  φ     => [! []([]φ -> φ) -> []φ !]
   end.
 
-Inductive deduction (A: axiom -> Prop): theory -> modalFormula -> Prop :=
+Inductive deduction (A: axiom -> Prop): theory -> formula -> Prop :=
   (* Premise. *)
   | Prem: forall (t: theory)
-                 (f: modalFormula)
+                 (f: formula)
                  (i: nat),
           (nth_error t i = Some f) -> deduction A t f
   (* Axiom. *)
   | Ax: forall (t: theory)
                (a: axiom)
-               (f: modalFormula),
+               (f: formula),
         A a -> instantiate a = f -> deduction A t f
   (* Modus Ponens. *)
   | Mp: forall (t: theory)
-               (f g: modalFormula)
+               (f g: formula)
                (d1: deduction A t [! f -> g !])
                (d2: deduction A t f),
         deduction A t g
   (* Generalization. *)
   | Nec: forall (t: theory)
-                (f: modalFormula)
+                (f: formula)
                 (d1: deduction A t f),
          deduction A t [! []f !].
 

@@ -166,7 +166,7 @@ Proof.
 Qed.
 
 Theorem soundness:
-  forall (G: theory) (φ: modalFormula),
+  forall (G: theory) (φ: formula),
   (K; G |-- φ) ->
   (G ||= φ).
 Proof.
