@@ -1,22 +1,31 @@
 Require Import List Modal_Library Modal_Notations Deductive_System Modal_Tactics.
 Import ListNotations.
 
+(** Some Examples of Applications **)
+
+(*
+  Here we have some examples of applications of the library, the biggest of which is the proof
+  of Löb's Theorem for any axiomatic systems that is a superset of K4.
+*)
+
+(* Initially, we must define modal fixed points *)
 Definition fixed_point S g :=
   forall f,
   exists p,
   (* TODO: we should improve the notation here! *)
   (S; g |-- And (Implies p (f (Box p))) (Implies (f (Box p)) p)).
 
+(* Then subset *)
 Definition subset {T} (P: T -> Prop) (Q: T -> Prop): Prop :=
   forall x, P x -> Q x.
 
-(* Some quick automation! *)
+(* Some quick automation *)
 Local Hint Unfold subset: modal.
 Local Hint Constructors K: modal.
 Local Hint Constructors K4: modal.
 
+(* Löb's theorem is provable in any superset of K4 with fixed points. *)
 Theorem Lob:
-  (* Löb's theorem is provable in any superset of K4 with fixed points. *)
   forall A,
   subset K4 A /\ fixed_point A nil ->
   forall P,
@@ -65,8 +74,9 @@ Proof.
   eapply Mp; eassumption.
 Qed.
 
+(* TODO: fix notation for deduction! *)
+(* A minor example of a deduction*)
 Example Ex1:
-  (* TODO: fix notation for deduction! *)
   T; ([! [](#0 -> #1) !] :: [! [](#1 -> #2) !] :: nil) |-- [! [](#0 -> #2) !].
 Proof.
   (* Line: 16 *)
