@@ -7,24 +7,24 @@ Require Import Modal_Library Modal_Notations List Classical Logic Equality.
   type (a Set in this case) is necessary
 *)
 Inductive axiom : Set :=
-  | ax1   : formula -> formula -> axiom
-  | ax2   : formula -> formula -> formula -> axiom
-  | ax3   : formula -> formula -> axiom
-  | ax4   : formula -> formula -> axiom
-  | ax5   : formula -> formula -> axiom
-  | ax6   : formula -> formula -> axiom
-  | ax7   : formula -> formula -> axiom
-  | ax8   : formula -> formula -> axiom
-  | ax9   : formula -> formula -> formula -> axiom
-  | ax10  : formula -> formula -> axiom
-  | axK   : formula -> formula -> axiom
-  | axPos : formula -> formula -> axiom
-  | axT   : formula -> axiom
-  | axB   : formula -> axiom
-  | axK4  : formula -> axiom
-  | axD   : formula -> axiom
-  | axK5  : formula -> axiom
-  | axGL  : formula -> axiom.
+  | ax1  : formula -> formula -> axiom
+  | ax2  : formula -> formula -> formula -> axiom
+  | ax3  : formula -> formula -> axiom
+  | ax4  : formula -> formula -> axiom
+  | ax5  : formula -> formula -> axiom
+  | ax6  : formula -> formula -> axiom
+  | ax7  : formula -> formula -> axiom
+  | ax8  : formula -> formula -> axiom
+  | ax9  : formula -> formula -> formula -> axiom
+  | ax10 : formula -> formula -> axiom
+  | axK  : formula -> formula -> axiom
+  | axPos: formula -> formula -> axiom
+  | axT  : formula -> axiom
+  | axB  : formula -> axiom
+  | axK4 : formula -> axiom
+  | axD  : formula -> axiom
+  | axK5 : formula -> axiom
+  | axGL : formula -> axiom.
 
 (* 
   Definition of a function that instanciates an axiom, that is, given an object of type axiom defined above,
