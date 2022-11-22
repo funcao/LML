@@ -2,10 +2,14 @@ Require Import Modal_Library List.
 
 Export ListNotations.
 
+(***
+    Notations for modal formulas and related stuff
+***)
+
 Declare Custom Entry modal.
 Declare Scope modal_scope.
 
-(* Bind Scope modal_scope with modalFormula. *)
+(* Bind Scope modal_scope with formula. *)
 
 Notation "x" := x
     (in custom modal at level 0, x ident).
@@ -28,6 +32,11 @@ Notation " <> p " := (Dia p)
 Notation " # p " := (Lit p)
     (in custom modal at level 2, no associativity, p constr at level 1, format "# p").
 
+(* 
+  Modal formula written and printed inside delimeters [! and !], inside those delimeters, 
+  we can redefine notations that are used nativelly by Coq, eg. /\ and -> 
+*)
+
 Notation "[ F -- V ]" := (Build_Model F V).
 
 Notation "Γ ||= φ" := (entails_modal Γ φ)
@@ -41,3 +50,5 @@ Notation "φ =|= ψ" := (equivalence φ ψ)
 
 Notation "M ' w ||- φ" := (fun_validation M w φ)
   (at level 110, right associativity).
+
+(* Notations for some of the modal functions defined so far *)

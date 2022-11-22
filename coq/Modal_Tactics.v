@@ -1,6 +1,12 @@
-Require Import List Modal_Library Modal_Notations Deductive_System.
+Require Import List Modal_Library Modal_Notations Deductive_System Classical.
 Import ListNotations.
 
+(** Some auxiliary tactics and lemmas **)
+
+(* 
+  If in a system S we can prove an instance of axiom 1 with φ:=A and ψ:=B, 
+  and we can prove A, then we can prove B -> A
+*)
 Lemma modal_ax1:
   forall (S: axiom -> Prop) g A B,
   S (ax1 A B) ->
@@ -13,6 +19,11 @@ Proof.
     + reflexivity.
   - assumption.
 Defined.
+
+(* 
+  If in a system S we can prove an instance of axiom 2 with φ:=A, ψ:=B and Ɣ:=C 
+  and if we can prove A -> B -> C and A -> B, then we can prove A -> C
+*)
 
 Lemma modal_ax2:
   forall (S: axiom -> Prop) g A B C,
@@ -35,6 +46,11 @@ Proof.
       * assumption.
 Defined.
 
+(* 
+  If in a system S we can prove an instance of axiom 5 with φ:=A and ψ:=B 
+  and if we can prove A /\ B, then we can prove A
+*)
+
 Lemma modal_ax5:
   forall (S: axiom -> Prop) g A B,
   S (ax5 A B) ->
@@ -49,6 +65,11 @@ Proof.
     + apply H1.
     + assumption.
 Defined.
+
+(* 
+  If in a system S we can prove an instance of axiom 6 with φ:=A and ψ:=B 
+  and if we can prove A /\ B, then we can prove B
+*)
 
 Lemma modal_ax6:
   forall (S: axiom -> Prop) g A B,
@@ -65,6 +86,12 @@ Proof.
     + assumption.
 Defined.
 
+(* 
+  If in a system S we can prove an instance of axiom a with φ:=(B -> C) and ψ:=A 
+  and if we can prove an instance of axiom 2 with φ:=A, ψ:=B and Ɣ:=C and if we can
+  prove A -> B and if we can prove B -> C then we can prove A -> C
+*)
+
 Lemma modal_compose:
   forall (S: axiom -> Prop) g A B C,
   S (ax1 [! B -> C !] A) ->
@@ -75,14 +102,17 @@ Lemma modal_compose:
 Proof.
   intros S g a b c ?H ?H H1 H2.
   assert (S; g |-- [! a -> b -> c !]).
-  - eapply modal_ax1.
-    + assumption.
-    + assumption.
+  - eapply modal_ax1; assumption.
   - eapply modal_ax2.
     + eassumption.
     + exact H3.
     + exact H1.
 Defined.
+
+(* 
+  If in a system S we can prove an instance of axiom K with φ:=A and ψ:=B 
+  and if we can prove [](A -> B), then we can prove ([]A -> []B)
+*)
 
 Lemma modal_axK:
   forall (S: axiom -> Prop) g A B,
@@ -99,6 +129,12 @@ Proof.
     + assumption.
 Defined.
 
+(* 
+  If in a system S we can prove an instance of axiom 4 with φ:=A ,
+  then we can prove ([]A -> [][]A)
+*)
+
+(*Não entendi essa prova, está apenas provando uma instância de 4*)
 Lemma modal_axK4:
   forall (S: axiom -> Prop) g A,
   S (axK4 A) ->
@@ -110,6 +146,9 @@ Proof.
   - reflexivity.
 Defined.
 
+(*
+  Semantic implication is transitive
+*)
 Lemma modal_impl_transitivity:
   forall M a b c,
   (M |= [! a -> b !]) /\ (M |= [! b -> c !]) ->
@@ -118,3 +157,25 @@ Proof.
   intros M a b c [H1 H2] w H3.
   apply H2; apply H1; assumption.
 Defined.
+
+(*
+  Double negation is valid
+*)
+Theorem modal_double_neg: 
+  forall M w p, (M ' w ||- [! ~~ p !]) -> (M ' w ||- p).
+Proof.
+  intros M w p H; simpl in H; apply NNPP; apply H.
+Defined.
+
+(*
+  Contraposition in valid
+*)
+Theorem modal_contra: 
+  forall M p q,
+  (M |= [! ~ p -> ~ q !]) -> (M |= [! q -> p !]).
+Proof.
+  intros M p q H w1 H1.
+  unfold validate_model in H; simpl in *.
+  apply modal_double_neg; intros H2.
+  apply H in H2; contradiction.
+Qed.
