@@ -114,58 +114,58 @@ Inductive deduction (A: axiom -> Prop): theory -> formula -> Prop :=
 
 (* System K, the most basic systems *)
 Inductive K: axiom -> Prop :=
-  | K_ax1:   forall φ ψ, K   (ax1 φ ψ)
+  | K_ax1:   forall φ ψ,   K (ax1 φ ψ)
   | K_ax2:   forall φ ψ Ɣ, K (ax2 φ ψ Ɣ)
-  | K_ax3:   forall φ ψ, K   (ax3 φ ψ)
-  | K_ax4:   forall φ ψ, K   (ax4 φ ψ)
-  | K_ax5:   forall φ ψ, K   (ax5 φ ψ)
-  | K_ax6:   forall φ ψ, K   (ax6 φ ψ)
-  | K_ax7:   forall φ ψ, K   (ax7 φ ψ)
-  | K_ax8:   forall φ ψ, K   (ax8 φ ψ)
+  | K_ax3:   forall φ ψ,   K (ax3 φ ψ)
+  | K_ax4:   forall φ ψ,   K (ax4 φ ψ)
+  | K_ax5:   forall φ ψ,   K (ax5 φ ψ)
+  | K_ax6:   forall φ ψ,   K (ax6 φ ψ)
+  | K_ax7:   forall φ ψ,   K (ax7 φ ψ)
+  | K_ax8:   forall φ ψ,   K (ax8 φ ψ)
   | K_ax9:   forall φ ψ Ɣ, K (ax9 φ ψ Ɣ)
-  | K_ax10:  forall φ ψ, K   (ax10 φ ψ)
-  | K_axK:   forall φ ψ, K   (axK φ ψ)
-  | K_axPos: forall φ ψ, K   (axPos φ ψ).
+  | K_ax10:  forall φ ψ,   K (ax10 φ ψ)
+  | K_axK:   forall φ ψ,   K (axK φ ψ)
+  | K_axPos: forall φ ψ,   K (axPos φ ψ).
 
 (* System T, where the accesibility relation is reflexive *)
 Inductive T: axiom -> Prop :=
   | T_K:   forall φ, K φ -> T φ
-  | T_axT: forall φ , T (axT φ).
+  | T_axT: forall φ, T (axT φ).
 
 (* System B, where the accesibility relation is reflexive and symmetric *)
 Inductive B: axiom -> Prop :=
   | B_T:   forall φ, T φ -> B φ
-  | B_axB: forall φ , B (axB φ).
+  | B_axB: forall φ, B (axB φ).
 
-(* System 4, where the accesibility relation is transitive *)
+(* System K4 (or simply 4), where the accesibility relation is transitive *)
 Inductive K4: axiom -> Prop :=
   | K4_K:    forall φ, K φ -> K4 φ
-  | K4_axK4: forall φ , K4 (axK4 φ).
+  | K4_axK4: forall φ, K4 (axK4 φ).
 
 (* System D, where the accesibility relation is serial *)
 Inductive D: axiom -> Prop :=
   | D_K:   forall φ, K φ -> D φ
-  | D_axD: forall φ , D (axD φ).
+  | D_axD: forall φ, D (axD φ).
 
 (* System K5 (or simply 5), where the accesibility relation is euclidean *)
 Inductive K5: axiom -> Prop :=
   | K5_K:    forall φ, K φ -> K5 φ
-  | K5_axK5: forall φ , K5 (axK5 φ).
+  | K5_axK5: forall φ, K5 (axK5 φ).
 
 (* System S4, where the accesibility relation is reflexive and transitive *)
 Inductive S4: axiom -> Prop :=
   | S4_T:    forall φ, T φ -> S4 φ
-  | S4_axK4: forall φ , S4 (axK4 φ).
+  | S4_axK4: forall φ, S4 (axK4 φ).
 
 (* System S5, where the accesibility relation is reflexive, transitive and symmetric *)
 Inductive S5: axiom -> Prop :=
   | S5_B:  forall φ, B φ -> S5 φ
-  | S5_S4: forall φ , S4 φ -> S5 φ.
+  | S5_S4: forall φ, S4 φ -> S5 φ.
 
 (* Another way of defining S5, where the accesibility relation is reflexive and euclidean *)
 Inductive S5_2: axiom -> Prop :=
   | S5_2_T:  forall φ, T φ -> S5_2 φ
-  | S5_2_K5: forall φ , K5 φ -> S5_2 φ.
+  | S5_2_K5: forall φ, K5 φ -> S5_2 φ.
 
 (* System GL, where the accesibility relation is converselly well founded and transitive *)
 Inductive GL: axiom -> Prop :=

@@ -9,6 +9,11 @@ Frame_Validation.v
 Logical_Equivalence.v
 Soundness.v
 exemplos.v
+PoCBasicComponents.v
+PoCSintaticComponents.v
+PoCSemanticComponents.v
 MultiModalCore.v
-FinNotations.v
-ProofofConcept.v
+MultiModalExamples.v
+MultiModalSemantics.v
+MultiModalSyntax.v
+MultiModalSoundness.v
