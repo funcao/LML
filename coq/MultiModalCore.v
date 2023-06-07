@@ -524,58 +524,67 @@ Section MultiModal.
   Qed.
 
   (*
-    Multimodal version of System K
-    Note the restriction on the cases for the axioms that have modalities
+    Multimodal axiomatic systems
+    Each system is indexed by a list of nat, which are the indexes of the modalities of that system
+    So we may have e.g. Kn [0; 1; 2] to represent that the system Kn (n-modal K) has modalities 0, 1 and 2
+    This is most useful for defining joins of axiomatic systems, as we may have something e.g.
+      Kn [0; 2] Tn [1; 3] to define the system resulting of the join of Kn and Tn and has modalities 0, 1, 2 and 3
+    To garantee that indexes are valid, we add the condition of that forall i in the list of indexes,
+      every instance of an axiom with modalities with index i are deducible
+    To define a multimodal system that has all modalities availible, simply define S (seq 0 Modalities), where S is
+      your system in question
   *)
-  Inductive Kn (index:nat): MMaxiom -> Prop :=
-    | Kn_ax1:   forall φ ψ,   (deducible_formula (MMinstance (MMax1 φ ψ)))         -> Kn index (MMax1   φ ψ)
-    | Kn_ax2:   forall φ ψ Ɣ, (deducible_formula (MMinstance (MMax2 φ ψ Ɣ)))       -> Kn index (MMax2   φ ψ Ɣ)
-    | Kn_ax3:   forall φ ψ,   (deducible_formula (MMinstance (MMax3 φ ψ)))         -> Kn index (MMax3   φ ψ)
-    | Kn_ax4:   forall φ ψ,   (deducible_formula (MMinstance (MMax4 φ ψ)))         -> Kn index (MMax4   φ ψ)
-    | Kn_ax5:   forall φ ψ,   (deducible_formula (MMinstance (MMax5 φ ψ)))         -> Kn index (MMax5   φ ψ)
-    | Kn_ax6:   forall φ ψ,   (deducible_formula (MMinstance (MMax6 φ ψ)))         -> Kn index (MMax6   φ ψ)
-    | Kn_ax7:   forall φ ψ,   (deducible_formula (MMinstance (MMax7 φ ψ)))         -> Kn index (MMax7   φ ψ)
-    | Kn_ax8:   forall φ ψ,   (deducible_formula (MMinstance (MMax8 φ ψ)))         -> Kn index (MMax8   φ ψ)
-    | Kn_ax9:   forall φ ψ Ɣ, (deducible_formula (MMinstance (MMax9 φ ψ Ɣ)))       -> Kn index (MMax9   φ ψ Ɣ)
-    | Kn_ax10:  forall φ ψ,   (deducible_formula (MMinstance (MMax10 φ ψ)))        -> Kn index (MMax10  φ ψ)
-    | Kn_axK:   forall φ ψ,   (deducible_formula (MMinstance (MMaxK index φ ψ)))   -> Kn index (MMaxK   index φ ψ)
-    | Kn_axPos: forall φ ψ,   (deducible_formula (MMinstance (MMaxPos index φ ψ))) -> Kn index (MMaxPos index φ ψ).
+  Inductive Kn (index: list nat): MMaxiom -> Prop :=
+    | Kn_ax1:   forall φ ψ,   (deducible_formula (MMinstance (MMax1 φ ψ)))      -> Kn index (MMax1   φ ψ)
+    | Kn_ax2:   forall φ ψ Ɣ, (deducible_formula (MMinstance (MMax2 φ ψ Ɣ)))    -> Kn index (MMax2   φ ψ Ɣ)
+    | Kn_ax3:   forall φ ψ,   (deducible_formula (MMinstance (MMax3 φ ψ)))      -> Kn index (MMax3   φ ψ)
+    | Kn_ax4:   forall φ ψ,   (deducible_formula (MMinstance (MMax4 φ ψ)))      -> Kn index (MMax4   φ ψ)
+    | Kn_ax5:   forall φ ψ,   (deducible_formula (MMinstance (MMax5 φ ψ)))      -> Kn index (MMax5   φ ψ)
+    | Kn_ax6:   forall φ ψ,   (deducible_formula (MMinstance (MMax6 φ ψ)))      -> Kn index (MMax6   φ ψ)
+    | Kn_ax7:   forall φ ψ,   (deducible_formula (MMinstance (MMax7 φ ψ)))      -> Kn index (MMax7   φ ψ)
+    | Kn_ax8:   forall φ ψ,   (deducible_formula (MMinstance (MMax8 φ ψ)))      -> Kn index (MMax8   φ ψ)
+    | Kn_ax9:   forall φ ψ Ɣ, (deducible_formula (MMinstance (MMax9 φ ψ Ɣ)))    -> Kn index (MMax9   φ ψ Ɣ)
+    | Kn_ax10:  forall φ ψ,   (deducible_formula (MMinstance (MMax10 φ ψ)))     -> Kn index (MMax10  φ ψ)
+    | Kn_axK:   forall i φ ψ, In i index ->
+                               (deducible_formula (MMinstance (MMaxK i φ ψ)))   -> Kn index (MMaxK   i φ ψ)
+    | Kn_axPos: forall i φ ψ, In i index ->
+                               (deducible_formula (MMinstance (MMaxPos i φ ψ))) -> Kn index (MMaxPos i φ ψ).
 
-  Inductive Tn (index:nat): MMaxiom -> Prop :=
+  Inductive Tn (index: list nat): MMaxiom -> Prop :=
     | Tn_Kn : forall φ, Kn index φ -> Tn index φ
-    | Tn_axT: forall φ, (deducible_formula (MMinstance (MMaxT index φ))) -> Tn index (MMaxT index φ).
+    | Tn_axT: forall i φ, In i index -> (deducible_formula (MMinstance (MMaxT i φ))) -> Tn index (MMaxT i φ).
 
-  Inductive Bn (index:nat): MMaxiom -> Prop :=
+  Inductive Bn (index: list nat): MMaxiom -> Prop :=
     | Bn_Tn : forall φ, Tn index φ -> Bn index φ
-    | Bn_axB: forall φ, (deducible_formula (MMinstance (MMaxB index φ))) -> Bn index (MMaxB index φ).
+    | Bn_axB: forall i φ, In i index -> (deducible_formula (MMinstance (MMaxB i φ))) -> Bn index (MMaxB i φ).
 
-  Inductive K4n (index:nat): MMaxiom -> Prop :=
+  Inductive K4n (index: list nat): MMaxiom -> Prop :=
     | K4n_Kn : forall φ, Kn index φ -> K4n index φ
-    | K4n_axK4: forall φ, (deducible_formula (MMinstance (MMaxK4 index φ))) -> K4n index (MMaxK4 index φ).
+    | K4n_axK4: forall i φ, In i index -> (deducible_formula (MMinstance (MMaxK4 i φ))) -> K4n index (MMaxK4 i φ).
 
-  Inductive Dn (index:nat): MMaxiom -> Prop :=
+  Inductive Dn (index: list nat): MMaxiom -> Prop :=
     | Dn_Kn : forall φ, Kn index φ -> Dn index φ
-    | Dn_axD: forall φ, (deducible_formula (MMinstance (MMaxD index φ))) -> Dn index (MMaxD index φ).
+    | Dn_axD: forall i φ, In i index -> (deducible_formula (MMinstance (MMaxD i φ))) -> Dn index (MMaxD i φ).
 
-  Inductive K5n (index:nat): MMaxiom -> Prop :=
+  Inductive K5n (index: list nat): MMaxiom -> Prop :=
     | K5n_Kn : forall φ, Kn index φ -> K5n index φ
-    | K5n_axK5: forall φ, (deducible_formula (MMinstance (MMaxK5 index φ))) -> K5n index (MMaxK5 index φ).
+    | K5n_axK5: forall i φ, In i index -> (deducible_formula (MMinstance (MMaxK5 i φ))) -> K5n index (MMaxK5 i φ).
 
-  Inductive S4n (index:nat): MMaxiom -> Prop :=
+  Inductive S4n (index: list nat): MMaxiom -> Prop :=
     | S4n_Tn : forall φ, Tn index φ -> S4n index φ
-    | S4n_axK4: forall φ, (deducible_formula (MMinstance (MMaxK4 index φ))) -> S4n index (MMaxK4 index φ).
+    | S4n_axK4: forall i φ, In i index -> (deducible_formula (MMinstance (MMaxK4 i φ))) -> S4n index (MMaxK4 i φ).
 
-  Inductive S5n (index:nat): MMaxiom -> Prop :=
+  Inductive S5n (index: list nat): MMaxiom -> Prop :=
     | S5n_Bn : forall φ, Bn  index φ -> S5n index φ
     | S5n_S4n: forall φ, S4n index φ -> S5n index φ.
 
-  Inductive S5n_alt (index:nat): MMaxiom -> Prop :=
+  Inductive S5n_alt (index: list nat): MMaxiom -> Prop :=
     | S5n_alt_Tn : forall φ, Tn  index φ -> S5n_alt index φ
     | S5n_alt_K5n: forall φ, K5n index φ -> S5n_alt index φ.
 
-  Inductive GLn (index:nat): MMaxiom -> Prop :=
+  Inductive GLn (index: list nat): MMaxiom -> Prop :=
     | GLn_K4n : forall φ, K4n index φ -> GLn index φ
-    | GLn_axGL: forall φ, (deducible_formula (MMinstance (MMaxGL index φ))) -> GLn index (MMaxGL index φ).
+    | GLn_axGL: forall i φ, In i index -> (deducible_formula (MMinstance (MMaxGL i φ))) -> GLn index (MMaxGL i φ).
 
   Require Import Deductive_System. (* to define translations, importing earlier causes weird errors *)
 
@@ -609,20 +618,20 @@ Section MultiModal.
     Inductive definition of the join of two axiomatic systems
       be it two modal, one modal one multimodal or two multimodal
   *)
-  Inductive join (S1 S2: axiom -> Prop) (index1 index2: nat): MMaxiom -> Prop :=
+  Inductive join (S1 S2: axiom -> Prop) (index1 index2: nat): list nat -> MMaxiom -> Prop :=
     | derivable_S1: forall a b, S1 a -> axiom_to_MMaxiom index1 a b ->
-      deducible_formula (MMinstance b) -> join S1 S2 index1 index2 b
+      deducible_formula (MMinstance b) -> join S1 S2 index1 index2 (index1 :: index2 :: nil) b
     | derivable_S2: forall a b, S2 a -> axiom_to_MMaxiom index2 a b ->
-      deducible_formula (MMinstance b) -> join S1 S2 index1 index2 b.
+      deducible_formula (MMinstance b) -> join S1 S2 index1 index2 (index1 :: index2 :: nil) b.
 
-  Inductive join_one (S1: axiom -> Prop) (S2: MMaxiom -> Prop) (index: nat): MMaxiom -> Prop :=
-    | derivable_S1_one: forall a b, S1 a -> axiom_to_MMaxiom index a b ->
-      deducible_formula (MMinstance b) -> join_one S1 S2 index b
-    | derivable_S2_one: forall a, S2 a -> join_one S1 S2 index a.
+  Inductive join_one (S1: axiom -> Prop) (S2: list nat -> MMaxiom -> Prop) (index1: nat) (index2: list nat): list nat -> MMaxiom -> Prop :=
+    | derivable_S1_one: forall a b, S1 a -> axiom_to_MMaxiom index1 a b ->
+      deducible_formula (MMinstance b) -> join_one S1 S2 index1 index2 (index1 :: index2) b
+    | derivable_S2_one: forall a, S2 index2 a -> join_one S1 S2 index1 index2 (index1 :: index2) a.
 
-  Inductive join_two (S1 S2: MMaxiom -> Prop): MMaxiom -> Prop :=
-    | derivable_S1_two: forall a, S1 a -> join_two S1 S2 a
-    | derivable_S2_two: forall a, S2 a -> join_two S1 S2 a.
+  Inductive join_two (S1 S2: list nat -> MMaxiom -> Prop) (index1 index2: list nat): list nat -> MMaxiom -> Prop :=
+    | derivable_S1_two: forall a, S1 index1 a -> join_two S1 S2 index1 index2 (index1 ++ index2) a
+    | derivable_S2_two: forall a, S2 index2 a -> join_two S1 S2 index1 index2 (index1 ++ index2) a.
 
   (*
     Proof of soundness of the previous definition
@@ -681,11 +690,11 @@ End MultiModal.
     These notatios include these variables when the function is called, so they can be used outside
       the section
 *)
-Notation "X ; w ; n ; R ||-M φ":= (valuation n R X w φ) (at level 110, right associativity).
-Notation "X ; n ; R |=M φ"     := (validity_in_model n R X φ) (at level 110, right associativity).
-Notation "Γ ; X ; n ; R ||=M φ":= (entailment n X R Γ φ) (at level 110, no associativity).
-Notation "Γ ; n ; R ||=M φ"    := (semantic_entailment n R Γ φ) (at level 110, no associativity).
-Notation "A ; G ; n |--M p"    := (MMdeduction n A G p) (at level 110, no associativity).
+Notation "X ; w ; n ||-M φ" := (valuation n X w φ) (at level 110, right associativity).
+Notation "X ; n |=M φ"      := (validity_in_model n X φ) (at level 110, right associativity).
+Notation "Γ ; X ; n ||=M φ" := (entailment n X Γ φ) (at level 110, no associativity).
+Notation "Γ ; n ||=M φ"     := (semantic_entailment n Γ φ) (at level 110, no associativity).
+Notation "A ; G ; n |--M p" := (MMdeduction n A G p) (at level 110, no associativity).
 
 (*
   Properties of relations that were defined in the base library by means of frames,

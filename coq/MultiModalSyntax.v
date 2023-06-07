@@ -96,60 +96,61 @@ Proof.
   induction t; simpl; firstorder; apply deducible_formula_condition with (f:=a) in H; auto.
 Qed.
 
-Theorem MMdeduction_generalization_Kn: forall modalities n Γ φ,
+Theorem MMdeduction_generalization_Kn: forall modalities indexes n Γ φ,
   let K_to_Kn := formula_to_MMformula in
   n < modalities ->
+  In n indexes ->
   deduction K Γ φ ->
-  MMdeduction modalities (Kn modalities n) (theory_to_MMtheory Γ n) (K_to_Kn φ n).
+  MMdeduction modalities (Kn modalities indexes) (theory_to_MMtheory Γ n) (K_to_Kn φ n).
 Proof.
-  intros modalities n Γ φ K_to_Kn H0 H1.
-  dependent induction H1;
-  assert (H2: deducible_formula modalities (K_to_Kn f n)) by
+  intros modalities indexes n Γ φ K_to_Kn H0 H1 H2.
+  dependent induction H2;
+  assert (H3: deducible_formula modalities (K_to_Kn f n)) by
     (apply deducible_formula_condition with(f:=f) in H0; assumption);
-  assert (H3: deducible_theory modalities (theory_to_MMtheory t n)) by
+  assert (H4: deducible_theory modalities (theory_to_MMtheory t n)) by
     (apply deducible_theory_condition with(t:=t) in H0; assumption).
   - (*Premise*)
     apply MMPrem with (i); try apply theory_to_MMtheory_preserves_order; assumption.
   - (*Axioms*)
     destruct H; unfold K_to_Kn in *.
-    + apply axiom_to_MMaxiom_sound with (a:=ax1 φ ψ) (b:= MMax1 (K_to_Kn φ n) (K_to_Kn ψ n)) (n:=n) in H1;
+    + apply axiom_to_MMaxiom_sound with (a:=ax1 φ ψ) (b:= MMax1 (K_to_Kn φ n) (K_to_Kn ψ n)) (n:=n) in H2;
       try constructor.
-      apply MMAx with (MMax1 (K_to_Kn φ n) (K_to_Kn ψ n)); try constructor; try rewrite H1; easy.
-    + apply axiom_to_MMaxiom_sound with (a:=ax2 φ ψ Ɣ) (b:= MMax2 (K_to_Kn φ n) (K_to_Kn ψ n) (K_to_Kn Ɣ n)) (n:=n) in H1;
+      apply MMAx with (MMax1 (K_to_Kn φ n) (K_to_Kn ψ n)); try constructor; try rewrite H2; easy.
+    + apply axiom_to_MMaxiom_sound with (a:=ax2 φ ψ Ɣ) (b:= MMax2 (K_to_Kn φ n) (K_to_Kn ψ n) (K_to_Kn Ɣ n)) (n:=n) in H2;
       try constructor.
-      apply MMAx with (MMax2 (K_to_Kn φ n) (K_to_Kn ψ n) (K_to_Kn Ɣ n)); try constructor; try rewrite H1; easy.
-    + apply axiom_to_MMaxiom_sound with (a:=ax3 φ ψ) (b:= MMax3 (K_to_Kn φ n) (K_to_Kn ψ n)) (n:=n) in H1;
+      apply MMAx with (MMax2 (K_to_Kn φ n) (K_to_Kn ψ n) (K_to_Kn Ɣ n)); try constructor; try rewrite H2; easy.
+    + apply axiom_to_MMaxiom_sound with (a:=ax3 φ ψ) (b:= MMax3 (K_to_Kn φ n) (K_to_Kn ψ n)) (n:=n) in H2;
       try constructor.
-      apply MMAx with (MMax3 (K_to_Kn φ n) (K_to_Kn ψ n)); try constructor; try rewrite H1; easy.
-    + apply axiom_to_MMaxiom_sound with (a:=ax4 φ ψ) (b:= MMax4 (K_to_Kn φ n) (K_to_Kn ψ n)) (n:=n) in H1;
+      apply MMAx with (MMax3 (K_to_Kn φ n) (K_to_Kn ψ n)); try constructor; try rewrite H2; easy.
+    + apply axiom_to_MMaxiom_sound with (a:=ax4 φ ψ) (b:= MMax4 (K_to_Kn φ n) (K_to_Kn ψ n)) (n:=n) in H2;
       try constructor.
-      apply MMAx with (MMax4 (K_to_Kn φ n) (K_to_Kn ψ n)); try constructor; try rewrite H1; easy.
-    + apply axiom_to_MMaxiom_sound with (a:=ax5 φ ψ) (b:= MMax5 (K_to_Kn φ n) (K_to_Kn ψ n)) (n:=n) in H1;
+      apply MMAx with (MMax4 (K_to_Kn φ n) (K_to_Kn ψ n)); try constructor; try rewrite H2; easy.
+    + apply axiom_to_MMaxiom_sound with (a:=ax5 φ ψ) (b:= MMax5 (K_to_Kn φ n) (K_to_Kn ψ n)) (n:=n) in H2;
       try constructor.
-      apply MMAx with (MMax5 (K_to_Kn φ n) (K_to_Kn ψ n)); try constructor; try rewrite H1; easy.
-    + apply axiom_to_MMaxiom_sound with (a:=ax6 φ ψ) (b:= MMax6 (K_to_Kn φ n) (K_to_Kn ψ n)) (n:=n) in H1;
+      apply MMAx with (MMax5 (K_to_Kn φ n) (K_to_Kn ψ n)); try constructor; try rewrite H2; easy.
+    + apply axiom_to_MMaxiom_sound with (a:=ax6 φ ψ) (b:= MMax6 (K_to_Kn φ n) (K_to_Kn ψ n)) (n:=n) in H2;
       try constructor.
-      apply MMAx with (MMax6 (K_to_Kn φ n) (K_to_Kn ψ n)); try constructor; try rewrite H1; easy.
-    + apply axiom_to_MMaxiom_sound with (a:=ax7 φ ψ) (b:= MMax7 (K_to_Kn φ n) (K_to_Kn ψ n)) (n:=n) in H1;
+      apply MMAx with (MMax6 (K_to_Kn φ n) (K_to_Kn ψ n)); try constructor; try rewrite H2; easy.
+    + apply axiom_to_MMaxiom_sound with (a:=ax7 φ ψ) (b:= MMax7 (K_to_Kn φ n) (K_to_Kn ψ n)) (n:=n) in H2;
       try constructor.
-      apply MMAx with (MMax7 (K_to_Kn φ n) (K_to_Kn ψ n)); try constructor; try rewrite H1; easy.
-    + apply axiom_to_MMaxiom_sound with (a:=ax8 φ ψ) (b:= MMax8 (K_to_Kn φ n) (K_to_Kn ψ n)) (n:=n) in H1;
+      apply MMAx with (MMax7 (K_to_Kn φ n) (K_to_Kn ψ n)); try constructor; try rewrite H2; easy.
+    + apply axiom_to_MMaxiom_sound with (a:=ax8 φ ψ) (b:= MMax8 (K_to_Kn φ n) (K_to_Kn ψ n)) (n:=n) in H2;
       try constructor.
-      apply MMAx with (MMax8 (K_to_Kn φ n) (K_to_Kn ψ n)); try constructor; try rewrite H1; easy.
-    + apply axiom_to_MMaxiom_sound with (a:=ax9 φ ψ Ɣ) (b:= MMax9 (K_to_Kn φ n) (K_to_Kn ψ n) (K_to_Kn Ɣ n)) (n:=n) in H1;
+      apply MMAx with (MMax8 (K_to_Kn φ n) (K_to_Kn ψ n)); try constructor; try rewrite H2; easy.
+    + apply axiom_to_MMaxiom_sound with (a:=ax9 φ ψ Ɣ) (b:= MMax9 (K_to_Kn φ n) (K_to_Kn ψ n) (K_to_Kn Ɣ n)) (n:=n) in H2;
       try constructor.
-      apply MMAx with (MMax9 (K_to_Kn φ n) (K_to_Kn ψ n) (K_to_Kn Ɣ n)); try constructor; try rewrite H1; easy.
-    + apply axiom_to_MMaxiom_sound with (a:=ax10 φ ψ) (b:= MMax10 (K_to_Kn φ n) (K_to_Kn ψ n)) (n:=n) in H1;
+      apply MMAx with (MMax9 (K_to_Kn φ n) (K_to_Kn ψ n) (K_to_Kn Ɣ n)); try constructor; try rewrite H2; easy.
+    + apply axiom_to_MMaxiom_sound with (a:=ax10 φ ψ) (b:= MMax10 (K_to_Kn φ n) (K_to_Kn ψ n)) (n:=n) in H2;
       try constructor.
-      apply MMAx with (MMax10 (K_to_Kn φ n) (K_to_Kn ψ n)); try constructor; try rewrite H1; easy.
-    + apply axiom_to_MMaxiom_sound with (a:=axK φ ψ) (b:= MMaxK n (K_to_Kn φ n) (K_to_Kn ψ n)) (n:=n) in H1;
+      apply MMAx with (MMax10 (K_to_Kn φ n) (K_to_Kn ψ n)); try constructor; try rewrite H2; easy.
+    + apply axiom_to_MMaxiom_sound with (a:=axK φ ψ) (b:= MMaxK n (K_to_Kn φ n) (K_to_Kn ψ n)) (n:=n) in H2;
       try constructor.
-      apply MMAx with (MMaxK n (K_to_Kn φ n) (K_to_Kn ψ n)); try constructor; try rewrite H1; easy.
-    + apply axiom_to_MMaxiom_sound with (a:=axPos φ ψ) (b:= MMaxPos n (K_to_Kn φ n) (K_to_Kn ψ n)) (n:=n) in H1;
+      apply MMAx with (MMaxK n (K_to_Kn φ n) (K_to_Kn ψ n)); try constructor; try rewrite H2; easy.
+    + apply axiom_to_MMaxiom_sound with (a:=axPos φ ψ) (b:= MMaxPos n (K_to_Kn φ n) (K_to_Kn ψ n)) (n:=n) in H2;
       try constructor.
-      apply MMAx with (MMaxPos n (K_to_Kn φ n) (K_to_Kn ψ n)); try constructor; try rewrite H1; easy.
+      apply MMAx with (MMaxPos n (K_to_Kn φ n) (K_to_Kn ψ n)); try constructor; try rewrite H2; easy.
   - (*Modus Ponens*)
-    assert (H4: deducible_formula modalities (K_to_Kn g n)) by
+    assert (H5: deducible_formula modalities (K_to_Kn g n)) by
       (apply deducible_formula_condition with(f:=g) in H0; assumption);
     apply MMMp with (K_to_Kn f n);
     try apply IHdeduction1; try assumption;
@@ -160,17 +161,17 @@ Proof.
 Qed.
 
 Lemma join_simmetric: forall modalities S1 S2 n1 n2 b,
-  join modalities S1 S2 n1 n2 b <-> join modalities S2 S1 n2 n1 b.
+  join modalities S1 S2 n1 n2 (n1 :: n2 :: nil) b <-> join modalities S2 S1 n2 n1 (n2 :: n1 :: nil) b.
 Proof.
   intros modalities S1 S2 n1 n2 b; split; induction 1;
   try (eapply derivable_S2; eassumption);
   eapply derivable_S1; eassumption.
 Qed.
 
-Lemma join_two_simmetric: forall S1 S2 b,
-  join_two S1 S2 b <-> join_two S2 S1 b.
+Lemma join_two_simmetric: forall S1 S2 l1 l2 b,
+  join_two S1 S2 l1 l2 (l1 ++ l2) b <-> join_two S2 S1 l2 l1 (l2 ++ l1) b.
 Proof.
-  intros S1 S2 b; split; induction 1;
+  intros S1 S2 l1 l2 b; split; induction 1;
   try (eapply derivable_S2_two; eassumption);
   eapply derivable_S1_two; eassumption.
 Qed.
@@ -178,8 +179,8 @@ Qed.
 Theorem join_preserves_deduction: forall modalities S1 n1 Γ φ,
   let K_to_Kn := formula_to_MMformula in
   n1 < modalities -> deduction S1 Γ φ ->
-  forall S2 n2 b, (forall a, axiom_to_MMaxiom n1 a b) -> join modalities S1 S2 n1 n2 b ->
-  MMdeduction modalities (join modalities S1 S2 n1 n2) (theory_to_MMtheory Γ n1) (K_to_Kn φ n1).
+  forall S2 n2 b, (forall a, axiom_to_MMaxiom n1 a b) -> join modalities S1 S2 n1 n2 (n1 :: n2 :: nil) b ->
+  MMdeduction modalities (join modalities S1 S2 n1 n2 (n1 :: n2 :: nil)) (theory_to_MMtheory Γ n1) (K_to_Kn φ n1).
 Proof.
   intros modalities S1 n1 Γ φ K_to_Kn H0 H1 S2 n2 b H2 H3.
   dependent induction H1;
@@ -208,10 +209,10 @@ Qed.
 Theorem join_one_preserves_deduction_left: forall modalities S1 n Γ φ,
   let K_to_Kn := formula_to_MMformula in
   n < modalities -> deduction S1 Γ φ ->
-  forall S2 b, (forall a, axiom_to_MMaxiom n a b) -> join_one modalities S1 S2 n b ->
-  MMdeduction modalities (join_one modalities S1 S2 n) (theory_to_MMtheory Γ n) (K_to_Kn φ n).
+  forall S2 l b, (forall a, axiom_to_MMaxiom n a b) -> join_one modalities S1 S2 n l (n :: l) b ->
+  MMdeduction modalities (join_one modalities S1 S2 n l (n :: l)) (theory_to_MMtheory Γ n) (K_to_Kn φ n).
 Proof.
-  intros modalities S1 n Γ φ K_to_Kn H0 H1 S2 b H2 H3.
+  intros modalities S1 n Γ φ K_to_Kn H0 H1 S2 l b H2 H3.
   dependent induction H1;
   assert (H4: deducible_formula modalities (K_to_Kn f n)) by
     (apply deducible_formula_condition with(f:=f) in H0; assumption);
@@ -235,13 +236,13 @@ Proof.
     apply MMNec; try eapply IHdeduction; eassumption.
 Qed.
 
-Theorem join_one_preserves_deduction_right: forall modalities S2 n Γ φ,
+Theorem join_one_preserves_deduction_right: forall modalities S2 l n Γ φ,
   let K_to_Kn := formula_to_MMformula in
-  n < modalities -> MMdeduction modalities S2 Γ φ ->
-  forall S1 b, join_one modalities S1 S2 n b ->
-  MMdeduction modalities (join_one modalities S1 S2 n) Γ φ.
+  n < modalities -> MMdeduction modalities (S2 l) Γ φ ->
+  forall S1 b, join_one modalities S1 S2 n l (n :: l) b ->
+  MMdeduction modalities (join_one modalities S1 S2 n l (n :: l)) Γ φ.
 Proof.
-  intros modalities S2 n Γ φ K_to_Kn H0 H1 S1 b H2.
+  intros modalities S2 l n Γ φ K_to_Kn H0 H1 S1 b H2.
   dependent induction H1.
   - (*Premise*)
     eapply MMPrem; eassumption.
@@ -257,11 +258,11 @@ Proof.
     apply MMNec; try eapply IHMMdeduction; eassumption.
 Qed.
 
-Theorem join_two_preserves_deduction: forall modalities S1 S2 Γ φ a,
-  MMdeduction modalities S1 Γ φ -> join_two S1 S2 a ->
-  MMdeduction modalities (join_two S1 S2) Γ φ.
+Theorem join_two_preserves_deduction: forall modalities S1 S2 l1 l2 Γ φ a,
+  MMdeduction modalities (S1 l1) Γ φ -> join_two S1 S2 l1 l2 (l1 ++ l2) a ->
+  MMdeduction modalities (join_two S1 S2 l1 l2 (l1 ++ l2)) Γ φ.
 Proof.
-  intros modalities S1 S2 Γ φ a H0 H1.
+  intros modalities S1 S2 l1 l2 Γ φ a H0 H1.
   dependent induction H0.
   - (*Premise*)
     eapply MMPrem; eassumption.
