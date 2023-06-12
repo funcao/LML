@@ -2,11 +2,15 @@ Require Import Arith List Notations Classical Relations Modal_Library Modal_Nota
 Export ListNotations.
 
 (*** Proof of Concept of fusions in the library - Fusion of Systems K4 and T (or KT) ***)
- 
-(** 
+
+(* 
+  TODO: Separate into multiple files
+*)
+
+(* 
   Definition of formulas of the multimodal language KT4 obtained by combining KT with K4 
   That is, this language contains modalities that behave like modalities of KT and K4
-**)
+*)
 Inductive KT4formula : Set :=
   | T4Lit    : nat        -> KT4formula
   | T4Neg    : KT4formula -> KT4formula
@@ -321,14 +325,14 @@ Qed.
 (*** Model Satisfiability and Semantic Entailment in KT4 ***)
 
 (* 
-  Defining Model Satisfiability - a formula is satisfiable in a model if 
+  Defining Model Validity - a formula is valid in a model if 
   it is true in every world of that model 
 *)
-Definition model_satisfiability (M: KT4Model) (φ: KT4formula) := 
+Definition model_validity (M: KT4Model) (φ: KT4formula) := 
     forall w, KT4eval M w φ.
 
 (* Notation for Model Satisfiability in KT4 *)
-Notation "M |=t4 f" := (model_satisfiability M f)
+Notation "M |=t4 f" := (model_validity M f)
   (at level 110, no associativity).
 
 (* Theories are (finite) lists of formulas *)
@@ -341,12 +345,12 @@ Definition KT4theory := list KT4formula.
 Fixpoint theorySatisfiable (M: KT4Model) (T: KT4theory): Prop :=
   match T with
   | [ ]    => True
-  | h :: t => (model_satisfiability M h) /\ (theorySatisfiable M t)
+  | h :: t => (model_validity M h) /\ (theorySatisfiable M t)
   end.
 
 (** Definition of Entailment **)
 Definition KT4entails (M: KT4Model) (T: KT4theory) (φ: KT4formula): Prop :=
-  theorySatisfiable M T -> model_satisfiability M φ.
+  theorySatisfiable M T -> model_validity M φ.
 
 (* Notation for Entailment in KT4 *)
 Notation "M T ||=t4 f" := (KT4entails M T f)
@@ -375,12 +379,7 @@ Definition subset {T: Type} (L1 L2: list T): Prop :=
 
 (* Valid formulas are formulas which are entailed in all models *)
 Definition KT4validity (T: KT4theory) (φ: KT4formula): Prop := 
-  forall M, theorySatisfiable M T -> model_satisfiability M φ.
-
-(*
-Definition entails_modal (Γ: theory) (φ: formula): Prop :=
-  forall M, theoryModal M Γ -> validate_model M φ.
-*)
+  forall M, theorySatisfiable M T -> model_validity M φ.
 
 (* Notation for Validity in KT4 *)
 Notation "T ||=t4 f" := (KT4validity T f)
@@ -584,16 +583,16 @@ Qed.
 (** Proving that Model Satisfiability in KT4 is a generalization of Model Satisfiability in KT/K4 **)
 
 (* First for KT *)
-Theorem KT_model_satisfiability_generalization: forall W RT RTR R4 R4R V φ, 
+Theorem KT_model_validity_generalization: forall W RT RTR R4 R4R V φ, 
   let FT4 := Build_KT4Frame W RT RTR R4 R4R in
     let MT4 := Build_KT4Model FT4 V in
       let M := KT4_model_into_KT MT4 in
         validate_model M φ <-> 
-          model_satisfiability MT4 (KTformula_to_KT4formula φ).
+          model_validity MT4 (KTformula_to_KT4formula φ).
 Proof.
   intros W RT RT_refl R4 R4_trans V φ FT4 MT4 M; simpl in *.
   destruct φ; intros; unfold validate_model in *;
-  unfold model_satisfiability in *; simpl in *.
+  unfold model_validity in *; simpl in *.
   - (*Lit*) split; trivial.
   - (*Neg*) 
     split; intros H0;
@@ -626,16 +625,16 @@ Proof.
 Qed.
 
 (* Then for K4 *)
-Theorem K4_model_satisfiability_generalization: forall W RT RTR R4 R4R V φ, 
+Theorem K4_model_validity_generalization: forall W RT RTR R4 R4R V φ, 
   let FT4 := Build_KT4Frame W RT RTR R4 R4R in
     let MT4 := Build_KT4Model FT4 V in
       let M := KT4_model_into_K4 MT4 in
         validate_model M φ <-> 
-          model_satisfiability MT4 (K4formula_to_KT4formula φ).
+          model_validity MT4 (K4formula_to_KT4formula φ).
 Proof.
   intros W RT RT_refl R4 R4_trans V φ FT4 MT4 M; simpl in *.
   destruct φ; intros; unfold validate_model in *;
-  unfold model_satisfiability in *; simpl in *.
+  unfold model_validity in *; simpl in *.
   - (*Lit*) split; trivial.
   - (*Neg*) 
     split; intros H0;
@@ -682,7 +681,7 @@ Proof.
   intros W RT RT_refl R4 R4_trans V T FT4 MT4 M; simpl in *.
   induction T as [ | φ T IHT]; split; intros; try easy; 
   destruct H as [H0 H1]; split; try (apply IHT; assumption);
-  eapply KT_model_satisfiability_generalization;
+  eapply KT_model_validity_generalization;
   eapply H0.
 Qed.
 
@@ -696,7 +695,7 @@ Proof.
   intros W RT RT_refl R4 R4_trans V T FT4 MT4 M; simpl in *.
   induction T as [ | φ T IHT]; split; intros; try easy; 
   destruct H as [H0 H1]; split; try (apply IHT; assumption);
-  eapply K4_model_satisfiability_generalization;
+  eapply K4_model_validity_generalization;
   eapply H0.
 Qed.
 
@@ -714,7 +713,7 @@ Theorem KT_semantic_entail_generalization: forall W RT RTR R4 R4R V T φ,
 Proof.
   intros W RT RT_refl R4 R4_trans V T φ FT4 MT4 M; simpl in *.
   destruct φ; intros; unfold entails in *; unfold KT4entails in *;
-  unfold validate_model in *; unfold model_satisfiability in *;
+  unfold validate_model in *; unfold model_validity in *;
   simpl in *.
   - (*Lit*) 
     split; intros H0 H1;
@@ -764,7 +763,7 @@ Theorem K4_semantic_entail_generalization: forall W RT RTR R4 R4R V T φ,
 Proof.
   intros W RT RT_refl R4 R4_trans V T φ FT4 MT4 M; simpl in *.
   destruct φ; intros; unfold entails in *; unfold KT4entails in *;
-  unfold validate_model in *; unfold model_satisfiability in *;
+  unfold validate_model in *; unfold model_validity in *;
   simpl in *.
   - (*Lit*) 
     split; intros H0 H1;
@@ -892,7 +891,7 @@ Qed.
 (*** Defining Axiomatic System for KT4 ***)
 
 (*
-  First, we must define the set of axioms we'll be using, much like formulas, they are define as an inductive type
+  First, we must define the set of axioms we'll be using, much like formulas, they are defined as an inductive type
 *)
 
 Require Import Deductive_System. 
@@ -920,7 +919,7 @@ Inductive KT4axiom : Set :=
   | KT4axK4   : KT4formula -> KT4axiom.
 
 (*
-  Next, we must define a function that "transforms" axioms into formulas, so they may be useful
+  Next, we must define a function that "transforms" axioms into formulas, so as to give a meaning to objects of the axiom type
 *)
 
 Definition KT4instantiate (a: KT4axiom): KT4formula :=
@@ -984,7 +983,7 @@ Lemma KT_axiom_to_KT4axiom_sound: forall a b φ,
 Proof.
   intros a b φ H0 H1.
   destruct a; simpl in *;
-  try (repeat (inversion H1; subst; reflexivity)).
+  repeat (inversion H1; subst; reflexivity).
 Qed.
 
 Lemma K4_axiom_to_KT4axiom_sound: forall a b φ,
@@ -993,7 +992,7 @@ Lemma K4_axiom_to_KT4axiom_sound: forall a b φ,
 Proof.
   intros a b φ H0 H1.
   destruct a; simpl in *; 
-  try (repeat (inversion H1; subst; reflexivity)).
+  repeat (inversion H1; subst; reflexivity).
 Qed.
 
 (*
@@ -1010,13 +1009,13 @@ Qed.
 
 Inductive KT4deduction (A: KT4axiom -> Prop): KT4theory -> KT4formula -> Prop :=
   (* Premises *)
-  | Prem: forall (T: KT4theory) (φ: KT4formula) (i: nat),
+  | PremKT4: forall (T: KT4theory) (φ: KT4formula) (i: nat),
                  (nth_error T i = Some φ) -> KT4deduction A T φ
   (* Instances of an Axiom *)
-  | Ax: forall (T: KT4theory) (a: KT4axiom) (φ: KT4formula),
+  | AxKT4: forall (T: KT4theory) (a: KT4axiom) (φ: KT4formula),
                A a -> KT4instantiate a = φ -> KT4deduction A T φ
   (* Modus Ponens *)
-  | Mp: forall (T: KT4theory) (φ ψ: KT4formula),
+  | MpKT4: forall (T: KT4theory) (φ ψ: KT4formula),
                KT4deduction A T <! φ -> ψ !> -> KT4deduction A T φ -> KT4deduction A T ψ
   (* Necessitation for T *)
   | Nec_T: forall (T: KT4theory)
@@ -1035,8 +1034,8 @@ Notation "A ; G |--t4 p" := (KT4deduction A G p)
   Next, we define the axiomatic system for our logic. As we're dealing with a bimodal logic, we need only
   define a single system, which has rules/axioms for K, T and 4 (rules/axioms for K would be in T/4 even in the
   monomodal case)
-  In what follows "forall a b c, KT4axiom (axX a b c ...)" is to be read as:
-  "In System KT4, all instances of axiom X are axioms of this system"
+  In what follows "forall a b c, KT4Ax (KT4axY a b c ...)" is to be read as:
+  "In System KT4, all instances of axiom Y are axioms of this system"
 *)
 
 (* System KT4 *)
@@ -1060,7 +1059,7 @@ Inductive KT4Ax: KT4axiom -> Prop :=
 
 (* For the following proofs, we will need so additional facts *)
 
-(* Translatiing Theories does not change which formulas are in the theories*)
+(* Translating Theories does not change which formulas are in the theories*)
 Lemma KT_theory_to_KT4theory_preserves_In: forall t φ,
   In φ t -> In (KTformula_to_KT4formula φ) (KT_theory_to_KT4theory t).
 Proof.
@@ -1144,7 +1143,7 @@ Theorem deduction_in_premise: forall A T φ,
   In φ T -> KT4deduction A T φ.
 Proof.
   intros A T φ H0. eapply In_nth_error in H0; destruct H0 as [i].
-  apply Prem with i; assumption.
+  apply PremKT4 with i; assumption.
 Qed.
 
 (* Weakeaning of a deduction, if a theory T1 is a subset of a theory T2 and T1 derives φ, then so does T2*)
@@ -1157,9 +1156,9 @@ Proof.
     unfold subset in H0; eapply nth_error_In in H.
     apply H0 in H; apply deduction_in_premise; auto.
   - (*Axiom*) 
-    apply Ax with a; auto.
+    apply AxKT4 with a; auto.
   - (*Modus Ponens*)
-    apply Mp with (φ1); [ apply IH1 | apply IH3]; assumption.
+    apply MpKT4 with (φ1); [ apply IH1 | apply IH3]; assumption.
   - (*Necessitation for T*)
     apply Nec_T; auto.
   - (*Necessitation for 4*)
@@ -1198,7 +1197,7 @@ Proof.
   intros Γ φ KT_to_KT4 H0;
   dependent induction H0.
   - (* Premise *)
-    apply Prem with i;
+    apply PremKT4 with i;
     apply KT_theory_to_KT4theory_nth_error; assumption.
   - (*Axiom*)
     destruct H as [a H | φ]; [destruct H |]. 
@@ -1206,45 +1205,45 @@ Proof.
     to avoid 3 levels of bullets*)
     + apply KT_axiom_to_KT4axiom_sound with (ax1 φ ψ) (KT4ax1 (KT_to_KT4 φ) (KT_to_KT4 ψ)) (f) in H0; 
       try constructor.
-      apply Ax with (KT4ax1 (KT_to_KT4 φ) (KT_to_KT4 ψ)); [constructor | easy].
+      apply AxKT4 with (KT4ax1 (KT_to_KT4 φ) (KT_to_KT4 ψ)); [constructor | easy].
     + apply KT_axiom_to_KT4axiom_sound with (ax2 φ ψ Ɣ) (KT4ax2 (KT_to_KT4 φ) (KT_to_KT4 ψ) (KT_to_KT4 Ɣ)) (f) in H0; 
       try constructor.
-      apply Ax with (KT4ax2 (KT_to_KT4 φ) (KT_to_KT4 ψ) (KT_to_KT4 Ɣ)); [constructor | easy].
+      apply AxKT4 with (KT4ax2 (KT_to_KT4 φ) (KT_to_KT4 ψ) (KT_to_KT4 Ɣ)); [constructor | easy].
     + apply KT_axiom_to_KT4axiom_sound with (ax3 φ ψ) (KT4ax3 (KT_to_KT4 φ) (KT_to_KT4 ψ)) (f) in H0; 
       try constructor.
-      apply Ax with (KT4ax3 (KT_to_KT4 φ) (KT_to_KT4 ψ)); [constructor | easy].
+      apply AxKT4 with (KT4ax3 (KT_to_KT4 φ) (KT_to_KT4 ψ)); [constructor | easy].
     + apply KT_axiom_to_KT4axiom_sound with (ax4 φ ψ) (KT4ax4 (KT_to_KT4 φ) (KT_to_KT4 ψ)) (f) in H0; 
       try constructor.
-      apply Ax with (KT4ax4 (KT_to_KT4 φ) (KT_to_KT4 ψ)); [constructor | easy].
+      apply AxKT4 with (KT4ax4 (KT_to_KT4 φ) (KT_to_KT4 ψ)); [constructor | easy].
     + apply KT_axiom_to_KT4axiom_sound with (ax5 φ ψ) (KT4ax5 (KT_to_KT4 φ) (KT_to_KT4 ψ)) (f) in H0; 
       try constructor.
-      apply Ax with (KT4ax5 (KT_to_KT4 φ) (KT_to_KT4 ψ)); [constructor | easy].
+      apply AxKT4 with (KT4ax5 (KT_to_KT4 φ) (KT_to_KT4 ψ)); [constructor | easy].
     + apply KT_axiom_to_KT4axiom_sound with (ax6 φ ψ) (KT4ax6 (KT_to_KT4 φ) (KT_to_KT4 ψ)) (f) in H0; 
       try constructor.
-      apply Ax with (KT4ax6 (KT_to_KT4 φ) (KT_to_KT4 ψ)); [constructor | easy].
+      apply AxKT4 with (KT4ax6 (KT_to_KT4 φ) (KT_to_KT4 ψ)); [constructor | easy].
     + apply KT_axiom_to_KT4axiom_sound with (ax7 φ ψ) (KT4ax7 (KT_to_KT4 φ) (KT_to_KT4 ψ)) (f) in H0; 
       try constructor.
-      apply Ax with (KT4ax7 (KT_to_KT4 φ) (KT_to_KT4 ψ)); [constructor | easy].
+      apply AxKT4 with (KT4ax7 (KT_to_KT4 φ) (KT_to_KT4 ψ)); [constructor | easy].
     + apply KT_axiom_to_KT4axiom_sound with (ax8 φ ψ) (KT4ax8 (KT_to_KT4 φ) (KT_to_KT4 ψ)) (f) in H0; 
       try constructor.
-      apply Ax with (KT4ax8 (KT_to_KT4 φ) (KT_to_KT4 ψ)); [constructor | easy].
+      apply AxKT4 with (KT4ax8 (KT_to_KT4 φ) (KT_to_KT4 ψ)); [constructor | easy].
     + apply KT_axiom_to_KT4axiom_sound with (ax9 φ ψ Ɣ) (KT4ax9 (KT_to_KT4 φ) (KT_to_KT4 ψ) (KT_to_KT4 Ɣ)) (f) in H0; 
       try constructor.
-      apply Ax with (KT4ax9 (KT_to_KT4 φ) (KT_to_KT4 ψ) (KT_to_KT4 Ɣ)); [constructor | easy].
+      apply AxKT4 with (KT4ax9 (KT_to_KT4 φ) (KT_to_KT4 ψ) (KT_to_KT4 Ɣ)); [constructor | easy].
     + apply KT_axiom_to_KT4axiom_sound with (ax10 φ ψ) (KT4ax10 (KT_to_KT4 φ) (KT_to_KT4 ψ)) (f) in H0; 
       try constructor.
-      apply Ax with (KT4ax10 (KT_to_KT4 φ) (KT_to_KT4 ψ)); [constructor | easy].
+      apply AxKT4 with (KT4ax10 (KT_to_KT4 φ) (KT_to_KT4 ψ)); [constructor | easy].
     + apply KT_axiom_to_KT4axiom_sound with (axK φ ψ) (KT4axK_T (KT_to_KT4 φ) (KT_to_KT4 ψ)) (f) in H0; 
       try constructor.
-      apply Ax with (KT4axK_T (KT_to_KT4 φ) (KT_to_KT4 ψ)); [constructor | easy].
+      apply AxKT4 with (KT4axK_T (KT_to_KT4 φ) (KT_to_KT4 ψ)); [constructor | easy].
     + apply KT_axiom_to_KT4axiom_sound with (axPos φ ψ) (KT4axPos_T (KT_to_KT4 φ) (KT_to_KT4 ψ)) (f) in H0; 
       try constructor.
-      apply Ax with (KT4axPos_T (KT_to_KT4 φ) (KT_to_KT4 ψ)); [constructor | easy]. 
+      apply AxKT4 with (KT4axPos_T (KT_to_KT4 φ) (KT_to_KT4 ψ)); [constructor | easy]. 
     + apply KT_axiom_to_KT4axiom_sound with (axT φ) (KT4axT (KT_to_KT4 φ)) (f) in H0; 
       try constructor.
-      apply Ax with (KT4axT (KT_to_KT4 φ)); [constructor | easy].
+      apply AxKT4 with (KT4axT (KT_to_KT4 φ)); [constructor | easy].
   - (* Modus Ponens *)
-    apply Mp with (KT_to_KT4 f); assumption.
+    apply MpKT4 with (KT_to_KT4 f); assumption.
   - (* Necessitation (for T)*)
     apply Nec_T with (φ := (KT_to_KT4 f)); assumption.
     (* For some reason, Coq wasn't able to correctly infer the type of φ in the above expression, so it was necessary
@@ -1258,7 +1257,7 @@ Proof.
   intros Γ φ K4_to_KT4 H0;
   dependent induction H0.
   - (* Premise *)
-    apply Prem with i;
+    apply PremKT4 with i;
     apply K4_theory_to_KT4theory_nth_error; assumption.
   - (*Axiom*)
     destruct H as [a H | φ]; [destruct H |]. 
@@ -1266,47 +1265,285 @@ Proof.
     to avoid 3 levels of bullets*)
     + apply K4_axiom_to_KT4axiom_sound with (ax1 φ ψ) (KT4ax1 (K4_to_KT4 φ) (K4_to_KT4 ψ)) (f) in H0; 
       try constructor.
-      apply Ax with (KT4ax1 (K4_to_KT4 φ) (K4_to_KT4 ψ)); [constructor | easy].
+      apply AxKT4 with (KT4ax1 (K4_to_KT4 φ) (K4_to_KT4 ψ)); [constructor | easy].
     + apply K4_axiom_to_KT4axiom_sound with (ax2 φ ψ Ɣ) (KT4ax2 (K4_to_KT4 φ) (K4_to_KT4 ψ) (K4_to_KT4 Ɣ)) (f) in H0; 
       try constructor.
-      apply Ax with (KT4ax2 (K4_to_KT4 φ) (K4_to_KT4 ψ) (K4_to_KT4 Ɣ)); [constructor | easy].
+      apply AxKT4 with (KT4ax2 (K4_to_KT4 φ) (K4_to_KT4 ψ) (K4_to_KT4 Ɣ)); [constructor | easy].
     + apply K4_axiom_to_KT4axiom_sound with (ax3 φ ψ) (KT4ax3 (K4_to_KT4 φ) (K4_to_KT4 ψ)) (f) in H0; 
       try constructor.
-      apply Ax with (KT4ax3 (K4_to_KT4 φ) (K4_to_KT4 ψ)); [constructor | easy].
+      apply AxKT4 with (KT4ax3 (K4_to_KT4 φ) (K4_to_KT4 ψ)); [constructor | easy].
     + apply K4_axiom_to_KT4axiom_sound with (ax4 φ ψ) (KT4ax4 (K4_to_KT4 φ) (K4_to_KT4 ψ)) (f) in H0; 
       try constructor.
-      apply Ax with (KT4ax4 (K4_to_KT4 φ) (K4_to_KT4 ψ)); [constructor | easy].
+      apply AxKT4 with (KT4ax4 (K4_to_KT4 φ) (K4_to_KT4 ψ)); [constructor | easy].
     + apply K4_axiom_to_KT4axiom_sound with (ax5 φ ψ) (KT4ax5 (K4_to_KT4 φ) (K4_to_KT4 ψ)) (f) in H0; 
       try constructor.
-      apply Ax with (KT4ax5 (K4_to_KT4 φ) (K4_to_KT4 ψ)); [constructor | easy].
+      apply AxKT4 with (KT4ax5 (K4_to_KT4 φ) (K4_to_KT4 ψ)); [constructor | easy].
     + apply K4_axiom_to_KT4axiom_sound with (ax6 φ ψ) (KT4ax6 (K4_to_KT4 φ) (K4_to_KT4 ψ)) (f) in H0; 
       try constructor.
-      apply Ax with (KT4ax6 (K4_to_KT4 φ) (K4_to_KT4 ψ)); [constructor | easy].
+      apply AxKT4 with (KT4ax6 (K4_to_KT4 φ) (K4_to_KT4 ψ)); [constructor | easy].
     + apply K4_axiom_to_KT4axiom_sound with (ax7 φ ψ) (KT4ax7 (K4_to_KT4 φ) (K4_to_KT4 ψ)) (f) in H0; 
       try constructor.
-      apply Ax with (KT4ax7 (K4_to_KT4 φ) (K4_to_KT4 ψ)); [constructor | easy].
+      apply AxKT4 with (KT4ax7 (K4_to_KT4 φ) (K4_to_KT4 ψ)); [constructor | easy].
     + apply K4_axiom_to_KT4axiom_sound with (ax8 φ ψ) (KT4ax8 (K4_to_KT4 φ) (K4_to_KT4 ψ)) (f) in H0; 
       try constructor.
-      apply Ax with (KT4ax8 (K4_to_KT4 φ) (K4_to_KT4 ψ)); [constructor | easy].
+      apply AxKT4 with (KT4ax8 (K4_to_KT4 φ) (K4_to_KT4 ψ)); [constructor | easy].
     + apply K4_axiom_to_KT4axiom_sound with (ax9 φ ψ Ɣ) (KT4ax9 (K4_to_KT4 φ) (K4_to_KT4 ψ) (K4_to_KT4 Ɣ)) (f) in H0; 
       try constructor.
-      apply Ax with (KT4ax9 (K4_to_KT4 φ) (K4_to_KT4 ψ) (K4_to_KT4 Ɣ)); [constructor | easy].
+      apply AxKT4 with (KT4ax9 (K4_to_KT4 φ) (K4_to_KT4 ψ) (K4_to_KT4 Ɣ)); [constructor | easy].
     + apply K4_axiom_to_KT4axiom_sound with (ax10 φ ψ) (KT4ax10 (K4_to_KT4 φ) (K4_to_KT4 ψ)) (f) in H0; 
       try constructor.
-      apply Ax with (KT4ax10 (K4_to_KT4 φ) (K4_to_KT4 ψ)); [constructor | easy].
+      apply AxKT4 with (KT4ax10 (K4_to_KT4 φ) (K4_to_KT4 ψ)); [constructor | easy].
     + apply K4_axiom_to_KT4axiom_sound with (axK φ ψ) (KT4axK_4 (K4_to_KT4 φ) (K4_to_KT4 ψ)) (f) in H0; 
       try constructor.
-      apply Ax with (KT4axK_4 (K4_to_KT4 φ) (K4_to_KT4 ψ)); [constructor | easy].
+      apply AxKT4 with (KT4axK_4 (K4_to_KT4 φ) (K4_to_KT4 ψ)); [constructor | easy].
     + apply K4_axiom_to_KT4axiom_sound with (axPos φ ψ) (KT4axPos_4 (K4_to_KT4 φ) (K4_to_KT4 ψ)) (f) in H0; 
       try constructor.
-      apply Ax with (KT4axPos_4 (K4_to_KT4 φ) (K4_to_KT4 ψ)); [constructor | easy]. 
+      apply AxKT4 with (KT4axPos_4 (K4_to_KT4 φ) (K4_to_KT4 ψ)); [constructor | easy]. 
     + apply K4_axiom_to_KT4axiom_sound with (axK4 φ) (KT4axK4 (K4_to_KT4 φ)) (f) in H0; 
       try constructor.
-      apply Ax with (KT4axK4 (K4_to_KT4 φ)); [constructor | easy].
+      apply AxKT4 with (KT4axK4 (K4_to_KT4 φ)); [constructor | easy].
   - (* Modus Ponens *)
-    apply Mp with (K4_to_KT4 f); assumption.
+    apply MpKT4 with (K4_to_KT4 f); assumption.
   - (* Necessitation (for 4)*)
     apply Nec_4 with (φ := (K4_to_KT4 f)); assumption.
     (* For some reason, Coq wasn't able to correctly infer the type of φ in the above expression, so it was necessary
     to explicitly state it*)
 Qed.
+
+(*** Transfer of Soundness ***)
+
+Require Import Soundness.
+
+(* 
+  To show that KT4 is sound, we must first show that both KT and K4 are sound 
+  As there is no "soundness" property in the core library, it will be stated here
+*)
+
+Definition relative_soundness (A: axiom -> Prop) (R: Frame -> Prop) := 
+  forall Γ φ, (A; Γ |-- φ) -> forall F V, R F -> entails (Build_Model F V) Γ φ.
+(* 
+  This states that a axiomatic system A is sound relative to a (set) of frames 
+  {F | F satisfies condition R}
+  For KT frames, R is the condition that the frame is reflexive
+  For K4 frames, R is the condition that the frame is transitive
+  For K frames,  R is the condition that F is any frame, defined below
+*)
+
+Inductive anyFrame (F: Frame): Prop :=
+  anyFrameMk: anyFrame F.
+
+(* Proving that this definition of soundness is correct
+    TODO: Conferir se isso está certo
+*)
+Lemma relative_soundness_correct:
+  relative_soundness K anyFrame.
+Proof.
+  intros Γ φ H0 F V H1.
+  apply soundness in H0;
+  unfold entails_modal in H0.
+  intros H2; apply H0;
+  assumption.
+Qed.
+
+Require Import Frame_Validation.
+(* This file has proofs of the soundness of the other systems of modal logic *)
+
+(** System KT is Sound **)
+Theorem KT_soundness:
+  relative_soundness T reflexivity_frame.
+Proof.
+  intros Γ φ H0 F V H1 H2;
+  induction H0. (*Induction on the deduction*)
+  - (*Premise*)
+    apply exact_deduction with t; try assumption;
+    apply nth_error_In with i; assumption.
+  - (*Axiom instance*)
+    destruct H. 
+    + apply Ax with (K) (t) (φ) (f) in H; try auto;
+      apply soundness in H; auto. (*Other Axioms*)
+    + unfold instantiate in H1; subst. (*Axiom T*)
+      eapply reflexive_frame_implies_axiomT;
+      assumption.
+  - (*Modus Ponens*)
+    intros w; apply Modus_Ponens_soundness with f; split;
+    [apply IHdeduction2 | apply IHdeduction1]; auto.
+  - (*Necessitation*)
+    intros w; apply Necessitation_soundness; 
+    apply IHdeduction; assumption.
+Qed.
+
+(** System K4 is Sound **)
+Theorem K4_soundness:
+  relative_soundness K4 transitivity_frame.
+Proof.
+  intros Γ φ H0 F V H1 H2;
+  induction H0. (*Induction on the deduction*)
+  - (*Premise*)
+    apply exact_deduction with t; try assumption;
+    apply nth_error_In with i; assumption.
+  - (*Axiom instance*)
+    destruct H. 
+    + apply Ax with (K) (t) (φ) (f) in H; try auto;
+      apply soundness in H; auto. (*Other Axioms*)
+    + unfold instantiate in H1; subst. (*Axiom 4*)
+      eapply transitive_frame_implies_axiom4;
+      assumption.
+  - (*Modus Ponens*)
+    intros w; apply Modus_Ponens_soundness with f; split;
+    [apply IHdeduction2 | apply IHdeduction1]; auto.
+  - (*Necessitation*)
+    intros w; apply Necessitation_soundness; 
+    apply IHdeduction; assumption.
+Qed.
+
+(*
+  Now that we have shown that KT and K4 are sound with respect to the classes of
+  reflexive and transitive frames respectivelly, we must show that KT4 is sound with respect
+  to the class of reflexive and transitive 2-frames
+*)
+
+Fixpoint KT4formula_to_formula (φ: KT4formula): formula :=
+  match φ with
+  | T4Lit     x    => Lit     x
+  | TBox      ψ    => Box     (KT4formula_to_formula ψ)
+  | TDia      ψ    => Dia     (KT4formula_to_formula ψ)
+  | K4Box     ψ    => Box     (KT4formula_to_formula ψ)
+  | K4Dia     ψ    => Dia     (KT4formula_to_formula ψ)
+  | T4Neg     ψ    => Neg     (KT4formula_to_formula ψ)
+  | T4And     ψ Ɣ  => And     (KT4formula_to_formula ψ) (KT4formula_to_formula Ɣ)
+  | T4Or      ψ Ɣ  => Or      (KT4formula_to_formula ψ) (KT4formula_to_formula Ɣ)
+  | T4Implies ψ Ɣ  => Implies (KT4formula_to_formula ψ) (KT4formula_to_formula Ɣ)
+  end.
+
+Fixpoint KT4theory_to_theory (T: KT4theory): theory :=
+  match T with
+  | [ ]    => [ ]
+  | h :: t => (KT4formula_to_formula h) :: KT4theory_to_theory t
+  end.
+
+Lemma KT4formula_to_KTformula_reversible: 
+  forall φ,  KT4formula_to_formula (KTformula_to_KT4formula φ) = φ.
+Proof.
+  induction φ;
+  try (reflexivity); (*Atom*)
+  try (simpl; rewrite IHφ; reflexivity); (*Unary connectives*)
+  try (simpl; rewrite IHφ1; rewrite IHφ2; reflexivity). (*Binary connectives*)
+Qed.
+
+Lemma KT4formula_to_K4formula_reversible: 
+  forall φ, KT4formula_to_formula (K4formula_to_KT4formula φ) = φ.
+Proof.
+  induction φ;
+  try (reflexivity); (*Atom*)
+  try (simpl; rewrite IHφ; reflexivity); (*Unary connectives*)
+  try (simpl; rewrite IHφ1; rewrite IHφ2; reflexivity). (*Binary connectives*)
+Qed.
+
+Lemma KT4theory_to_KTtheory_reversible: 
+  forall Γ, KT4theory_to_theory (KT_theory_to_KT4theory Γ) = Γ.
+Proof.
+  induction Γ; try (reflexivity);
+  simpl; rewrite KT4formula_to_KTformula_reversible;
+  rewrite IHΓ; reflexivity.
+Qed.
+
+Lemma KT4theory_to_K4theory_reversible: 
+  forall Γ, KT4theory_to_theory (K4_theory_to_KT4theory Γ) = Γ.
+Proof.
+  induction Γ; try (reflexivity);
+  simpl; rewrite KT4formula_to_K4formula_reversible;
+  rewrite IHΓ; reflexivity.
+Qed.
+
+Inductive KT4_axiom_to_ProppositionalAxiom: KT4axiom -> axiom -> Prop :=
+| transformKT4_to_ax1  : forall φ ψ,   KT4_axiom_to_ProppositionalAxiom (KT4ax1 φ ψ)     (ax1   (KT4formula_to_formula φ) (KT4formula_to_formula ψ))
+| transformKT4_to_ax2  : forall φ ψ Ɣ, KT4_axiom_to_ProppositionalAxiom (KT4ax2 φ ψ Ɣ)   (ax2   (KT4formula_to_formula φ) (KT4formula_to_formula ψ) (KT4formula_to_formula Ɣ))
+| transformKT4_to_ax3  : forall φ ψ,   KT4_axiom_to_ProppositionalAxiom (KT4ax3 φ ψ)     (ax3   (KT4formula_to_formula φ) (KT4formula_to_formula ψ))
+| transformKT4_to_ax4  : forall φ ψ,   KT4_axiom_to_ProppositionalAxiom (KT4ax4 φ ψ)     (ax4   (KT4formula_to_formula φ) (KT4formula_to_formula ψ))
+| transformKT4_to_ax5  : forall φ ψ,   KT4_axiom_to_ProppositionalAxiom (KT4ax5 φ ψ)     (ax5   (KT4formula_to_formula φ) (KT4formula_to_formula ψ))
+| transformKT4_to_ax6  : forall φ ψ,   KT4_axiom_to_ProppositionalAxiom (KT4ax6 φ ψ)     (ax6   (KT4formula_to_formula φ) (KT4formula_to_formula ψ))
+| transformKT4_to_ax7  : forall φ ψ,   KT4_axiom_to_ProppositionalAxiom (KT4ax7 φ ψ)     (ax7   (KT4formula_to_formula φ) (KT4formula_to_formula ψ))
+| transformKT4_to_ax8  : forall φ ψ,   KT4_axiom_to_ProppositionalAxiom (KT4ax8 φ ψ)     (ax8   (KT4formula_to_formula φ) (KT4formula_to_formula ψ))
+| transformKT4_to_ax9  : forall φ ψ Ɣ, KT4_axiom_to_ProppositionalAxiom (KT4ax9 φ ψ Ɣ)   (ax9   (KT4formula_to_formula φ) (KT4formula_to_formula ψ) (KT4formula_to_formula Ɣ))
+| transformKT4_to_ax10 : forall φ ψ,   KT4_axiom_to_ProppositionalAxiom (KT4ax10 φ ψ)    (ax10  (KT4formula_to_formula φ) (KT4formula_to_formula ψ)).
+
+Inductive KT4_axiom_to_KTaxiom: KT4axiom -> axiom -> Prop :=
+  | transformKT4_toT_prop : forall φ ψ,   KT4_axiom_to_ProppositionalAxiom φ ψ  -> KT4_axiom_to_KTaxiom φ ψ
+  | transformKT4_toT_axK  : forall φ ψ,   KT4_axiom_to_KTaxiom (KT4axK_T φ ψ)   (axK   (KT4formula_to_formula φ) (KT4formula_to_formula ψ))
+  | transformKT4_toT_axPos: forall φ ψ,   KT4_axiom_to_KTaxiom (KT4axPos_T φ ψ) (axPos (KT4formula_to_formula φ) (KT4formula_to_formula ψ))
+  | transformKT4_toT_axT  : forall φ,     KT4_axiom_to_KTaxiom (KT4axT φ)       (axT   (KT4formula_to_formula φ)).
+
+Inductive KT4_axiom_to_K4axiom: KT4axiom -> axiom -> Prop :=
+  | transformKT4_to4_prop : forall φ ψ,   KT4_axiom_to_ProppositionalAxiom φ ψ  -> KT4_axiom_to_K4axiom φ ψ
+  | transformKT4_to4_axK  : forall φ ψ,   KT4_axiom_to_K4axiom (KT4axK_4 φ ψ)   (axK   (KT4formula_to_formula φ) (KT4formula_to_formula ψ))
+  | transformKT4_to4_axPos: forall φ ψ,   KT4_axiom_to_K4axiom (KT4axPos_4 φ ψ) (axPos (KT4formula_to_formula φ) (KT4formula_to_formula ψ))
+  | transformKT4_to4_axK4 : forall φ,     KT4_axiom_to_K4axiom (KT4axK4 φ)      (axK4  (KT4formula_to_formula φ)).
+
+(* TODO: Arrumar essas provas *)
+Lemma KT4_axiom_to_KTaxiom_sound: forall a b φ,
+  KT4instantiate a = φ -> KT4_axiom_to_KTaxiom a b ->
+    instantiate b = (KT4formula_to_formula φ).
+Proof.
+  intros a b φ H0 H1.
+  destruct a; simpl in *;
+  repeat (inversion H1; subst; reflexivity).
+Admitted.
+
+Lemma KT4_axiom_to_K4axiom_sound: forall a b φ,
+  KT4instantiate a = φ -> KT4_axiom_to_K4axiom a b ->
+    instantiate b = (KT4formula_to_formula φ).
+Proof.
+  intros a b φ H0 H1.
+  destruct a; simpl in *;
+  repeat (inversion H1; subst; reflexivity).
+Admitted.
+
+Theorem silly1: forall W RT RTR R4 R4R V φ a Γ,
+  let FT4 := Build_KT4Frame W RT RTR R4 R4R in
+    let MT4 := Build_KT4Model FT4 V in
+      let M := KT4_model_into_KT MT4 in
+        KT4instantiate a = φ ->
+        entails M (KT4theory_to_theory Γ) (KT4formula_to_formula φ) ->
+        KT4entails MT4 Γ φ.
+Proof.
+  intros W RT RTR R4 R4R V φ a Γ FT4 MT4 M H0 H1.
+Abort.
+
+Inductive anyKT4Frame (F: KT4Frame): Prop :=
+  anyKT4FrameMk: anyKT4Frame F.
+
+Definition relative_KT4soundness (A: KT4axiom -> Prop) (R: KT4Frame -> Prop) := 
+  forall Γ φ, (A; Γ |--t4 φ) -> forall F V, R F -> KT4entails (Build_KT4Model F V) Γ φ.
+
+Theorem KT4_soundness:
+  relative_KT4soundness KT4Ax anyKT4Frame.
+Proof.
+  intros Γ φ H0 FT4 VT4 H1.
+  assert(HKT: relative_soundness T (fun F => F = KT4_frame_into_KT FT4)) 
+    by (intros ?x ?x ?x F ?x H3; assert (H4: KTFrame F) by (rewrite H3; apply KT4_frame_into_KT_sound);
+        eapply KT_soundness in H4; eauto).
+  assert(HK4: relative_soundness K4 (fun F => F = KT4_frame_into_K4 FT4)) 
+    by (intros ?x ?x ?x F ?x H4; assert (H5: K4Frame F) by (rewrite H4; apply KT4_frame_into_K4_sound);
+        eapply K4_soundness in H5; eauto).
+  induction H0.
+  - (*Premises*)
+    intros ?H; apply entailment_in_theory with (T); 
+    try assumption; apply nth_error_In with (i); 
+    assumption.
+  - (*Instance of Axioms*) 
+    unfold relative_soundness in *.
+    destruct FT4 as [WT4 RT RT_refl R4 R4_trans]; simpl in *.
+    destruct H.
+    + pose H0 as H2.
+      apply KT4_axiom_to_KTaxiom_sound with (b:=ax1 (KT4formula_to_formula φ0) (KT4formula_to_formula ψ)) in H2; try constructor.
+      assert(H3: forall Γ, Deductive_System.T; Γ |-- KT4formula_to_formula φ)
+        by (intros Γ; rewrite <- H2; apply Ax with (ax1 (KT4formula_to_formula φ0) (KT4formula_to_formula ψ)); 
+            try auto; apply T_K; constructor).
+      apply HKT with (F:=KT4_frame_into_KT (Build_KT4Frame WT4 RT RT_refl R4 R4_trans)) (Γ:=KT4theory_to_theory T) (V:=VT4) in H3;
+      try auto; simpl in H3.
+
+      eapply KT_semantic_entail_generalization with (T:=(KT4theory_to_theory T)) (φ:=KT4formula_to_formula φ) in H3.
+(* - (*Modus Ponens*) admit.
+  - (*Necessitation for [T]*) admit.
+  - (*Necessitation for [4]*) admit. *)
+Abort.

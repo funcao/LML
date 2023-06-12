@@ -73,7 +73,7 @@ Fixpoint fun_validation (M: Model) (w: W (F M)) (φ: formula): Prop :=
 
 (* TODO: Change order of rules to match what is in the paper *)
 
-(* Definition of satisfiability in a model: a formula is satisfiable in a model if it is true in
+(* Definition of satisfiability in a model: a formula is valid in a model if it is true in
   all worlds of that model *)
 Definition validate_model (M: Model) (φ: formula): Prop :=
   forall w, fun_validation M w φ.
@@ -86,10 +86,10 @@ Definition theory := list formula.
 (** 
   Definition of Semantic Entailment: 
   A theory T semantically entails a formula phi in a Model M
-  iff for all formulas psi in T, psi being satisfiable in M imples that phi is too 
+  iff for all formulas psi in T, psi being valid in M imples that phi is too 
 **)
 
-(* Helper function, tests if a given theory is satisfiable in a model *)
+(* Helper function, tests if a given theory is valid in a model *)
 Fixpoint theoryModal (M: Model) (Γ: theory): Prop :=
   match Γ with
   | nil => True
