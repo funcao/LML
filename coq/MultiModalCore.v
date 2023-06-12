@@ -618,20 +618,52 @@ Section MultiModal.
     Inductive definition of the join of two axiomatic systems
       be it two modal, one modal one multimodal or two multimodal
   *)
+
+  (* Simple recursive function that checks if two lists share any elements *)
+  Fixpoint share_element {T} (l1 l2: list T): Prop :=
+    match l1 with
+    | [ ]    => False
+    | h :: t => In h l2 \/ share_element t l2
+    end.
+
+  Lemma share_element_aux: forall (T: Type) (l1 l2: list T) (e:T),
+    share_element l1 l2 -> exists2 e, In e l1 & In e l2.
+  Proof.
+    intros T l1 l2 e H0; induction l1; try contradiction.
+    destruct H0.
+    - exists a; simpl; auto.
+    - apply IHl1 in H; destruct H as [e1 H1 H2]; exists e1; simpl; auto.
+  Qed.
+
+  Lemma share_element_sym: forall (T:Type) (l1 l2: list T),
+    share_element l1 l2 -> share_element l2 l1.
+  Proof.
+    clear dummyFrame; clear minimum_modalities; clear Modalities;
+    intros T l1 l2 H0; apply share_element_aux in H0;
+    generalize dependent l1; induction l2; intros l1 H0.
+    - destruct H0; contradiction.
+    - destruct H0 as [x H0 [H1 | H1]]; subst.
+      + firstorder.
+      + right; apply IHl2; exists x; auto.
+    - induction l1; [contradiction | apply a].
+    - apply a.
+  Qed.
+
   Inductive join (S1 S2: axiom -> Prop) (index1 index2: nat): list nat -> MMaxiom -> Prop :=
-    | derivable_S1: forall a b, S1 a -> axiom_to_MMaxiom index1 a b ->
+    | derivable_S1: forall a b, S1 a -> index1 <> index2 -> axiom_to_MMaxiom index1 a b ->
       deducible_formula (MMinstance b) -> join S1 S2 index1 index2 (index1 :: index2 :: nil) b
-    | derivable_S2: forall a b, S2 a -> axiom_to_MMaxiom index2 a b ->
+    | derivable_S2: forall a b, S2 a -> index1 <> index2 -> axiom_to_MMaxiom index2 a b ->
       deducible_formula (MMinstance b) -> join S1 S2 index1 index2 (index1 :: index2 :: nil) b.
 
   Inductive join_one (S1: axiom -> Prop) (S2: list nat -> MMaxiom -> Prop) (index1: nat) (index2: list nat): list nat -> MMaxiom -> Prop :=
-    | derivable_S1_one: forall a b, S1 a -> axiom_to_MMaxiom index1 a b ->
+    | derivable_S1_one: forall a b, S1 a -> ~ In index1 index2 -> axiom_to_MMaxiom index1 a b ->
       deducible_formula (MMinstance b) -> join_one S1 S2 index1 index2 (index1 :: index2) b
-    | derivable_S2_one: forall a, S2 index2 a -> join_one S1 S2 index1 index2 (index1 :: index2) a.
+    | derivable_S2_one: forall a, S2 index2 a -> ~ In index1 index2 ->
+      join_one S1 S2 index1 index2 (index1 :: index2) a.
 
   Inductive join_two (S1 S2: list nat -> MMaxiom -> Prop) (index1 index2: list nat): list nat -> MMaxiom -> Prop :=
-    | derivable_S1_two: forall a, S1 index1 a -> join_two S1 S2 index1 index2 (index1 ++ index2) a
-    | derivable_S2_two: forall a, S2 index2 a -> join_two S1 S2 index1 index2 (index1 ++ index2) a.
+    | derivable_S1_two: forall a, S1 index1 a -> ~ share_element index1 index2 -> join_two S1 S2 index1 index2 (index1 ++ index2) a
+    | derivable_S2_two: forall a, S2 index2 a -> ~ share_element index1 index2 -> join_two S1 S2 index1 index2 (index1 ++ index2) a.
 
   (*
     Proof of soundness of the previous definition

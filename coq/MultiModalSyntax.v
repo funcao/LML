@@ -164,16 +164,16 @@ Lemma join_simmetric: forall modalities S1 S2 n1 n2 b,
   join modalities S1 S2 n1 n2 (n1 :: n2 :: nil) b <-> join modalities S2 S1 n2 n1 (n2 :: n1 :: nil) b.
 Proof.
   intros modalities S1 S2 n1 n2 b; split; induction 1;
-  try (eapply derivable_S2; eassumption);
-  eapply derivable_S1; eassumption.
+  try (eapply derivable_S2; try apply not_eq_sym; eassumption);
+  eapply derivable_S1; try apply not_eq_sym; eassumption.
 Qed.
 
 Lemma join_two_simmetric: forall S1 S2 l1 l2 b,
   join_two S1 S2 l1 l2 (l1 ++ l2) b <-> join_two S2 S1 l2 l1 (l2 ++ l1) b.
 Proof.
   intros S1 S2 l1 l2 b; split; induction 1;
-  try (eapply derivable_S2_two; eassumption);
-  eapply derivable_S1_two; eassumption.
+  try (eapply derivable_S2_two; try eassumption; intros H1; apply share_element_sym in H1; contradiction);
+  eapply derivable_S1_two; try eassumption; intros H1; apply share_element_sym in H1; contradiction.
 Qed.
 
 Theorem join_preserves_deduction: forall modalities S1 n1 Γ φ,
@@ -238,17 +238,17 @@ Qed.
 
 Theorem join_one_preserves_deduction_right: forall modalities S2 l n Γ φ,
   let K_to_Kn := formula_to_MMformula in
-  n < modalities -> MMdeduction modalities (S2 l) Γ φ ->
+  n < modalities -> ~ In n l -> MMdeduction modalities (S2 l) Γ φ ->
   forall S1 b, join_one modalities S1 S2 n l (n :: l) b ->
   MMdeduction modalities (join_one modalities S1 S2 n l (n :: l)) Γ φ.
 Proof.
-  intros modalities S2 l n Γ φ K_to_Kn H0 H1 S1 b H2.
-  dependent induction H1.
+  intros modalities S2 l n Γ φ K_to_Kn H0 H1 H2 S1 b H3.
+  dependent induction H2.
   - (*Premise*)
     eapply MMPrem; eassumption.
   - (*Axiom*)
-    pose H as H'; eapply MMAx in H'; try eassumption.
-    eapply derivable_S2_one in H;
+    pose H as H'; eapply MMAx in H'; try eassumption;
+    eapply derivable_S2_one in H; try eassumption;
     eapply MMAx; try eassumption.
   - (*Modus Ponens*)
     apply MMMp with (φ); try assumption;
@@ -259,17 +259,18 @@ Proof.
 Qed.
 
 Theorem join_two_preserves_deduction: forall modalities S1 S2 l1 l2 Γ φ a,
+  ~ share_element l1 l2 ->
   MMdeduction modalities (S1 l1) Γ φ -> join_two S1 S2 l1 l2 (l1 ++ l2) a ->
   MMdeduction modalities (join_two S1 S2 l1 l2 (l1 ++ l2)) Γ φ.
 Proof.
-  intros modalities S1 S2 l1 l2 Γ φ a H0 H1.
-  dependent induction H0.
+  intros modalities S1 S2 l1 l2 Γ φ a H0 H1 H2.
+  dependent induction H1.
   - (*Premise*)
     eapply MMPrem; eassumption.
   - (*Axiom*)
     pose H as H';
     eapply MMAx in H'; try eassumption.
-    eapply derivable_S1_two in H;
+    eapply derivable_S1_two in H; try eassumption;
     eapply MMAx; try eassumption.
   - (*Modus Ponens*)
     apply MMMp with (φ); try assumption;
