@@ -132,18 +132,6 @@ Proof.
     assumption.
 Qed.
 
-(* φ ∈ Γ -> Γ ||= φ  *)
-Lemma case_two :
-  forall Γ φ,
-  In φ Γ ->
-  Γ ||= φ.
-Proof.
-  unfold entails_modal, validate_model; intros.
-  apply exact_deduction with Γ.
-  - assumption.
-  - assumption.
-Qed.
-
 (* a /\ (a -> b) -> b *)
 Lemma Modus_Ponens_soundness:
   forall M w φ ψ,
@@ -172,10 +160,7 @@ Theorem soundness:
 Proof.
   induction 1.
   - intros M ?H.
-    apply exact_deduction with t.
-    + apply nth_error_In with i.
-      assumption.
-    + assumption.
+    apply H0; auto.
   - destruct H; destruct H0; simpl.
     + intros M ?H w.
       apply Hilbert_Axiom_1_soundness.

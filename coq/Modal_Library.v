@@ -1,4 +1,4 @@
-Require Import Arith List ListSet Notations Classical Relations.
+Require Import Arith List ListSet Notations Classical Relations Sets.
 Export ListNotations.
 
 Inductive formula: Set :=
@@ -60,19 +60,16 @@ Definition validate_model (M: Model) (φ: formula): Prop :=
 
 (******  Finite theories and entailment ******)
 
-Definition theory := list formula.
+Definition theory := formula -> Prop.
 
-Fixpoint theoryModal (M: Model) (Γ: theory): Prop :=
-  match Γ with
-  | nil => True
-  | h :: t => (validate_model M h) /\ (theoryModal M t)
-  end.
+Definition theoryModal (M: Model) (Γ: theory): Prop :=
+  forall p, Γ p -> validate_model M p.
 
 Definition entails (M: Model) (Γ: theory) (φ: formula): Prop :=
   theoryModal M Γ -> validate_model M φ.
 
 (***** structural properties of deduction ****)
-
+(*
 (* If a formula belongs in a theory, it's valid. *)
 Theorem exact_deduction:
   forall Γ φ,
@@ -274,6 +271,7 @@ Proof.
   apply theoryModal_union with (ẟ := ẟ).
   assumption.
 Qed.
+*)
 
 (* Reflexividade *)
 Definition reflexivity_frame (F: Frame): Prop :=
@@ -346,4 +344,4 @@ Definition entails_modal (Γ: theory) (φ: formula): Prop :=
   validate_model M φ.
 
 Definition equivalence (φ ψ: formula): Prop := 
-  (entails_modal [φ] ψ) /\ (entails_modal [ψ] φ).
+  (entails_modal (Singleton φ) ψ) /\ (entails_modal (Singleton ψ) φ).

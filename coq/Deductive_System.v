@@ -1,4 +1,4 @@
-Require Import Modal_Library Modal_Notations List Classical Logic Equality.
+Require Import Modal_Library Modal_Notations List Classical Logic Equality Sets.
 
 (**** HILBERT SYSTEM (axiomatic method) ****)
 Inductive axiom : Set :=
@@ -46,9 +46,8 @@ Definition instantiate (a: axiom): formula :=
 Inductive deduction (A: axiom -> Prop): theory -> formula -> Prop :=
   (* Premise. *)
   | Prem: forall (t: theory)
-                 (f: formula)
-                 (i: nat),
-          (nth_error t i = Some f) -> deduction A t f
+                 (f: formula),
+        t f -> deduction A t f
   (* Axiom. *)
   | Ax: forall (t: theory)
                (a: axiom)
@@ -147,6 +146,7 @@ Proof.
     + reflexivity.
 Qed.
 
+(*
 Lemma derive_refl:
   forall A Γ φ,
   A; φ :: Γ |-- φ.
@@ -155,34 +155,20 @@ Proof.
   apply Prem with (i := 0).
   reflexivity.
 Qed.
-
-Definition subset (Γ Δ: theory): Prop :=
-  forall φ,
-  In φ Γ -> In φ Δ.
-
-Lemma derive_In:
-  forall A Γ φ,
-  In φ Γ ->
-  A; Γ |-- φ.
-Proof.
-  intros; eapply In_nth_error in H.
-  destruct H.
-  apply Prem with (i := x).
-  assumption.
-Qed.
+*)
 
 Lemma derive_weak:
   forall Γ ẟ,
-  subset Γ ẟ ->
+  Subset Γ ẟ ->
   forall A φ,
   (A; Γ |-- φ) ->
   (A; ẟ |-- φ).
 Proof.
   intros.
   induction H0.
-  - eapply derive_In; apply H.
-    eapply nth_error_In.
-    exact H0.
+  - apply Prem.
+    apply H.
+    assumption.
   - apply Ax with (a:= a); auto.
   - eapply Mp; eauto.
   - apply Nec; intuition.
@@ -191,29 +177,26 @@ Qed.
 Lemma derive_monotonicity:
   forall ẟ Γ φ,
   (K; Γ |-- φ) ->
-  (K; ẟ ++ Γ |-- φ).
+  (K; Union ẟ Γ |-- φ).
 Proof.
   intros.
   apply derive_weak with Γ.
-  - unfold subset. intros.
-    induction ẟ.
-    + simpl; assumption.
-    + simpl in *; right; assumption.
+  - intros p ?.
+    right; auto.
   - assumption.
 Qed.
 
 Lemma derive_modus_ponens:
   forall Γ φ ψ,
-  (K; φ::Γ |-- ψ) ->
+  (K; Union (Singleton φ) Γ |-- ψ) ->
   (K; Γ |-- φ) ->
   (K; Γ |-- ψ).
 Proof.
   intros; dependent induction H.
-  - apply nth_error_In in H.
-    destruct H.
-    + destruct H.
+  - destruct H.
+    + dependent destruction H.
       assumption.
-    + apply derive_In.
+    + apply Prem.
       assumption.
   - apply Ax with (a:=a).
     + assumption.

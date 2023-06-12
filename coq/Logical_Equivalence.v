@@ -1,29 +1,33 @@
 Require Import Modal_Library Modal_Notations Classical List.
 
+Lemma singleton_formula:
+  forall M p,
+  theoryModal M (Sets.Singleton p) -> M |= p.
+Proof.
+  intros.
+  apply H.
+  constructor.
+Qed.
+
 Theorem implies_to_or_modal:
   forall φ ψ,
   [! φ -> ψ !] =|= [! ~φ \/ ψ !].
 Proof.
   split.
+  - unfold entails_modal, validate_model in *. 
+    intros; simpl in *.
+    apply singleton_formula in H.
+    destruct classic with (M ' w ||- φ); firstorder.
   - unfold entails_modal in *. 
     intros; simpl in *.
-    destruct H as (?,_). 
-    unfold validate_model in *. 
-    simpl in *; intros.
-    edestruct classic.
-    + exact H0.
-    + right; apply H.
-      apply not_or_and in H0.
-      destruct H0 as (?, _);
-      apply NNPP in H0; auto.
-  - unfold entails_modal in *. 
-    intros; simpl in *.
-    destruct H as (?, _).
-    unfold validate_model in *.
-    simpl in *; intros.
-    destruct H with w.
-    + contradiction.
-    + assumption. 
+    apply singleton_formula in H.
+    intro w.
+    specialize (H w).
+    simpl in H.
+    destruct H.
+    + simpl; intros.
+      exfalso; firstorder.
+    + simpl; firstorder.
 Qed.
 
 Theorem double_neg_modal:
@@ -35,14 +39,14 @@ Proof.
     simpl in *.
     unfold validate_model.
     intros.
-    destruct H as (?, _).
-    simpl in *.
+    apply singleton_formula in H.
+    specialize (H w); simpl in H.
     apply NNPP; auto.
   - unfold entails_modal.
     simpl in *.
     unfold validate_model.
     intros; simpl in *.
-    destruct H as (?, _).
+    apply singleton_formula in H.
     edestruct classic.
     + exact H0.
     + apply NNPP in H0.
@@ -58,7 +62,7 @@ Proof.
     simpl in *; intros.
     unfold validate_model in *.
     simpl in *.
-    destruct H as (?, _).
+    apply singleton_formula in H.
     unfold not; intros; apply H0.
     + destruct H with (w:=w); auto.
     + destruct H with (w:=w); auto.
@@ -66,18 +70,16 @@ Proof.
     simpl in *; intros.
     unfold validate_model in *.
     intros; simpl in *.
-    destruct H as (?, _).
+    apply singleton_formula in H.
+    specialize (H w); simpl in H.
     split.
     + edestruct classic.
       * exact H0.
-      * exfalso. unfold not in H.
-      apply H with (w:=w). intros;
-      contradiction.
+      * exfalso.
+        firstorder.
     + edestruct classic.
       * exact H0.
-      * exfalso; unfold not in H;
-        apply H with (w:=w). 
-        intros; contradiction. 
+      * firstorder.
 Qed.
 
 Theorem diamond_to_box_modal:
@@ -87,26 +89,22 @@ Proof.
   split.
   - unfold entails_modal, validate_model in *.
     simpl in *; intros.
-    destruct H as (?, _).
-    unfold validate_model in H; simpl in H.
+    apply singleton_formula in H.
+    specialize (H w); simpl in H.
     edestruct classic.
     + exact H0.
-    + unfold not; intros. 
-      destruct H with (w:=w). 
-      apply H1 with (w':=x).
-      destruct H2; auto.
-      destruct H2; auto.
-  - intros. unfold entails_modal in *.
+    + firstorder.
+  - intros.
+    unfold entails_modal in *.
     simpl in *.
     unfold validate_model in *.
-    simpl in *. 
+    simpl in *.
     unfold not in *.
     intros.
-    destruct H as (?, _).
+    apply singleton_formula in H.
+    specialize (H w); simpl in H.
     edestruct classic.
     + exact H0.
-    + exfalso; apply H with (w:=w);
-      intros.
-      apply H0; exists w';
-      split; auto; auto.
+    + exfalso.
+      firstorder.
 Qed.

@@ -1,5 +1,6 @@
 Require Import Modal_Library Modal_Notations Deductive_System List Classical Bool.
 
+(*
 Section Lindebaum.
 
 Definition Consistent (A: axiom -> Prop) (G : theory) : Prop :=
@@ -223,3 +224,4 @@ Lemma Lindenbaum:
 Proof.
   admit.
 Admitted.
+*)
