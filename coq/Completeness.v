@@ -63,49 +63,87 @@ Section Lindebaum.
     forall D p,
     Subset D (Insert p D).
   Proof.
-    admit.
-  Admitted.
+    intros.
+    unfold Subset. intros. destruct p. 
+    - edestruct classic.
+      + apply Insert_valid.
+        * eauto.
+        * unfold Union. right. assumption.
+      + apply Insert_invalid. 
+        * assumption.
+        * unfold Union. right. assumption.
+    - apply Insert_skip. assumption.  
+  Qed.
 
   Lemma delta_subset_of_max:
     forall n,
     Subset (Delta n) Max.
   Proof.
-    admit.
-  Admitted.
+    unfold Subset. intros. unfold Max. unfold UnionOf. eauto.
+  Qed.
 
   Lemma gamma_subset_of_max:
     Subset G Max.
   Proof.
-    admit.
-  Admitted.
+    unfold Subset. intros. unfold Max. unfold UnionOf. exists O. simpl. assumption. 
+  Qed.
 
   Lemma delta_is_monotonic:
     forall n m,
     n < m ->
     Subset (Delta n) (Delta m).
   Proof.
-    admit.
-  Admitted.
+    unfold Subset. intros. induction H.
+    - simpl. apply subset_of_insert. assumption.
+    - simpl. apply subset_of_insert. assumption.
+  Qed.
 
   Lemma insert_contains_formula:
     forall D p,
     Insert (Some p) D [! p !] \/ Insert (Some p) D [! ~p !].
   Proof.
-    admit.
-  Admitted.
+    intros.
+    edestruct classic.
+    - left. 
+      apply Insert_valid.
+      + eauto.
+      + unfold Union.
+        left.
+        constructor.
+    - right.
+      apply Insert_invalid.
+      + assumption.
+      + unfold Union.
+        left.
+        constructor.
+  Qed.
 
   Lemma max_is_maximal:
     forall p,
     Max [! p !] \/ Max [! ~p !].
   Proof.
-    admit.
-  Admitted.
+    intros.
+    edestruct insert_contains_formula with (Delta (encode p)) p.
+    - left.
+      exists (1 + encode p); simpl.
+      rewrite countable.
+      assumption.
+    - right.
+      exists (1 + encode p); simpl.
+      rewrite countable.
+      assumption.
+  Qed.
 
   Lemma insert_preserves_consistency:
     forall D p,
     Consistent A D -> Consistent A (Insert p D).
   Proof.
-    admit.
+    intros.
+    destruct p.
+    - edestruct classic.
+      + eauto.
+      + admit. 
+    - admit.
   Admitted.
 
   Lemma delta_is_consistent:
@@ -113,6 +151,8 @@ Section Lindebaum.
     forall n,
     Consistent A (Delta n).
   Proof.
+    intros.
+    edestruct insert_preserves_consistency.
     admit.
   Admitted.
 
@@ -120,7 +160,10 @@ Section Lindebaum.
     Consistent A G ->
     Consistent A Max.
   Proof.
-    admit.
+    intros.
+    edestruct classic.
+    - apply H0.
+    - admit.
   Admitted.
 
   Theorem lindebaum:
@@ -128,7 +171,11 @@ Section Lindebaum.
     exists D,
     Consistent A D /\ Maximal D /\ Subset G D.
   Proof.
-    admit.
-  Admitted.
+    intros. exists Max. split.
+    - apply max_is_consistent. assumption.
+    - split.
+      + unfold Maximal. apply max_is_maximal.
+      + unfold Subset. apply gamma_subset_of_max.
+  Qed.
 
 End Lindebaum.
