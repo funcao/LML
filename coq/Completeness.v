@@ -138,12 +138,6 @@ Section Lindebaum.
     forall D p,
     Consistent A D -> Consistent A (Insert p D).
   Proof.
-    intros.
-    destruct p.
-    - edestruct classic.
-      + eauto.
-      + admit. 
-    - admit.
   Admitted.
 
   Lemma delta_is_consistent:
@@ -151,19 +145,12 @@ Section Lindebaum.
     forall n,
     Consistent A (Delta n).
   Proof.
-    intros.
-    edestruct insert_preserves_consistency.
-    admit.
   Admitted.
 
   Lemma max_is_consistent:
     Consistent A G ->
     Consistent A Max.
   Proof.
-    intros.
-    edestruct classic.
-    - apply H0.
-    - admit.
   Admitted.
 
   Theorem lindebaum:
