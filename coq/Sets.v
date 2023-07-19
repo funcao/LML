@@ -13,3 +13,6 @@ Definition UnionOf {I T} (A: I -> T -> Prop): T -> Prop :=
 Definition Subset {T} (A B: T -> Prop): Prop :=
   forall t: T,
   A t -> B t.
+
+Definition Empty {T} (t: T): Prop :=
+  False.

@@ -34,7 +34,7 @@ Fixpoint literals (f: formula): set nat :=
 end.
 
 Record Frame: Type := {
-  W: Set;
+  W: Type;
   R: W -> W -> Prop
 }.
 

@@ -1,3 +1,5 @@
+Require Import Sets.
+Require Import Equality.
 Require Import List Modal_Library Modal_Notations Deductive_System.
 Import ListNotations.
 
@@ -118,3 +120,42 @@ Proof.
   intros M a b c [H1 H2] w H3.
   apply H2; apply H1; assumption.
 Defined.
+
+Lemma modal_deduction:
+  forall A g p q,
+  Subset K A ->
+  (A; Union (Singleton p) g |-- q) ->
+  (A; g |-- [! p -> q !]).
+Proof.
+  intros.
+  dependent induction H0.
+  - destruct H0.
+    + dependent destruction H0.
+      apply derive_identity.
+      assumption.
+    + apply modal_ax1.
+      * apply H.
+        apply K_ax1.
+      * constructor 1.
+        assumption.
+  - apply modal_ax1.
+    + apply H.
+      apply K_ax1.
+    + econstructor 2.
+      * eassumption.
+      * reflexivity.
+  - eapply modal_ax2.
+    + apply H.
+      apply K_ax2.
+    + apply IHdeduction1.
+      * assumption.
+      * reflexivity.
+    + apply IHdeduction2.
+      * assumption.
+      * reflexivity.
+  - apply modal_ax1.
+    + apply H.
+      apply K_ax1.
+    + constructor 4.
+      assumption.
+Qed.

@@ -1,5 +1,5 @@
-Require Import Equality.
-Require Import Modal_Library Modal_Notations Deductive_System Soundness List Classical Bool Sets.
+Require Import Equality Relations.
+Require Import Modal_Library Modal_Notations Modal_Tactics Deductive_System Soundness List Classical Bool Sets.
 
 (* Assume that formulas are constructively countable for now. *)
 Axiom encode: formula -> nat.
@@ -42,7 +42,6 @@ Proof.
     + apply IHdeduction2.
       assumption.
   - econstructor 4.
-    apply IHdeduction.
     assumption.
 Qed.
 
@@ -50,8 +49,7 @@ Qed.
 
 Section Lindebaum.
 
-  (* For now, assume that the set of axioms is K. *)
-  Definition A: axiom -> Prop := K.
+  Variable A: axiom -> Prop.
 
   (* Base theory. *)
   Variable G: theory.
@@ -96,18 +94,21 @@ Section Lindebaum.
     - edestruct classic.
       + apply Insert_valid.
         * eauto.
-        * unfold Union. right. assumption.
-      + apply Insert_invalid. 
+        * right; assumption.
+      + apply Insert_invalid.
         * assumption.
-        * unfold Union. right. assumption.
-    - apply Insert_skip. assumption.  
+        * right; assumption.
+    - apply Insert_skip.
+      assumption.
   Qed.
 
   Lemma delta_subset_of_max:
     forall n,
     Subset (Delta n) Max.
   Proof.
-    unfold Subset. intros. unfold Max. unfold UnionOf. eauto.
+    unfold Subset; intros.
+    unfold Max, UnionOf.
+    eauto.
   Qed.
 
   Lemma gamma_subset_of_max:
@@ -168,6 +169,41 @@ Section Lindebaum.
       assumption.
   Qed.
 
+  Hypothesis extending_K: Subset K A.
+
+  Lemma consistency_negation:
+    forall D f,
+    Consistent A D ->
+    ~Consistent A (Union (Singleton f) D) ->
+    Consistent A (Union (Singleton [! ~f !]) D).
+  Proof.
+    intros.
+    unfold Consistent in H0.
+    assert (exists p, (A; Union (Singleton f) D |-- [! p /\ ~p !])).
+    edestruct classic.
+    exact H1.
+    exfalso.
+    apply H0; clear H0.
+    intros p ?.
+    apply H1; clear H1.
+    exists p.
+    assumption.
+    clear H0.
+    destruct H1 as (p, ?).
+    assert (A; D |-- [! f \/ ~f !]).
+    apply derive_excluded_middle.
+    apply extending_K.
+    apply modal_deduction in H0.
+    assert (A; D |-- [! ~f !]).
+    admit.
+    intros q ?.
+    apply H with [! ~f -> q !]; clear H H2.
+    apply modal_deduction in H3.
+    admit.
+    apply extending_K.
+    apply extending_K.
+  Admitted.
+
   Lemma insert_preserves_consistency:
     forall D p,
     Consistent A D -> Consistent A (Insert p D).
@@ -181,14 +217,19 @@ Section Lindebaum.
         * intros t ?.
           dependent destruction H2; firstorder.
         * exact H1.
-      + admit.
+      + intros p ?.
+        eapply consistency_negation; eauto.
+        apply deduction_subset with (Insert (Some f) D).
+        * intros t ?.
+          dependent destruction H2; firstorder.
+        * exact H1.
     - intros p ?.
       apply H with p; clear H.
       apply deduction_subset with (Insert None D).
       + inversion 1.
         assumption.
       + assumption.
-  Admitted.
+  Qed.
 
   Lemma delta_is_consistent:
     Consistent A G ->
@@ -240,10 +281,9 @@ Section Lindebaum.
         * apply delta_is_monotonic.
           auto with arith.
         * assumption.
-    (* This is necessitation; simply follows by induction! *)
-    - destruct IHdeduction as (n, ?); auto.
-      exists n.
-      econstructor 4.
+    (* For necessitation, it works even for Delta 0 as we drop the context. *)
+    - exists 0; simpl.
+      constructor 4.
       assumption.
   Qed.
 
@@ -274,10 +314,45 @@ Section Lindebaum.
     - apply max_is_consistent.
       assumption.
     - split.
-      + unfold Maximal.
-        apply max_is_maximal.
-      + unfold Subset.
-        apply gamma_subset_of_max.
+      + exact max_is_maximal.
+      + exact gamma_subset_of_max.
   Qed.
 
 End Lindebaum.
+
+Section CanonicalModel.
+
+  Definition canonical_accessibility: relation theory :=
+    fun w v =>
+      forall p, w [! []p !] -> v p.
+
+  Definition canonical_frame :=
+    Build_Frame theory canonical_accessibility.
+
+  Definition canonical_valuation: nat -> theory -> Prop :=
+    fun p w =>
+      Maximal w /\ w [! #p !].
+
+  Definition canonical_model :=
+    Build_Model canonical_frame canonical_valuation.
+
+End CanonicalModel.
+
+Goal
+  forall A G p,
+  Subset K A ->
+  ~(A; G |-- p) -> Consistent A (Union (Singleton [! ~p !]) G).
+Proof.
+  admit.
+Admitted.
+
+Theorem completeness:
+  forall G p,
+  (G ||= p) -> (S5; G |-- p).
+Proof.
+  intros.
+  edestruct classic.
+  - exact H0.
+  - exfalso.
+    admit.
+Admitted.

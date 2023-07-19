@@ -196,7 +196,7 @@ Proof.
   - intros M ?H w.
     apply Necessitation_soundness.
     apply IHdeduction.
-    assumption.
+    inversion 1.
 Qed.
 
 Corollary soundness2:

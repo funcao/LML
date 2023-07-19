@@ -62,7 +62,7 @@ Inductive deduction (A: axiom -> Prop): theory -> formula -> Prop :=
   (* Generalization. *)
   | Nec: forall (t: theory)
                 (f: formula)
-                (d1: deduction A t f),
+                (d1: deduction A Empty f),
          deduction A t [! []f !].
 
 Inductive K: axiom -> Prop :=
@@ -129,20 +129,24 @@ Notation "A ; G |-- p" := (deduction A G p)
     (at level 110, no associativity).
 
 Lemma derive_identity:
-  forall Γ φ,
-  K; Γ |-- [! φ -> φ !].
+  forall A Γ φ,
+  Subset K A ->
+  A; Γ |-- [! φ -> φ !].
 Proof.
   intros.
   apply Mp with (f := [! φ -> φ -> φ !]).
   - apply Mp with (f := [! φ -> (φ -> φ) -> φ !]).
     + apply Ax with (a := ax2 φ [! φ -> φ !] φ).
-      * constructor.
+      * apply H.
+        constructor.
       * reflexivity.
     + apply Ax with (a := ax1 φ [! φ -> φ !]).
-      * constructor.
+      * apply H.
+        constructor.
       * reflexivity.
   - apply Ax with (a := ax1 φ φ).
-    + constructor.
+    + apply H.
+      constructor.
     + reflexivity.
 Qed.
 
@@ -175,9 +179,9 @@ Proof.
 Qed.
 
 Lemma derive_monotonicity:
-  forall ẟ Γ φ,
-  (K; Γ |-- φ) ->
-  (K; Union ẟ Γ |-- φ).
+  forall A ẟ Γ φ,
+  (A; Γ |-- φ) ->
+  (A; Union ẟ Γ |-- φ).
 Proof.
   intros.
   apply derive_weak with Γ.
@@ -186,30 +190,11 @@ Proof.
   - assumption.
 Qed.
 
-Lemma derive_modus_ponens:
-  forall Γ φ ψ,
-  (K; Union (Singleton φ) Γ |-- ψ) ->
-  (K; Γ |-- φ) ->
-  (K; Γ |-- ψ).
+Lemma derive_excluded_middle:
+  forall A Γ φ,
+  Subset K A ->
+  A; Γ |-- [! φ \/ ~φ !].
 Proof.
-  intros; dependent induction H.
-  - destruct H.
-    + dependent destruction H.
-      assumption.
-    + apply Prem.
-      assumption.
-  - apply Ax with (a:=a).
-    + assumption.
-    + reflexivity.
-  - eapply Mp.
-    + eapply IHdeduction1.
-      * eauto.
-      * assumption.
-    + eapply IHdeduction2.
-      * eauto.
-      * assumption.
-  - apply Nec.
-    + eapply IHdeduction.
-      * eauto.
-      * assumption.
-Qed.
+  intros.
+  admit.
+Admitted.
