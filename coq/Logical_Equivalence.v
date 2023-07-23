@@ -1,8 +1,8 @@
-Require Import Modal_Library Modal_Notations Classical List.
+Require Import Sets Modal_Library Modal_Notations Classical List.
 
 Lemma singleton_formula:
   forall M p,
-  theoryModal M (Sets.Singleton p) -> M |= p.
+  theoryModal M (Singleton p) -> M |= p.
 Proof.
   intros.
   apply H.

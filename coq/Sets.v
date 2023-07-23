@@ -16,3 +16,6 @@ Definition Subset {T} (A B: T -> Prop): Prop :=
 
 Definition Empty {T} (t: T): Prop :=
   False.
+
+Notation Extend p D :=
+  (Union (Singleton p) D).

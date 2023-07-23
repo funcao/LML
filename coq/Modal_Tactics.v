@@ -159,3 +159,25 @@ Proof.
     + constructor 4.
       assumption.
 Qed.
+
+Lemma deduction_subset:
+  forall A G1 G2,
+  Subset G1 G2 ->
+  forall p,
+  deduction A G1 p -> deduction A G2 p.
+Proof.
+  induction 2.
+  - constructor 1.
+    apply H.
+    assumption.
+  - econstructor 2.
+    + eassumption.
+    + assumption.
+  - econstructor 3.
+    + apply IHdeduction1.
+      assumption.
+    + apply IHdeduction2.
+      assumption.
+  - econstructor 4.
+    assumption.
+Qed.
