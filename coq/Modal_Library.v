@@ -45,7 +45,7 @@ Record Model: Type := {
 
 Fixpoint fun_validation (M: Model) (w: W (F M)) (φ: formula): Prop :=
   match φ with
-  | Lit     x   => v M x w 
+  | Lit     x   => v M x w
   | Box     ψ   => forall w', R (F M) w w' -> fun_validation M w' ψ
   | Dia     ψ   => exists w', R (F M) w w' /\ fun_validation M w' ψ
   | Neg     ψ   => ~fun_validation M w ψ

@@ -168,7 +168,7 @@ Section Completeness.
       clear H0.
       destruct H1 as (p, ?).
       assert (A; D |-- [! f \/ ~f !]).
-      apply derive_excluded_middle.
+      apply modal_excluded_middle.
       apply extending_K.
       apply modal_deduction in H0.
       assert (A; D |-- [! ~f !]).
@@ -176,6 +176,14 @@ Section Completeness.
       intros q ?.
       apply H with [! ~f -> q !]; clear H H2.
       apply modal_deduction in H3.
+      apply modal_ax4.
+      apply extending_K.
+      apply K_ax1.
+      apply extending_K.
+      apply K_ax2.
+      apply extending_K.
+      apply K_ax4.
+      admit.
       admit.
       apply extending_K.
       apply extending_K.
@@ -423,9 +431,38 @@ Section Completeness.
     intros G p ? f ?.
     apply H; clear H.
     apply modal_deduction in H0; auto.
-    (* This should be obvious, but we need a tactic for that! *)
+    assert (A; G |-- [! p \/ ~p !]).
+    apply modal_excluded_middle.
+    assumption.
     admit.
   Admitted.
+
+  Lemma theoryModal_superset:
+    forall M D,
+    theoryModal M D ->
+    forall G,
+    Subset G D ->
+    theoryModal M G.
+  Proof.
+    intros M D ? G ? p ?.
+    apply H.
+    apply H0.
+    assumption.
+  Qed.
+
+  Lemma entails_superset:
+    forall G p,
+    (G ||= p) ->
+    forall D,
+    Subset G D ->
+    (D ||= p).
+  Proof.
+    intros G p ? D ? M ?.
+    apply H.
+    apply theoryModal_superset with D.
+    - assumption.
+    - assumption.
+  Qed.
 
   Theorem completeness:
     forall G p,
@@ -439,15 +476,14 @@ Section Completeness.
       + (* Lets call the maximum consistent set extending (G, ~p) as M. *)
         edestruct lindebaum as (M, (?, (?, ?))); eauto.
         (* Let's derive our contradiction! *)
-        assert (M p /\ ~M p) as (?, ?); try split.
-        * (* Hmm... G < (G, ~p) < M *)
+        assert ((M ||= p) /\ (M ||= [! ~p !])) as (?, ?); try split.
+        * apply entails_superset with G; auto.
+          firstorder.
+        * intros f ? w.
+          apply H5.
+          firstorder.
+        * (* Huh... *)
           admit.
-        * intros ?.
-          apply H2 with p.
-          (* TODO: make a tactic for this! *)
-          admit.
-        * (* Finally! *)
-          contradiction.
   Admitted.
 
 End Completeness.

@@ -37,6 +37,32 @@ Proof.
       * assumption.
 Defined.
 
+Lemma modal_ax4:
+  forall (S: axiom -> Prop) g A B,
+  S (ax1 B A) ->
+  S (ax2 A B [! A /\ B !]) ->
+  S (ax4 A B) ->
+  (S; g |-- A) ->
+  (S; g |-- B) ->
+  (S; g |-- [! A /\ B !]).
+Proof.
+  (* TODO: refactor me. *)
+  intros S g a b ? ? ? ? ?.
+  assert (S; g |-- [! (a -> b -> a /\ b) -> (a -> b) -> (a -> a /\ b) !]).
+  apply Ax with (a := ax2 a b [! a /\ b !]); auto.
+  assert (S; g |-- [! (a -> b) -> (a -> a /\ b) !]).
+  eapply Mp; eauto.
+  eapply Ax with (ax4 a b); auto.
+  eapply Mp.
+  eapply Mp.
+  exact H5.
+  eapply Mp.
+  apply Ax with (ax1 b a); auto.
+  reflexivity.
+  assumption.
+  assumption.
+Defined.
+
 Lemma modal_ax5:
   forall (S: axiom -> Prop) g A B,
   S (ax5 A B) ->
@@ -181,3 +207,12 @@ Proof.
   - econstructor 4.
     assumption.
 Qed.
+
+Lemma modal_excluded_middle:
+  forall A Γ φ,
+  Subset K A ->
+  A; Γ |-- [! φ \/ ~φ !].
+Proof.
+  intros.
+  admit.
+Admitted.

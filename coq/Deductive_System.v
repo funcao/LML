@@ -189,12 +189,3 @@ Proof.
     right; auto.
   - assumption.
 Qed.
-
-Lemma derive_excluded_middle:
-  forall A Γ φ,
-  Subset K A ->
-  A; Γ |-- [! φ \/ ~φ !].
-Proof.
-  intros.
-  admit.
-Admitted.
