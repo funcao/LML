@@ -66,6 +66,9 @@ Definition theory_modal (M: Model) (Γ: theory): Prop :=
   forall p, Γ p -> validate_model M p.
 
 Definition entails (M: Model) (Γ: theory) (φ: formula): Prop :=
+  (* This is a *global* consequence rather than a local one; i.e., we expect
+     gamma to be valid at every world rather the the world we're dealing with
+     for the formulas p. This is a stronger result than the local one. *)
   theory_modal M Γ -> validate_model M φ.
 
 (***** structural properties of deduction ****)

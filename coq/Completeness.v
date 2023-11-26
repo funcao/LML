@@ -276,19 +276,18 @@ Section Completeness.
 
   Section CanonicalModel.
 
-    (* TODO: is it necessary to consider that the world set only contains maximal
-       theories, or is it enough to consider that the world is maximal during the
-       valuation function? *)
+    Variable G: theory.
 
-    Local Notation W := { G: theory | Consistent A G & Maximal G }.
+    Inductive W: Type :=
+      | W_mk D: Consistent A D -> Maximal D -> Subset G D -> W.
 
     Definition wit (w: W) (p: formula): Prop :=
       match w with
-      | exist2 _ _ G _ _ => G p
+      | @W_mk D _ _ _ => D p
       end.
 
     (* TODO: check why Coq is complaining in here. *)
-    Global Coercion wit: sig2 >-> Funclass.
+    Global Coercion wit: W >-> Funclass.
 
     Definition canonical_accessibility: relation W :=
       fun w v =>
@@ -331,7 +330,17 @@ Section Completeness.
         apply IHp in H0.
         assert (Consistent A w) by (destruct w; auto).
         apply H1 with p.
-        admit.
+        apply modal_ax4.
+        + apply extending_K.
+          apply K_ax1.
+        + apply extending_K.
+          apply K_ax2.
+        + apply extending_K.
+          apply K_ax4.
+        + constructor 1.
+          assumption.
+        + constructor 1.
+          assumption.
       - edestruct classic.
         + eassumption.
         + exfalso.
@@ -374,7 +383,6 @@ Section Completeness.
     Admitted.
 
     Theorem canonical:
-      forall G,
       Consistent A G ->
       forall p,
       G p ->
@@ -384,31 +392,32 @@ Section Completeness.
       intros.
       destruct lindebaum with G as (w, (?, (?, ?))); simpl.
       - assumption.
-      - exists (exist2 _ _ w H1 H2).
+      - exists (@W_mk w H1 H2 H3).
         apply truth; simpl.
         apply H3.
         assumption.
     Qed.
 
     Lemma nonderivation_implies_consistency:
-      forall G p,
+      forall p,
       ~(A; G |-- p) -> Consistent A G.
     Proof.
-      intros G p ? q ?.
+      intros p ? q ?.
       admit.
     Admitted.
 
     Lemma determination_if:
       forall p,
-      (M |= p) -> (A; Empty |-- p).
+      (M |= p) -> (A; G |-- p).
     Proof.
       intros p.
       apply contrapositive; intros.
       - apply classic.
-      - edestruct lindebaum with (G := Extend [! ~p !] Empty)
+      - edestruct lindebaum with (G := Extend [! ~p !] G)
           as (w, (?, (?, ?))).
         + admit.
-        + specialize (H0 (exist2 _ _ w H1 H2)).
+        + assert (Subset G w) by admit.
+          specialize (H0 (@W_mk w H1 H2 H4)).
           apply truth in H0; simpl in H0.
           apply H1 with p.
           apply modal_ax4.
@@ -426,30 +435,29 @@ Section Completeness.
 
     Lemma determination_only_if:
       forall p,
-      (A; Empty |-- p) -> (M |= p).
+      (A; G |-- p) -> (M |= p).
     Proof.
-      intros p ? (w, ?H, ?H).
-      assert (w p).
-      - destruct H1 with p; auto.
-        destruct H0 with p.
-        apply modal_ax4.
-        + apply extending_K.
-          apply K_ax1.
-        + apply extending_K.
-          apply K_ax2.
-        + apply extending_K.
-          apply K_ax4.
-        + apply deduction_subset with Empty; auto.
-          inversion 1.
-        + constructor 1.
-          assumption.
-      - apply truth; simpl.
+      intros p ? (w, ?H, ?H, ?H).
+      apply truth; simpl.
+      destruct H1 with p; auto.
+      destruct H0 with p.
+      apply modal_ax4.
+      - apply extending_K.
+        apply K_ax1.
+      - apply extending_K.
+        apply K_ax2.
+      - apply extending_K.
+        apply K_ax4.
+      - apply deduction_subset with G.
+        + assumption.
+        + assumption.
+      - constructor 1.
         assumption.
     Qed.
 
     Lemma determination:
       forall p,
-      (M |= p) <-> (A; Empty |-- p).
+      (M |= p) <-> (A; G |-- p).
     Proof.
       split.
       - apply determination_if.
@@ -458,7 +466,7 @@ Section Completeness.
 
     Theorem completeness:
       forall p,
-      (Empty ||= p) -> (A; Empty |-- p).
+      (G ||= p) -> (A; G |-- p).
     Proof.
       intros p.
       (* We can't pretend we know how to derive this, but there must be a way. *)
@@ -466,16 +474,20 @@ Section Completeness.
       - apply classic.
       - (* Since it's impossible to derive A; G |-- p, this means that G must
            be consistent. If it were inconsistent, anything could be derived! *)
-        assert (Consistent A Empty).
+        assert (Consistent A G).
         + apply nonderivation_implies_consistency with p.
           assumption.
         + (* Now, by the determination lemma, since p isn't derivable, it can't
              be done in the canonical model as well. *)
-          assert ((canonical_model |= p) -> False); intros.
+          assert ((M |= p) -> False); intros.
           * apply determination with p in H2; auto.
           * apply H2, H0.
-            (* This detail is trivially true, as we're in the empty context. *)
-            inversion 1.
+            (* Since our canonical model only contains worlds that extend G, by
+               the truth lemma all of our possible worlds in here will contain
+               the hypotheses of G. TODO: not sure why I did this... *)
+            intros q ? w; apply truth.
+            destruct w as (w, ?H, ?H, ?H); simpl.
+            apply H6; assumption.
     Qed.
 
   End CanonicalModel.
