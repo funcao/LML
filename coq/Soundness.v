@@ -111,11 +111,11 @@ Lemma Axiom_Possibility_soundness:
   M ' w ||- [! <>(φ \/ ψ) -> (<>φ \/ <>ψ) !].
 Proof.
   simpl; intros.
-  destruct H as [ w' [ Hip1 [ Hip2 | Hip3 ] ]].
-  - left; exists w'; split.
+  destruct H as (w', ?H, [ ?H | ?H ]).
+  - left; exists w'.
     + assumption.
     + assumption.
-  - right; exists w'; split.
+  - right; exists w'.
     + assumption.
     + assumption.
 Qed.

@@ -344,8 +344,7 @@ Section Completeness.
         apply H0.
         assumption.
       - simpl in H.
-        (* TODO: change definition to exists2 please! *)
-        destruct H as (w', (?, ?)).
+        destruct H as (w', ?, ?).
         apply IHp in H0.
         admit.
       - simpl.
@@ -398,8 +397,6 @@ Section Completeness.
       intros G p ? q ?.
       admit.
     Admitted.
-
-    
 
     Lemma determination_if:
       forall p,
