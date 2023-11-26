@@ -154,39 +154,7 @@ Section Completeness.
       ~Consistent A (Extend f D) ->
       Consistent A (Extend [! ~f !] D).
     Proof.
-      intros.
-      unfold Consistent in H0.
-      assert (exists p, (A; Extend f D |-- [! p /\ ~p !])).
-      edestruct classic.
-      exact H1.
-      exfalso.
-      apply H0; clear H0.
-      intros p ?.
-      apply H1; clear H1.
-      exists p.
-      assumption.
-      clear H0.
-      destruct H1 as (p, ?).
-      assert (A; D |-- [! f \/ ~f !]).
-      apply modal_excluded_middle.
-      apply extending_K.
-      apply modal_deduction in H0.
-      assert (A; D |-- [! ~f !]).
       admit.
-      intros q ?.
-      apply H with [! ~f -> q !]; clear H H2.
-      apply modal_deduction in H3.
-      apply modal_ax4.
-      apply extending_K.
-      apply K_ax1.
-      apply extending_K.
-      apply K_ax2.
-      apply extending_K.
-      apply K_ax4.
-      admit.
-      admit.
-      apply extending_K.
-      apply extending_K.
     Admitted.
 
     Lemma insert_preserves_consistency:
@@ -266,8 +234,9 @@ Section Completeness.
           * apply delta_is_monotonic.
             auto with arith.
           * assumption.
-      (* For necessitation, it works even for Delta 0 as we drop the context. *)
-      - exists 0; simpl.
+      (* For necessitation, follows simply by the hypothesis. *)
+      - destruct IHdeduction as (n, ?); auto.
+        exists n.
         constructor 4.
         assumption.
     Qed.
@@ -319,7 +288,7 @@ Section Completeness.
       end.
 
     (* TODO: check why Coq is complaining in here. *)
-    Coercion wit: sig2 >-> Funclass.
+    Global Coercion wit: sig2 >-> Funclass.
 
     Definition canonical_accessibility: relation W :=
       fun w v =>
@@ -339,7 +308,7 @@ Section Completeness.
     Local Notation V := canonical_valuation.
 
     Definition canonical_model :=
-      Build_Model F V.
+      [F -- V].
 
     Local Notation M := canonical_model.
 
@@ -422,68 +391,96 @@ Section Completeness.
         assumption.
     Qed.
 
+    Lemma nonderivation_implies_consistency:
+      forall G p,
+      ~(A; G |-- p) -> Consistent A G.
+    Proof.
+      intros G p ? q ?.
+      admit.
+    Admitted.
+
+    
+
+    Lemma determination_if:
+      forall p,
+      (M |= p) -> (A; Empty |-- p).
+    Proof.
+      intros p.
+      apply contrapositive; intros.
+      - apply classic.
+      - edestruct lindebaum with (G := Extend [! ~p !] Empty)
+          as (w, (?, (?, ?))).
+        + admit.
+        + specialize (H0 (exist2 _ _ w H1 H2)).
+          apply truth in H0; simpl in H0.
+          apply H1 with p.
+          apply modal_ax4.
+          * apply extending_K.
+            apply K_ax1.
+          * apply extending_K.
+            apply K_ax2.
+          * apply extending_K.
+            apply K_ax4.
+          * constructor 1.
+            assumption.
+          * constructor 1.
+            firstorder.
+    Admitted.
+
+    Lemma determination_only_if:
+      forall p,
+      (A; Empty |-- p) -> (M |= p).
+    Proof.
+      intros p ? (w, ?H, ?H).
+      assert (w p).
+      - destruct H1 with p; auto.
+        destruct H0 with p.
+        apply modal_ax4.
+        + apply extending_K.
+          apply K_ax1.
+        + apply extending_K.
+          apply K_ax2.
+        + apply extending_K.
+          apply K_ax4.
+        + apply deduction_subset with Empty; auto.
+          inversion 1.
+        + constructor 1.
+          assumption.
+      - apply truth; simpl.
+        assumption.
+    Qed.
+
+    Lemma determination:
+      forall p,
+      (M |= p) <-> (A; Empty |-- p).
+    Proof.
+      split.
+      - apply determination_if.
+      - apply determination_only_if.
+    Qed.
+
+    Theorem completeness:
+      forall p,
+      (Empty ||= p) -> (A; Empty |-- p).
+    Proof.
+      intros p.
+      (* We can't pretend we know how to derive this, but there must be a way. *)
+      apply contrapositive; intros.
+      - apply classic.
+      - (* Since it's impossible to derive A; G |-- p, this means that G must
+           be consistent. If it were inconsistent, anything could be derived! *)
+        assert (Consistent A Empty).
+        + apply nonderivation_implies_consistency with p.
+          assumption.
+        + (* Now, by the determination lemma, since p isn't derivable, it can't
+             be done in the canonical model as well. *)
+          assert ((canonical_model |= p) -> False); intros.
+          * apply determination with p in H2; auto.
+          * apply H2, H0.
+            (* This detail is trivially true, as we're in the empty context. *)
+            inversion 1.
+    Qed.
+
   End CanonicalModel.
-
-  Lemma nonderivability_implies_consistency:
-    forall G p,
-    ~(A; G |-- p) -> Consistent A (Extend [! ~p !] G).
-  Proof.
-    intros G p ? f ?.
-    apply H; clear H.
-    apply modal_deduction in H0; auto.
-    assert (A; G |-- [! p \/ ~p !]).
-    apply modal_excluded_middle.
-    assumption.
-    admit.
-  Admitted.
-
-  Lemma theoryModal_superset:
-    forall M D,
-    theoryModal M D ->
-    forall G,
-    Subset G D ->
-    theoryModal M G.
-  Proof.
-    intros M D ? G ? p ?.
-    apply H.
-    apply H0.
-    assumption.
-  Qed.
-
-  Lemma entails_superset:
-    forall G p,
-    (G ||= p) ->
-    forall D,
-    Subset G D ->
-    (D ||= p).
-  Proof.
-    intros G p ? D ? M ?.
-    apply H.
-    apply theoryModal_superset with D.
-    - assumption.
-    - assumption.
-  Qed.
-
-  Theorem completeness:
-    forall G p,
-    (G ||= p) -> (A; G |-- p).
-  Proof.
-    intros G p.
-    apply contrapositive; intros.
-    - apply classic.
-    - assert (Consistent A (Extend [! ~p !] G)).
-      + apply nonderivability_implies_consistency; assumption.
-      + (* Lets call the maximum consistent set extending (G, ~p) as M. *)
-        edestruct lindebaum as (M, (?, (?, ?))); eauto.
-        (* Let's derive our contradiction! *)
-        assert ((M ||= p) /\ (M ||= [! ~p !])) as (?, ?); try split.
-        * apply entails_superset with G; auto.
-          firstorder.
-        * intros f ? w.
-          apply H5.
-          firstorder.
-        * (* Huh... *)
-          admit.
-  Admitted.
 
 End Completeness.

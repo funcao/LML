@@ -340,7 +340,7 @@ Definition noetherian_frame (F: Frame): Prop :=
 (* Logical Equivalence *)
 Definition entails_modal (Γ: theory) (φ: formula): Prop :=
   forall M,
-  theoryModal M Γ -> 
+  theoryModal M Γ ->
   validate_model M φ.
 
 Definition equivalence (φ ψ: formula): Prop := 

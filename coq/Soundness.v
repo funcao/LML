@@ -196,16 +196,5 @@ Proof.
   - intros M ?H w.
     apply Necessitation_soundness.
     apply IHdeduction.
-    inversion 1.
-Qed.
-
-Corollary soundness2:
-  forall M G w φ, 
-  theoryModal M G -> 
-  (K; G |-- φ) -> M ' w ||- φ.
-Proof.
-  intros.
-  eapply soundness.
-  - eassumption.
-  - assumption.
+    assumption.
 Qed.
