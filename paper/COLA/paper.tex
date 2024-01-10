@@ -893,13 +893,13 @@ This concludes our formalization of the existence of the maximal consistent sets
 is the construction of the cannonical model. The cannonical model
 $\mathcal{M} = \langle\mathcal{F},\mathcal{V}\rangle$ is such that:
 \begin{itemize}
-  \item The frame $mathcal{F} = \langle W, \mathcal{R}\rangle$ is
+  \item The frame $\mathcal{F} = \langle W, \mathcal{R}\rangle$ is
         \begin{itemize}
           \item $\mathcal{W}$ is the set of all maximal consistent sets of formulas;
           \item $\mathcal{R}(w_{1},w_{2})$ iff $\Box \varphi \in w_{1}$ implies $\varphi \in w_{2}$;
         \end{itemize}
-  \item The labelling function $\mathcal{V}$ is such that $\mathcal{V}(A) \in \mathcal{W}$ and $p\in \mathcal{V}(A)$,
-        for all propositional variables $A$.
+  \item The labelling function $\mathcal{V}$ is such that $\mathcal{V}(A) = w$, $A\in w$,
+        for some propositional variable $A$ and $w \in \mathcal{W}$.
 \end{itemize}
 
 The canonical model is formalized in Coq as follows. First, we define the type \mintinline{coq}{W} that pack
