@@ -22,13 +22,110 @@ Section Properties.
 
 End Properties.
 
+(* TODO: move this to tactics, please! *)
+
+Lemma aux_deduction:
+  forall A G p,
+  (A; G |-- p) ->
+  forall q,
+  (A; Extend p G |-- q) -> (A; G |-- q).
+Proof.
+  intros.
+  dependent induction H0.
+  - destruct H0.
+    + now dependent destruction H0.
+    + now constructor 1.
+  - now constructor 2 with a.
+  - constructor 3 with f.
+    + apply IHdeduction1.
+      * assumption.
+      * reflexivity.
+    + apply IHdeduction2.
+      * assumption.
+      * reflexivity.
+  - constructor 4.
+    eapply IHdeduction.
+    + assumption.
+    + reflexivity.
+Qed.
+
+Lemma consistency_deduction:
+  forall A,
+  Subset K A ->
+  forall G p,
+  (A; G |-- p) <-> ~Consistent A (Extend [! ~p !] G).
+Proof.
+  split.
+  - intros ? ?.
+    apply H1 with p.
+    apply modal_ax4.
+    + apply H.
+      apply K_ax1.
+    + apply H.
+      apply K_ax2.
+    + apply H.
+      apply K_ax4.
+    + apply deduction_subset with G.
+      * intros t ?.
+        now right.
+      * assumption.
+    + constructor 1.
+      now left.
+  - apply contrapositive; intros.
+    + apply classic.
+    + admit.
+Admitted.
+
+Lemma consistency_either:
+  forall A,
+  Subset K A ->
+  forall G f,
+  Consistent A G ->
+  (Consistent A (Extend f G) \/ Consistent A (Extend [! ~f !] G)).
+Proof.
+  intros A ? G f.
+  apply contrapositive; intros.
+  - apply classic.
+  - assert (~Consistent A (Extend f G) /\ ~Consistent A (Extend [! ~f !] G)).
+    + split; intro.
+      * apply H0.
+        now left.
+      * apply H0.
+        now right.
+    + clear H0; destruct H2.
+      apply consistency_deduction in H2; auto.
+      apply H0.
+      (* If there's anything broken in here, then H1 is a contradiction! *)
+      intros q ?.
+      apply H1 with q.
+      apply aux_deduction with f.
+      * assumption.
+      * assumption.
+Qed.
+
+Lemma consistency_negation:
+  forall A,
+  Subset K A ->
+  forall G f,
+  Consistent A G ->
+  ~Consistent A (Extend f G) ->
+  Consistent A (Extend [! ~f !] G).
+Proof.
+  intros.
+  destruct consistency_either with A G f.
+  - assumption.
+  - assumption.
+  - contradiction.
+  - assumption.
+Qed.
+
 Section Completeness.
 
   Variable A: axiom -> Prop.
 
   Hypothesis extending_K: Subset K A.
 
-  Section Lindebaum.
+  Section Lindenbaum.
 
     (* Base theory. *)
     Variable G: theory.
@@ -53,7 +150,7 @@ Section Completeness.
         ~Consistent A (Extend p D) ->
         Subset (Extend [! ~p !] D) (Insert (Some p) D).
 
-    (* Lindebaum sets. *)
+    (* Lindenbaum sets. *)
     Fixpoint Delta (n: nat): theory :=
       match n with
       | 0   => G
@@ -147,15 +244,6 @@ Section Completeness.
         rewrite countable.
         assumption.
     Qed.
-
-    Lemma consistency_negation:
-      forall D f,
-      Consistent A D ->
-      ~Consistent A (Extend f D) ->
-      Consistent A (Extend [! ~f !] D).
-    Proof.
-      admit.
-    Admitted.
 
     Lemma insert_preserves_consistency:
       forall D p,
@@ -258,7 +346,7 @@ Section Completeness.
         assumption.
     Qed.
 
-    Theorem lindebaum:
+    Theorem lindenbaum:
       Consistent A G ->
       exists D,
       Consistent A D /\ Maximal D /\ Subset G D.
@@ -272,7 +360,7 @@ Section Completeness.
         + exact gamma_subset_of_max.
     Qed.
 
-  End Lindebaum.
+  End Lindenbaum.
 
   Section CanonicalModel.
 
@@ -390,7 +478,7 @@ Section Completeness.
       M ' w ||- p.
     Proof.
       intros.
-      destruct lindebaum with G as (w, (?, (?, ?))); simpl.
+      destruct lindenbaum with G as (w, (?, (?, ?))); simpl.
       - assumption.
       - exists (@W_mk w H1 H2 H3).
         apply truth; simpl.
@@ -403,8 +491,57 @@ Section Completeness.
       ~(A; G |-- p) -> Consistent A G.
     Proof.
       intros p ? q ?.
-      admit.
-    Admitted.
+      apply H.
+      apply consistency_deduction; auto.
+      intro.
+      apply H1 with q.
+      apply deduction_subset with G.
+      - now right.
+      - assumption.
+    Qed.
+
+    Lemma world_derivation:
+      forall p,
+      (A; G |-- p) <-> (forall w: W, w p).
+    Proof.
+      split.
+      - intros.
+        destruct w as (D, ?H, ?H, ?H); simpl.
+        destruct H1 with p.
+        + assumption.
+        + exfalso.
+          apply H0 with p.
+          apply modal_ax4.
+          * apply extending_K.
+            apply K_ax1.
+          * apply extending_K.
+            apply K_ax2.
+          * apply extending_K.
+            apply K_ax4.
+          * now apply deduction_subset with G.
+          * now constructor.
+      - intros.
+        apply consistency_deduction; auto; intro.
+        destruct lindenbaum with (Extend [! ~p !] G) as (D, (?, (?, ?))).
+        + assumption.
+        + assert (Subset G D).
+          * intros t ?.
+            apply H3.
+            now right.
+          * specialize (H (W_mk H1 H2 H4)); simpl in H.
+            apply H1 with p.
+            apply modal_ax4.
+            --- apply extending_K.
+                apply K_ax1.
+            --- apply extending_K.
+                apply K_ax2.
+            --- apply extending_K.
+                apply K_ax4.
+            --- now constructor 1.
+            --- constructor 1.
+                apply H3.
+                now left.
+    Qed.
 
     Lemma determination_if:
       forall p,
@@ -413,25 +550,38 @@ Section Completeness.
       intros p.
       apply contrapositive; intros.
       - apply classic.
-      - edestruct lindebaum with (G := Extend [! ~p !] G)
-          as (w, (?, (?, ?))).
-        + admit.
-        + assert (Subset G w) by admit.
-          specialize (H0 (@W_mk w H1 H2 H4)).
-          apply truth in H0; simpl in H0.
-          apply H1 with p.
-          apply modal_ax4.
-          * apply extending_K.
-            apply K_ax1.
-          * apply extending_K.
-            apply K_ax2.
-          * apply extending_K.
-            apply K_ax4.
-          * constructor 1.
-            assumption.
-          * constructor 1.
-            firstorder.
-    Admitted.
+      - edestruct lindenbaum with (G := Extend [! ~p !] G)
+          as (D, (?, (?, ?))).
+        + intros q ?.
+          apply H.
+          apply world_derivation; intros.
+          destruct w as (D, ?H, ?H, ?H); simpl.
+          destruct H3 with p.
+          * assumption.
+          * exfalso.
+            apply H2 with q.
+            apply deduction_subset with (Extend [! ~p !] G); auto.
+            destruct 1.
+            --- now dependent destruction H6.
+            --- now apply H4.
+        + assert (Subset G D).
+          * intros t ?.
+            apply H3.
+            now right.
+          * specialize (H0 (@W_mk D H1 H2 H4)).
+            apply truth in H0; simpl in H0.
+            apply H1 with p.
+            apply modal_ax4.
+            --- apply extending_K.
+                apply K_ax1.
+            --- apply extending_K.
+                apply K_ax2.
+            --- apply extending_K.
+                apply K_ax4.
+            --- now constructor 1.
+            --- constructor 1.
+                firstorder.
+    Qed.
 
     Lemma determination_only_if:
       forall p,
@@ -484,7 +634,7 @@ Section Completeness.
           * apply H2, H0.
             (* Since our canonical model only contains worlds that extend G, by
                the truth lemma all of our possible worlds in here will contain
-               the hypotheses of G. TODO: not sure why I did this... *)
+               the hypotheses of G. *)
             intros q ? w; apply truth.
             destruct w as (w, ?H, ?H, ?H); simpl.
             apply H6; assumption.
