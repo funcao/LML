@@ -3,189 +3,164 @@ Require Import Equality.
 Require Import List Modal_Library Modal_Notations Deductive_System.
 Import ListNotations.
 
-Lemma modal_ax1:
-  forall (S: axiom -> Prop) g A B,
-  S (ax1 A B) ->
-  (S; g |-- A) -> (S; g |-- [! B -> A !]).
-Proof.
-  intros.
-  eapply Mp.
-  - apply Ax with (a := ax1 A B).
-    + assumption.
-    + reflexivity.
-  - assumption.
-Defined.
+Section Deduction.
 
-Lemma modal_ax2:
-  forall (S: axiom -> Prop) g A B C,
-  S (ax2 A B C) ->
-  (S; g |-- [! A -> B -> C !]) ->
-  (S; g |-- [! A -> B !]) ->
-  (S; g |-- [! A -> C !]).
-Proof.
-  intros S g a b c H H1 H2.
-  assert (S; g |-- [! (a -> b -> c) -> (a -> b) -> a -> c !]).
-  - apply Ax with (a := ax2 a b c).
-    + assumption.
-    + reflexivity.
-  - assert (S; g |-- [! (a -> b) -> a -> c !]).
-    + eapply Mp.
-      * exact H0.
-      * assumption.
-    + eapply Mp.
-      * exact H3.
-      * assumption.
-Defined.
+  Variable A: axiom -> Prop.
+  Variable G: theory.
 
-Lemma modal_ax3:
-  forall (S: axiom -> Prop) g p q,
-  S (ax3 p q) ->
-  (S; g |-- [! (~q -> ~p) !]) ->
-  (S; g |-- [! p !]) ->
-  (S; g |-- [! q !]).
-Proof.
-  intros.
-  assert (S; g |-- [! (~q -> ~p) -> p -> q !]).
-  - now apply Ax with (a := ax3 p q).
-  - assert (S; g |-- [! p -> q !]).
-    + eapply Mp.
-      * exact H2.
-      * assumption.
-    + eapply Mp.
-      * exact H3.
-      * assumption.
-Qed.
+  Lemma modal_ax1:
+    forall p q,
+    A (ax1 p q) ->
+    (A; G |-- p) -> (A; G |-- [! q -> p !]).
+  Proof.
+    intros.
+    apply Mp with p; auto.
+    now apply Ax with (a := ax1 p q).
+  Defined.
 
-Lemma modal_ax4:
-  forall (S: axiom -> Prop) g A B,
-  S (ax1 B A) ->
-  S (ax2 A B [! A /\ B !]) ->
-  S (ax4 A B) ->
-  (S; g |-- A) ->
-  (S; g |-- B) ->
-  (S; g |-- [! A /\ B !]).
-Proof.
-  (* TODO: refactor me. *)
-  intros S g a b ? ? ? ? ?.
-  assert (S; g |-- [! (a -> b -> a /\ b) -> (a -> b) -> (a -> a /\ b) !]).
-  apply Ax with (a := ax2 a b [! a /\ b !]); auto.
-  assert (S; g |-- [! (a -> b) -> (a -> a /\ b) !]).
-  eapply Mp; eauto.
-  eapply Ax with (ax4 a b); auto.
-  eapply Mp.
-  eapply Mp.
-  exact H5.
-  eapply Mp.
-  apply Ax with (ax1 b a); auto.
-  reflexivity.
-  assumption.
-  assumption.
-Defined.
+  Lemma modal_ax2:
+    forall p q r,
+    A (ax2 p q r) ->
+    (A; G |-- [! p -> q -> r !]) ->
+    (A; G |-- [! p -> q !]) ->
+    (A; G |-- [! p -> r !]).
+  Proof.
+    intros.
+    assert (A; G |-- [! (p -> q -> r) -> (p -> q) -> p -> r !]).
+    - now apply Ax with (a := ax2 p q r).
+    - assert (A; G |-- [! (p -> q) -> p -> r !]).
+      + now apply Mp with [! p -> q -> r !].
+      + now apply Mp with [! p -> q !].
+  Defined.
 
-Lemma modal_ax5:
-  forall (S: axiom -> Prop) g A B,
-  S (ax5 A B) ->
-  (S; g |-- [! A /\ B !]) -> (S; g |-- A).
-Proof.
-  intros.
-  assert (S; g |-- Implies (And A B) A).
-  - apply Ax with (a := ax5 A B).
-    + assumption.
-    + reflexivity.
-  - eapply Mp.
-    + apply H1.
-    + assumption.
-Defined.
+  Lemma modal_ax3:
+    forall p q,
+    A (ax3 p q) ->
+    (A; G |-- [! (~q -> ~p) !]) ->
+    (A; G |-- [! p !]) ->
+    (A; G |-- [! q !]).
+  Proof.
+    intros.
+    assert (A; G |-- [! (~q -> ~p) -> p -> q !]).
+    - now apply Ax with (a := ax3 p q).
+    - assert (A; G |-- [! p -> q !]).
+      + now apply Mp with [! ~q -> ~p !].
+      + now apply Mp with p.
+  Defined.
 
-Lemma modal_ax6:
-  forall (S: axiom -> Prop) g A B,
-  S (ax6 A B) ->
-  (S; g |-- [! A /\ B !]) -> (S; g |-- B).
-Proof.
-  intros.
-  assert (S; g |-- Implies (And A B) B).
-  - apply Ax with (a := ax6 A B).
-    + assumption.
-    + reflexivity.
-  - eapply Mp.
-    + apply H1.
-    + assumption.
-Defined.
+  Lemma modal_ax4:
+    forall p q,
+    A (ax1 q p) ->
+    A (ax2 p q [! p /\ q !]) ->
+    A (ax4 p q) ->
+    (A; G |-- p) ->
+    (A; G |-- q) ->
+    (A; G |-- [! p /\ q !]).
+  Proof.
+    intros.
+    assert (A; G |-- [! (p -> q -> p /\ q) -> (p -> q) -> (p -> p /\ q) !]).
+    - now apply Ax with (a := ax2 p q [! p /\ q !]).
+    - assert (A; G |-- [! (p -> q) -> (p -> p /\ q) !]).
+      + apply Mp with [! p -> q -> p /\ q !]; auto.
+        now apply Ax with (ax4 p q).
+      + apply Mp with p; auto.
+        apply Mp with [! p -> q !]; auto.
+        apply Mp with q; auto.
+        now apply Ax with (ax1 q p).
+  Defined.
 
-Lemma modal_ax7:
-  forall (S: axiom -> Prop) g A B,
-  S (ax7 A B) ->
-  (S; g |-- [! A !]) -> (S; g |-- [! A \/ B !]).
-Proof.
-  intros.
-  assert (S; g |-- Implies A (Or A B)).
-  - apply Ax with (a := ax7 A B).
-    + assumption.
-    + reflexivity.
-  - eapply Mp.
-    + apply H1.
-    + assumption.
-Qed.
+  Lemma modal_ax5:
+    forall p q,
+    A (ax5 p q) ->
+    (A; G |-- [! p /\ q !]) ->
+    (A; G |-- p).
+  Proof.
+    intros.
+    assert (A; G |-- [! p /\ q -> p !]).
+    - now apply Ax with (a := ax5 p q).
+    - now apply Mp with [! p /\ q !].
+  Defined.
 
-Lemma modal_ax8:
-  forall (S: axiom -> Prop) g A B,
-  S (ax8 A B) ->
-  (S; g |-- [! B !]) -> (S; g |-- [! A \/ B !]).
-Proof.
-  intros.
-  assert (S; g |-- Implies B (Or A B)).
-  - apply Ax with (a := ax8 A B).
-    + assumption.
-    + reflexivity.
-  - eapply Mp.
-    + apply H1.
-    + assumption.
-Qed.
+  Lemma modal_ax6:
+    forall p q,
+    A (ax6 p q) ->
+    (A; G |-- [! p /\ q !]) -> (A; G |-- q).
+  Proof.
+    intros.
+    assert (A; G |-- [! p /\ q -> q !]).
+    - now apply Ax with (a := ax6 p q).
+    - now apply Mp with [! p /\ q !].
+  Defined.
 
-Lemma modal_compose:
-  forall (S: axiom -> Prop) g A B C,
-  S (ax1 [! B -> C !] A) ->
-  S (ax2 A B C) ->
-  (S; g |-- [! A -> B !]) ->
-  (S; g |-- [! B -> C !]) ->
-  (S; g |-- [! A -> C !]).
-Proof.
-  intros S g a b c ?H ?H H1 H2.
-  assert (S; g |-- [! a -> b -> c !]).
-  - eapply modal_ax1.
-    + assumption.
-    + assumption.
-  - eapply modal_ax2.
-    + eassumption.
-    + exact H3.
-    + exact H1.
-Defined.
+  Lemma modal_ax7:
+    forall p q,
+    A (ax7 p q) ->
+    (A; G |-- [! p !]) ->
+    (A; G |-- [! p \/ q !]).
+  Proof.
+    intros.
+    assert (A; G |-- [! p -> p \/ q !]).
+    - now apply Ax with (a := ax7 p q).
+    - now apply Mp with p.
+  Defined.
 
-Lemma modal_axK:
-  forall (S: axiom -> Prop) g A B,
-  S (axK A B) ->
-  (S; g |-- [! [](A -> B) !]) -> (S; g |-- [! []A -> []B !]).
-Proof.
-  intros.
-  eassert (S; g |-- Implies ?[X] ?[Y]).
-  - apply Ax with (a := axK A B).
-    + assumption.
-    + reflexivity.
-  - eapply Mp.
-    + apply H1.
-    + assumption.
-Defined.
+  Lemma modal_ax8:
+    forall p q,
+    A (ax8 p q) ->
+    (A; G |-- [! q !]) ->
+    (A; G |-- [! p \/ q !]).
+  Proof.
+    intros.
+    assert (A; G |-- [! q -> p \/ q !]).
+    - now apply Ax with (a := ax8 p q).
+    - now apply Mp with q.
+  Defined.
 
-Lemma modal_axK4:
-  forall (S: axiom -> Prop) g A,
-  S (axK4 A) ->
-  (S; g |-- [! []A -> [][]A !]).
-Proof.
-  intros.
-  apply Ax with (a := axK4 A).
-  - assumption.
-  - reflexivity.
-Defined.
+  Lemma modal_compose:
+    forall p q r,
+    A (ax1 [! q -> r !] p) ->
+    A (ax2 p q r) ->
+    (A; G |-- [! p -> q !]) ->
+    (A; G |-- [! q -> r !]) ->
+    (A; G |-- [! p -> r !]).
+  Proof.
+    intros.
+    assert (A; G |-- [! p -> q -> r !]).
+    - now apply modal_ax1.
+    - now apply modal_ax2 with q.
+  Defined.
+
+  Lemma modal_axK:
+    forall p q,
+    A (axK p q) ->
+    (A; G |-- [! [](p -> q) !]) ->
+    (A; G |-- [! []p -> []q !]).
+  Proof.
+    intros.
+    assert (A; G |-- [! [](p -> q) -> []p -> []q !]).
+    - now apply Ax with (a := axK p q).
+    - now apply Mp with [! [](p -> q) !].
+  Defined.
+
+  Lemma modal_axK4:
+    forall p,
+    A (axK4 p) ->
+    (A; G |-- [! []p -> [][]p !]).
+  Proof.
+    intros.
+    now apply Ax with (a := axK4 p).
+  Defined.
+
+  Lemma modal_excluded_middle:
+    forall A Γ φ,
+    Subset K A ->
+    A; Γ |-- [! φ \/ ~φ !].
+  Proof.
+    intros.
+    admit.
+  Admitted.
+
+End Deduction.
 
 Lemma modal_impl_transitivity:
   forall M a b c,
@@ -218,12 +193,3 @@ Proof.
     apply IHdeduction.
     assumption.
 Qed.
-
-Lemma modal_excluded_middle:
-  forall A Γ φ,
-  Subset K A ->
-  A; Γ |-- [! φ \/ ~φ !].
-Proof.
-  intros.
-  admit.
-Admitted.
