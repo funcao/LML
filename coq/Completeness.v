@@ -30,9 +30,8 @@ Lemma nonderivation_implies_consistency:
 Proof.
   intros A ? G p ? q ?.
   apply H0; clear H0.
-  (* Ok, p follows by explosion! *)
-  admit.
-Admitted.
+  now apply modal_explosion with q.
+Qed.
 
 Lemma consistency_deduction:
   forall A,

@@ -173,6 +173,15 @@ Section Deduction.
     now apply Ax with (a := axK4 p).
   Defined.
 
+  Lemma modal_explosion:
+    forall p q,
+    (A; G |-- [! p /\ ~p !]) ->
+    (A; G |-- q).
+  Proof.
+    intros.
+    admit.
+  Admitted.
+
   Lemma modal_excluded_middle:
     forall A Γ φ,
     Subset K A ->
