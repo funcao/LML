@@ -539,7 +539,17 @@ Section Completeness.
       - simpl in *; intros.
         apply IHp1 in H0.
         apply IHp2.
-        admit.
+        assert (Maximal w) by now destruct w.
+        assert (Consistent A w) by now destruct w.
+        destruct H1 with p2.
+        + assumption.
+        + exfalso.
+          apply H2 with p2.
+          apply modal_ax4...
+          * apply Mp with p1.
+            --- now constructor 1.
+            --- now constructor 1.
+          * now constructor 1.
     Admitted.
 
     Theorem canonical:
