@@ -22,33 +22,6 @@ Section Properties.
 
 End Properties.
 
-(* TODO: move this to tactics, please! *)
-
-Lemma aux_deduction:
-  forall A G p,
-  (A; G |-- p) ->
-  forall q,
-  (A; Extend p G |-- q) -> (A; G |-- q).
-Proof.
-  intros.
-  dependent induction H0.
-  - destruct H0.
-    + now dependent destruction H0.
-    + now constructor 1.
-  - now constructor 2 with a.
-  - constructor 3 with f.
-    + apply IHdeduction1.
-      * assumption.
-      * reflexivity.
-    + apply IHdeduction2.
-      * assumption.
-      * reflexivity.
-  - constructor 4.
-    eapply IHdeduction.
-    + assumption.
-    + reflexivity.
-Qed.
-
 Lemma nonderivation_implies_consistency:
   forall A,
   Subset K A ->
@@ -114,9 +87,7 @@ Proof.
       (* If there's anything broken in here, then H1 is a contradiction! *)
       intros q ?.
       apply H1 with q.
-      apply aux_deduction with f.
-      * assumption.
-      * assumption.
+      now apply modal_cut with f.
 Qed.
 
 Lemma consistency_negation:

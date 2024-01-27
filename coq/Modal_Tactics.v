@@ -8,6 +8,31 @@ Section Deduction.
   Variable A: axiom -> Prop.
   Variable G: theory.
 
+  Lemma modal_cut:
+    forall A G p,
+    (A; G |-- p) ->
+    forall q,
+    (A; Extend p G |-- q) -> (A; G |-- q).
+  Proof.
+    intros.
+    dependent induction H0.
+    - destruct H0.
+      + now dependent destruction H0.
+      + now constructor 1.
+    - now constructor 2 with a.
+    - constructor 3 with f.
+      + apply IHdeduction1.
+        * assumption.
+        * reflexivity.
+      + apply IHdeduction2.
+        * assumption.
+        * reflexivity.
+    - constructor 4.
+      eapply IHdeduction.
+      + assumption.
+      + reflexivity.
+  Defined.
+
   Lemma modal_ax1:
     forall p q,
     A (ax1 p q) ->
