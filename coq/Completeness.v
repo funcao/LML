@@ -49,6 +49,18 @@ Proof.
     + reflexivity.
 Qed.
 
+Lemma nonderivation_implies_consistency:
+  forall A,
+  Subset K A ->
+  forall G p,
+  ~(A; G |-- p) -> Consistent A G.
+Proof.
+  intros A ? G p ? q ?.
+  apply H0; clear H0.
+  (* Ok, p follows by explosion! *)
+  admit.
+Admitted.
+
 Lemma consistency_deduction:
   forall A,
   Subset K A ->
@@ -73,7 +85,11 @@ Proof.
       now left.
   - apply contrapositive; intros.
     + apply classic.
-    + admit.
+    + assert (Consistent A G).
+      * now apply nonderivation_implies_consistency with p.
+      * apply H1; clear H1; intros q ?.
+        (* Left as an exercise to the reader. *)
+        admit.
 Admitted.
 
 Lemma consistency_either:
@@ -374,7 +390,6 @@ Section Completeness.
       | @W_mk D _ _ _ => D p
       end.
 
-    (* TODO: check why Coq is complaining in here. *)
     Global Coercion wit: W >-> Funclass.
 
     Definition canonical_accessibility: relation W :=
@@ -399,22 +414,31 @@ Section Completeness.
 
     Local Notation M := canonical_model.
 
+    Lemma existential:
+      forall (w: W) p,
+      w [! ~[]p !] ->
+      exists2 w',
+      R w w' & w' [! ~p !].
+    Proof.
+      admit.
+    Admitted.
+
     Lemma truth:
       forall p w,
       (M ' w ||- p) <-> (w p).
     Proof.
       induction p; split; intros.
-      - simpl in H.
+      - simpl in *.
         assumption.
-      - simpl.
+      - simpl in *.
         assumption.
-      - simpl in H.
+      - simpl in *.
         assert (~w p) by firstorder.
         assert (Maximal w) by (destruct w; auto).
         destruct H1 with p.
         + contradiction.
         + assumption.
-      - simpl; intro.
+      - simpl in *; intro.
         apply IHp in H0.
         assert (Consistent A w) by (destruct w; auto).
         apply H1 with p.
@@ -429,42 +453,140 @@ Section Completeness.
           assumption.
         + constructor 1.
           assumption.
-      - edestruct classic.
+      - simpl in *.
+        edestruct classic.
         + eassumption.
         + exfalso.
-          assert (Maximal w) by (destruct w; auto).
+          assert (Maximal w) by now destruct w.
           assert (w [! ~[] p !]) by firstorder.
-          simpl in H.
-          admit.
-      - simpl; intros.
+          destruct existential with w p as (w', ?, ?); auto.
+          specialize (H w' H3).
+          apply IHp in H.
+          assert (Consistent A w') by now destruct w'.
+          apply H5 with p.
+          apply modal_ax4.
+          * apply extending_K.
+            apply K_ax1.
+          * apply extending_K.
+            apply K_ax2.
+          * apply extending_K.
+            apply K_ax4.
+          * now constructor 1.
+          * now constructor 1.
+      - simpl in *; intros.
         apply IHp.
         apply H0.
         assumption.
-      - simpl in H.
+      - simpl in *.
         destruct H as (w', ?, ?).
         apply IHp in H0.
         admit.
-      - simpl.
+      - simpl in *.
         admit.
-      - simpl in H.
+      - simpl in *.
         destruct H.
         apply IHp1 in H.
         apply IHp2 in H0.
-        admit.
-      - simpl; split.
-        + admit.
-        + admit.
-      - simpl in H.
+        assert (Maximal w) by now destruct w.
+        assert (Consistent A w) by now destruct w.
+        destruct H1 with [! p1 /\ p2 !].
+        + assumption.
+        + exfalso.
+          apply H2 with [! p1 /\ p2 !].
+          apply modal_ax4.
+          * apply extending_K.
+            apply K_ax1.
+          * apply extending_K.
+            apply K_ax2.
+          * apply extending_K.
+            apply K_ax4.
+          * apply modal_ax4.
+            --- apply extending_K.
+                apply K_ax1.
+            --- apply extending_K.
+                apply K_ax2.
+            --- apply extending_K.
+                apply K_ax4.
+            --- now constructor 1.
+            --- now constructor 1.
+          * now constructor 1.
+      - simpl in *.
+        assert (Maximal w) by now destruct w.
+        assert (Consistent A w) by now destruct w.
+        split.
+        + destruct H0 with p1.
+          * apply IHp1.
+            assumption.
+          * exfalso.
+            apply H1 with p1.
+            admit.
+        + destruct H0 with p2.
+          * apply IHp2.
+            assumption.
+          * exfalso.
+            apply H1 with p2.
+            admit.
+      - simpl in *.
         destruct H.
         + apply IHp1 in H.
-          admit.
+          assert (Maximal w) by now destruct w.
+          assert (Consistent A w) by now destruct w.
+          destruct H0 with [! p1 \/ p2 !].
+          * assumption.
+          * exfalso.
+            apply H1 with [! (p1 \/ p2) !].
+            apply modal_ax4.
+            --- apply extending_K.
+                apply K_ax1.
+            --- apply extending_K.
+                apply K_ax2.
+            --- apply extending_K.
+                apply K_ax4.
+            --- (* By axiom 7 and H. *)
+                admit.
+            --- now constructor 1.
         + apply IHp2 in H.
-          admit.
-      - simpl.
+          assert (Maximal w) by now destruct w.
+          assert (Consistent A w) by now destruct w.
+          destruct H0 with [! p1 \/ p2 !].
+          * assumption.
+          * exfalso.
+            apply H1 with [! (p1 \/ p2) !].
+            apply modal_ax4.
+            --- apply extending_K.
+                apply K_ax1.
+            --- apply extending_K.
+                apply K_ax2.
+            --- apply extending_K.
+                apply K_ax4.
+            --- (* By axiom 8 and H. *)
+                admit.
+            --- now constructor 1.
+      - simpl in *.
+        assert (Maximal w) by now destruct w.
+        assert (Consistent A w) by now destruct w.
+        destruct H0 with p1.
+        + left.
+          apply IHp1.
+          assumption.
+        + destruct H0 with p2.
+          * right.
+            apply IHp2.
+            assumption.
+          * exfalso.
+            apply H1 with [! p1 \/ p2 !].
+            apply modal_ax4.
+            --- apply extending_K.
+                apply K_ax1.
+            --- apply extending_K.
+                apply K_ax2.
+            --- apply extending_K.
+                apply K_ax4.
+            --- now constructor 1.
+            --- admit.
+      - simpl in *.
         admit.
-      - simpl in H.
-        admit.
-      - simpl; intros.
+      - simpl in *; intros.
         apply IHp1 in H0.
         apply IHp2.
         admit.
@@ -486,27 +608,12 @@ Section Completeness.
         assumption.
     Qed.
 
-    Lemma nonderivation_implies_consistency:
-      forall p,
-      ~(A; G |-- p) -> Consistent A G.
-    Proof.
-      intros p ? q ?.
-      apply H.
-      apply consistency_deduction; auto.
-      intro.
-      apply H1 with q.
-      apply deduction_subset with G.
-      - now right.
-      - assumption.
-    Qed.
-
     Lemma world_derivation:
       forall p,
       (A; G |-- p) <-> (forall w: W, w p).
     Proof.
-      split.
-      - intros.
-        destruct w as (D, ?H, ?H, ?H); simpl.
+      split; intros.
+      - destruct w as (D, ?H, ?H, ?H); simpl.
         destruct H1 with p.
         + assumption.
         + exfalso.
@@ -520,8 +627,7 @@ Section Completeness.
             apply K_ax4.
           * now apply deduction_subset with G.
           * now constructor.
-      - intros.
-        apply consistency_deduction; auto; intro.
+      - apply consistency_deduction; auto; intro.
         destruct lindenbaum with (Extend [! ~p !] G) as (D, (?, (?, ?))).
         + assumption.
         + assert (Subset G D).
@@ -625,8 +731,7 @@ Section Completeness.
       - (* Since it's impossible to derive A; G |-- p, this means that G must
            be consistent. If it were inconsistent, anything could be derived! *)
         assert (Consistent A G).
-        + apply nonderivation_implies_consistency with p.
-          assumption.
+        + now apply nonderivation_implies_consistency with p.
         + (* Now, by the determination lemma, since p isn't derivable, it can't
              be done in the canonical model as well. *)
           assert ((M |= p) -> False); intros.
