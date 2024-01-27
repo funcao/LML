@@ -62,15 +62,12 @@ Section Deduction.
     forall p q,
     A (ax3 p q) ->
     (A; G |-- [! (~q -> ~p) !]) ->
-    (A; G |-- [! p !]) ->
-    (A; G |-- [! q !]).
+    (A; G |-- [! p -> q !]).
   Proof.
     intros.
     assert (A; G |-- [! (~q -> ~p) -> p -> q !]).
     - now apply Ax with (a := ax3 p q).
-    - assert (A; G |-- [! p -> q !]).
-      + now apply Mp with [! ~q -> ~p !].
-      + now apply Mp with p.
+    - now apply Mp with [! ~q -> ~p !].
   Defined.
 
   Lemma modal_ax4:

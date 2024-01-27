@@ -535,7 +535,32 @@ Section Completeness.
             --- now constructor 1.
             --- admit.
       - simpl in *.
-        admit.
+        assert (Maximal w) by now destruct w.
+        assert (Consistent A w) by now destruct w.
+        destruct H0 with p1.
+        + apply IHp1 in H2.
+          specialize (H H2).
+          apply IHp2 in H.
+          destruct H0 with [! p1 -> p2 !]; auto.
+            exfalso; apply H1 with [! p1 -> p2 !].
+            apply modal_ax4...
+            --- apply modal_ax1...
+                now constructor 1.
+            --- now constructor 1.
+        + destruct H0 with p2.
+          * destruct H0 with [! p1 -> p2 !]; auto.
+            exfalso; apply H1 with [! p1 -> p2 !].
+            apply modal_ax4...
+            --- apply modal_ax1...
+                now constructor 1.
+            --- now constructor 1.
+          * destruct H0 with [! p1 -> p2 !]; auto.
+            exfalso; apply H1 with [! p1 -> p2 !].
+            apply modal_ax4...
+            --- apply modal_ax3...
+                apply modal_ax1...
+                now constructor 1.
+            --- now constructor 1.
       - simpl in *; intros.
         apply IHp1 in H0.
         apply IHp2.
