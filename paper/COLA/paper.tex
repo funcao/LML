@@ -420,7 +420,7 @@ current world iff $\varphi$ is true in every world accessible from the current
 one. Similarly, the semantics of operator
 $\Diamond$ is that a formula $\Diamond\varphi$ is true in the current
 world iff $\varphi$ is \emph{possible}, i.e. true in at least some world
-accessible from the current world. We the remaining of the paper, we also write
+accessible from the current world. In the remaining of the paper, we also write
 $\phi_1\leftrightarrow\phi_2$ to mean $\phi_1\to\phi_2\land\phi_2\to\phi_1$.
 
 Formally, we can only interpret a formula with respect to a \emph{model}, which is
@@ -447,14 +447,14 @@ that $\mathcal{M}\,;\,w\models \varphi$ does not hold):
     $\mathcal{M}\,;\,w\models\varphi_1$ or $\mathcal{M}\,;\,w\models\varphi_2$;
   \item $\mathcal{M}\,;\,w\models \varphi_1 \to \varphi_2$ iff
     $\mathcal{M}\,;\,w\not\models\varphi_1$ or $\mathcal{M}\,;\,w\models\varphi_2$;
-  \item $\mathcal{M}\,;\,w\models\Box\varphi$ iff $\forall y \in W. w R y \to \mathcal{M}\,;\,y \models\varphi$;
-  \item $\mathcal{M}\,;\,w\models\Diamond\varphi$ iff $\exists y \in W. w R y \land \mathcal{M}\,;\,y \models\varphi$;
+  \item $\mathcal{M}\,;\,w\models\Box\varphi$ iff $\forall y \in W. (w R y \to \mathcal{M}\,;\,y \models\varphi)$;
+  \item $\mathcal{M}\,;\,w\models\Diamond\varphi$ iff $\exists y \in W. (w R y \land \mathcal{M}\,;\,y \models\varphi)$;
   \end{enumerate}
   \caption{Kripke semantics}
   \label{fig:kripke}
 \end{figure}
 We say that a formula $\varphi$ is satisfiable in a model $\mathcal{M}$,
-denoted by $\mathcal{M}\models \varphi$, if $\forall w \in W. M\,;w\,\models \varphi$ holds.
+denoted by $\mathcal{M}\models \varphi$, if $\forall w \in W. (M\,;w\,\models \varphi)$ holds.
 Similarly, $\varphi$ is valid in a frame $\mathcal{F}$, written $\mathcal{F}\models\varphi$, if
 it holds on all models $\mathcal{M} = \langle \mathcal{F},\mathcal{V}\rangle$, i.e.
 for any $\mathcal{M}$, we have that $\mathcal{M}\models\varphi$. A formula
@@ -462,19 +462,19 @@ is valid, written $\models \varphi$, if it is valid in any frame $\mathcal{F}$.
 
 Using the semantics, we can define the concept of \emph{entailment}: given a set
 of formulas $\Gamma$ and a formula $\varphi$, we say that $\Gamma$ entails
-$\varphi$, written $\Gamma\models\varphi$, iff $\forall \mathcal{M} . (\forall \varphi' \in\Gamma .
-\mathcal{M} \models \varphi') \to \mathcal{M} \models \varphi$.
+$\varphi$, written $\Gamma\models\varphi$, iff $\forall \mathcal{M} . ((\forall \varphi' \in\Gamma .
+\mathcal{M} \models \varphi') \to \mathcal{M} \models \varphi)$.
 
 In this work, we consider Hilbert deductive systems for modal logic.
 Essentially, the considered system adds axioms for the modalities
 to the set of axioms for classical propositional logic.
-As examples of modalities axioms we mention \textbf{K}, which express that $\Box$ distributes
+As examples of modalities axioms we mention K, which express that $\Box$ distributes
 over implication, and possibility which states that $\Diamond$ distributes
 over disjunction.
 \[
   \begin{array}{ll}
-    \textbf{K} & \Box(\varphi_1 \to \varphi_2) \to (\Box \varphi_1 \to \Box \varphi_2)\\
-    \textbf{Possibility} & \Diamond (\varphi_1 \lor \varphi_2) \to
+    K & \Box(\varphi_1 \to \varphi_2) \to (\Box \varphi_1 \to \Box \varphi_2)\\
+    Possibility & \Diamond (\varphi_1 \lor \varphi_2) \to
                            (\Diamond \varphi_1 \lor \Diamond \varphi_2)\\
   \end{array}
 \]
@@ -510,7 +510,7 @@ A central aspect in the study of modal logics is the so-called \emph{frame
   correspondence}, which is a relationship between the
 accessibility relation and the truth of certain formulas in frames containing
 it. As an example, consider a frame $\mathcal{F} = \langle W,R
-\rangle$ in which the relation $R$ is reflexive: $\forall w \in W. wRw$, i.e.
+\rangle$ in which the relation $R$ is reflexive: $\forall w \in W. (wRw)$, i.e.
 every world is accessible from itself. In such frame when $\Box A$ holds in
 a world $w$, $w$ itself is among the accessible worlds in which $A$ must be true.
 In this way, if the accessibility relation $R$ is reflexive, then whatever world
@@ -522,9 +522,9 @@ presented in the table below.
 \begin{tabular}{|c|c|}
   \hline
   Property of $R$                          & Formula schema \\ \hline
-  reflexive: $\forall w.wRw$               & $\Box A \to A$ \\ 
-  serial: $\forall w\exists w'. wRw'$      & $\Box A \to \Diamond A$ \\
-  symmetric: $\forall w\,w'.wRw' \to w'Rw$ & $A \to \Box\Diamond A$ \\
+  reflexive: $\forall w.(wRw)$               & $\Box A \to A$ \\
+  serial: $\forall w\exists w'. (wRw')$      & $\Box A \to \Diamond A$ \\
+  symmetric: $\forall w\,w'.(wRw' \to w'Rw)$ & $A \to \Box\Diamond A$ \\
   \hline
 \end{tabular}
 \centering
@@ -618,15 +618,14 @@ define Coq notations that mimic the standard way of writing them.
 \subsection{The Hilbert deductive system}
 
 Basically, a Hilbert-style deductive system allows the use of four
-possibilities in a proof: 1) the use of a hypothesis; 2) the use of an axiom;
+possibilities in a proof: 1) the use of a hypothesis; 2) the use of an instantiation of an axiom;
 3) the use of the modus ponens rule or 4) the use of the generalization (necessity)
 rule. The inductive type \mintinline{coq}{deduction} encodes these possibilities
 as its constructors. The \mintinline{coq}{deduction} type is parameterized by
 the set of axioms that form a system for some modal logic. In this way, our definition can be
 used by several systems alike.
 \begin{minted}{coq}
-Inductive deduction (A: axiom -> Prop):
-                          theory -> formula -> Prop :=
+Inductive deduction (A: axiom -> Prop) : theory -> formula -> Prop :=
   (* Premise. *)
   | Prem: forall (t: theory)
                  (f: formula),
@@ -709,8 +708,8 @@ In order to use the deductive system to
 check the provability of formulas, we need to specify the axioms that are
 included in the system. Our approach is to define predicates
 which denote each system. The simplest set of axioms is usually referred as
-\textbf{K} and it includes the axiom $\Box(A \to B) \to (\Box A \to \Box B)$
-and all the axioms for propositional logic. We represent system \textbf{K}
+K and it includes the axiom $\Box(A \to B) \to (\Box A \to \Box B)$
+and all the axioms for propositional logic. We represent system K
 by the following inductive predicate:
 \begin{minted}{coq}
 Inductive K: axiom -> Prop :=
@@ -722,7 +721,7 @@ Inductive K: axiom -> Prop :=
 Type \mintinline{coq}{K} is a predicate over axioms: it has one constructor for
 each of the valid axioms which form the system. Given a value
 of \mintinline{coq}{axiom}, a value of type \mintinline{coq}{K a} denotes a
-proof that a given axiom is part of the system \textbf{K}. This is the main
+proof that a given axiom is part of the system K. This is the main
 trick used by the constructor \mintinline{coq}{Ax}, of type
 \mintinline{coq}{deduction}, to generically represent axioms for
 different systems of modal logics uniformly. In order to understand how it
@@ -762,9 +761,9 @@ Theorem soundness : forall G p, (K; G |-- p) -> (G ||= p).
 \end{minted}
 
 The proof proceeds by induction on the derivation of $\Gamma \vdash\varphi$ and
-it has a case for each of the 11 axioms of the Hilbert system for propositional
-logics, one for the $K$ axiom and cases for using hypothesis and the rules modus
-ponens. In order to modularize the proof, we defined a lemma for each case.
+it has a case for each of the axioms of the Hilbert system for propositional
+logics, one for the $K$ axiom and cases for using hypothesis, the rules modus
+ponens and necessitation. In order to modularize the proof, we defined a lemma for each case.
 As example, the following is the statement for modus ponens case.
 \begin{minted}{coq}
 Lemma Modus_Ponens_soundness:
@@ -777,13 +776,17 @@ any restrictions on the frame.
 \subsubsection{Completeness}\label{sec:completeness}
 
 In this section, we describe our formalization of the completeness result for the
-Hilbert proof system with respect to the Kripke semantics. The proof consists of two
-basic steps: 1) the proof of the existence of maximal consistent sets and; 2) the
-construction of a cannonical model from the maximal consistent set. We describe these
-steps separately.
+Hilbert proof system with respect to the Kripke semantics.
+It is worth mentioning that there are different notions of completeness and
+the literature is not always clear about the difference of those.
 
-\paragraph{Maximal consistent sets} The first step on the completeness proof is the construction of
-a \emph{maximal consistent sets}, $\Delta$, of formulas for $\Gamma$ and $\varphi$.  The $\Delta$ set
+{\color{red} TORRENS: Escrever definições de completude}
+
+The proof consists of two
+basic steps: 1) the proof of the existence of maximal consistent sets and; 2) the
+construction of a cannonical model from the maximal consistent set. We describe these steps separately.
+
+\paragraph{Maximal consistent sets} The first step on the completeness proof is the construction of a \emph{maximal consistent set}, $\Delta$, of formulas for $\Gamma$ and $\varphi$.  The $\Delta$ set
 is defined as follows:
 
 \[
@@ -811,7 +814,7 @@ Definition Consistent: Prop := forall p, ~(A; G |-- [! p /\ ~p !]).
 Definition Maximal: Prop := forall p, G p \/ G [! ~p !].
 \end{minted}
 
-Which states that it is not possible to deduce \verb|p| and \verb|~ p|, for any formula \verb|p|.
+Which states that it is not possible to deduce \mintinline{coq}{p} and \mintinline{coq}{~p}, for any formula \mintinline{coq}{p}.
 In order to define maximal consistent sets, we use the following representation of a theory
 subset predicate:
 
@@ -821,7 +824,7 @@ Definition Subset (A B : theory): Prop := forall t, A t -> B t.
 
 The completeness proof rely on the fact that the set of modal logic formulas is countable. We model
 this fact by two functions \mintinline{coq}{encode :: formula -> nat} and \mintinline{coq}{decode :: nat -> option formula}
-which satisfies the following property: $\forall \varphi . \texttt{decode(encode }\varphi\texttt{)} = \varphi$.
+which satisfies the following property: $\forall \varphi . (\texttt{decode(encode }\varphi\texttt{)} = \varphi)$.
 
 Using the previously defined predicates, we encode the action of including a formula or its
 negation in a set using the type \mintinline{coq}{Insert}:
@@ -839,7 +842,8 @@ The first constructor states that when we do not insert a formula in a theory,
 we do not change it. The second constructor includes a formula in a theory if
 adding that formula keeps the theory consistent and the final constructor considers
 the situation when the inclusion of a formula \verb|p| makes the theory inconsistent.
-In this case, we add the negation of \verb|p| to the theory.
+In this case, we add the negation of \verb|p| to the theory. Notation \mintinline{coq}{Extend p D} denotes the union of theory \mintinline{coq}{D} with the
+singleton set containing \mintinline{coq}{p}.
 
 Using the type \mintinline{coq}{Insert}, we can define the $\Delta_{i}$ sets using the
 following function:
@@ -864,7 +868,7 @@ the followed lemma, which has an immediate proof using the previous definitions.
 \begin{minted}{coq}
 Lemma subset_of_insert: forall D p, Subset D (Insert p D).
 \end{minted}
-Next, we show that the set \mintinline{coq}{Max} is such that either \verb|p| or \verb|~ p| is an element of \verb|Max|.
+Next, we show that the set \mintinline{coq}{Max} is such that either \verb|p| or \verb|~p| is an element of \verb|Max|.
 \begin{minted}{coq}
 Lemma max_is_maximal: forall p, Max [! p !] \/ Max [! ~p !].
 \end{minted}
@@ -885,9 +889,9 @@ Corollary max_is_consistent: Consistent A G -> Consistent A Max.
 The final piece is the proof of the Lindenbaum's theorem, which states that any consistent theory has
 a maximal consistent set. The proof of this fact is immediate from the previous lemmas.
 \begin{minted}{coq}
-Theorem lindebaum : Consistent A G -> exists D, Consistent A D /\ Maximal D /\ Subset G D.
+Theorem lindenbaum : Consistent A G -> exists D, Consistent A D /\ Maximal D /\ Subset G D.
 \end{minted}
-This concludes our formalization of the existence of the maximal consistent sets for modal logics formula.
+This concludes our formalization of the existence of the maximal consistent set for modal logic theories.
 
 \paragraph{Canonical model construction} The second part of a Henkin style completeness proof for modal logic
 is the construction of the cannonical model. The cannonical model
@@ -1049,95 +1053,95 @@ incompleteness results.
 
 In order to state L\"ob's theorem we need a way to encode modal
 fixed points. Formally, let $\varphi(X)$ be a formula with only one propositional variable
-$X$. The modal fixed point of $\varphi$ is then a formula $\Psi$ such that such that
+$X$. The modal fixed point of $\varphi$ is then a formula $\Psi$ such that
 $\Psi \leftrightarrow \varphi(\Box \Psi)$.
 We represent the existence of modal fixed points for all one-variable formulas by a definition \mintinline{coq}{fixed_point},
 which is parameterized by a system of modal logic, \mintinline{coq}{S}, and a
-theory, \mintinline{coq}{g}, and encodes the logical equivalence demonstrating
+theory, \mintinline{coq}{G}, and encodes the logical equivalence demonstrating
 that \mintinline{coq}{p} is a modal fixed point for \mintinline{coq}{f}.
 \begin{minted}{coq}
-  Definition fixed_point S g: Prop :=
+  Definition fixed_point A G: Prop :=
     forall f, exists p,
-    (S; g |-- [! (p <-> f ([]p)) !]).
+    (A; G |-- [! (p <-> f ([]p)) !]).
 \end{minted}
 
 \noindent We can now write down L\"ob's theorem as follows:
 
 \begin{minted}{coq}
   Theorem Lob:
-    forall A, subset K4 A /\ fixed_point A nil ->
-    forall P, (A; nil |-- [! []P -> P !]) ->
-              (A; nil |-- [! P !]).
+    forall A G, subset K4 A /\ fixed_point A G ->
+    forall p, (A; G |-- [! []p -> p !]) ->
+              (A; G |-- [! p !]).
 \end{minted}
 
-\noindent The proof starts by assuming an arbitrary formula $P$, the existence of modal fixed
-points and that $\Box P \to P$ is provable with axioms A. These deduction steps
+\noindent The proof starts by assuming an arbitrary formula $p$, the existence of modal fixed
+points and that $\Box p \to p$ is provable with axioms A. These deduction steps
 are performed by the following tactic:
 
 \begin{minted}{coq}
-  intros A [I FP] P H1.
+  intros A G [I FP] P H1.
 \end{minted}
 
 \noindent Next, from the existence of modal fixed points for every formula,
 we know that there is a formula $\Psi$ such that $\Psi \leftrightarrow (\Box
-\Psi \to P)$. The following tactic performs this step of reasoning.
+\Psi \to p)$. The following tactic performs this step of reasoning.
 
 \begin{minted}{coq}
   destruct FP with (fun X => [! X -> P !]) as (psi, H2).
 \end{minted}
 
-\noindent Now, we are able to deduce that $\Psi \to (\Box \Psi\to P)$ from the previous
+\noindent Now, we are able to deduce that $\Psi \to (\Box \Psi\to p)$ from the previous
 step result as follows:
 
 \begin{minted}{coq}
-  assert (A; nil |-- [! psi -> []psi -> P !]) as H3.
+  assert (A; G |-- [! psi -> []psi -> P !]) as H3.
   apply modal_ax5 in H2; auto with modal.
 \end{minted}
 
 \noindent The \mintinline{coq}{assert} tactic allows the definition of
 auxiliary proof goals. In the previous code piece, we specified
-$\vdash \Psi \to (\Box \Psi \to P)$ as a new goal which
+$\vdash \Psi \to (\Box \Psi \to p)$ as a new goal which
 generates a new proof hypothesis named \mintinline{coq}{H3}. The
 deduction of this fact is immediate from K4 axioms, of which A is a superset.
 We use some basic automation to move on.
 
-From $\vdash \Psi \to (\Box \Psi \to P)$ and the necessitation
-rule, we can deduce $\vdash \Box (\Psi \to (\Box \Psi \to P))$
+From $\vdash \Psi \to (\Box \Psi \to p)$ and the necessitation
+rule, we can deduce $\vdash \Box (\Psi \to (\Box \Psi \to p))$
 using the following tactics:
 \begin{minted}{coq}
-  assert (A; nil |-- [! [](psi -> []psi -> P) !])
+  assert (A; G |-- [! [](psi -> []psi -> p) !])
     as H4.
   apply Nec; auto.
 \end{minted}
 
-\noindent Now, using the axiom \textbf{K} we can deduce $\vdash \Box \Psi \to
-\Box (\Box \Psi \to P)$. Again, we deduce this fact using the
+\noindent Now, using the axiom K we can deduce $\vdash \Box \Psi \to
+\Box (\Box \Psi \to p)$. Again, we deduce this fact using the
 \mintinline{coq}{assert} tactic.
 
 \begin{minted}{coq}
-  assert (A; nil |-- [! []psi -> []([]psi -> P) !])
+  assert (A; G |-- [! []psi -> []([]psi -> p) !])
     as H5.
   apply modal_axK in H4; auto with modal.
 \end{minted}
 
 \noindent The next proof step involves showing that
-$\vdash \Box (\Box \Psi \to P)\to (\Box \Box \Psi \to \Box P)$ holds
-by axiom \textbf{K}.
+$\vdash \Box (\Box \Psi \to p)\to (\Box \Box \Psi \to \Box p)$ holds
+by axiom K.
 
 \begin{minted}{coq}
-  assert (A; nil |-- [! []([]psi -> P) ->
-                          [][]psi -> []P !]) as H6.
+  assert (A; G |-- [! []([]psi -> p) ->
+                          [][]psi -> []p !]) as H6.
   eapply Ax with (a := axK ?[X] ?[Y]); auto with modal.
   reflexivity.
 \end{minted}
 
-\noindent Using $\vdash \Box (\Box \Psi \to P)\to (\Box \Box \Psi \to \Box P)$ and
-$\vdash \Box \Psi \to\Box (\Box \Psi \to P)$ we can deduce
+\noindent Using $\vdash \Box (\Box \Psi \to p)\to (\Box \Box \Psi \to \Box p)$ and
+$\vdash \Box \Psi \to\Box (\Box \Psi \to p)$ we can deduce
 $\vdash \Box \Psi \to \Box \Box \Psi \to \Box P$ using transitivity of
 implication.
 
 \begin{minted}{coq}
-  assert (A; nil |-- [! []psi -> [][]psi -> []P !])
+  assert (A; G |-- [! []psi -> [][]psi -> []p !])
     as H7.
   eapply modal_compose; eauto with modal.
 \end{minted}
@@ -1147,48 +1151,48 @@ the axiom K4 of A. The next snippet of tactics perform this
 reasoning step.
 
 \begin{minted}{coq}
-  assert (A; nil |-- [! []psi -> [][]psi !]) as H8.
+  assert (A; G |-- [! []psi -> [][]psi !]) as H8.
   apply modal_axK4; auto with modal.
 \end{minted}
 
 \noindent From the previou two hypotheses we gather necessary info to derive
-$\vdash \Box \Psi \to P$, using a propositional axiom.
+$\vdash \Box \Psi \to p$, using a propositional axiom.
 
 \begin{minted}{coq}
-  assert (A; nil |-- [! []psi -> []P !]) as H9.
+  assert (A; G |-- [! []psi -> []p !]) as H9.
   eapply modal_ax2; eauto with modal.
 \end{minted}
 
-\noindent Then, from $\vdash \Box\Psi \to \Box P$ and $\vdash \Box P \to P$, we can
-conclude $\vdash \Box \Psi \to P$, by composition of implication as
+\noindent Then, from $\vdash \Box\Psi \to \Box p$ and $\vdash \Box p \to p$, we can
+conclude $\vdash \Box \Psi \to p$, by composition of implication as
 follows.
 
 \begin{minted}{coq}
-  assert (A; nil |-- [! []psi -> P !]) as H10.
+  assert (A; G |-- [! []psi -> p !]) as H10.
   eapply modal_compose; eauto with modal.
 \end{minted}
 
-\noindent Next, we can conclude $\vdash \Box (\Psi \to P) \to \Psi$ from
-$\Psi \leftrightarrow (\Box \Psi \to P)$ using
+\noindent Next, we can conclude $\vdash \Box (\Psi \to p) \to \Psi$ from
+$\Psi \leftrightarrow (\Box \Psi \to p)$ using
 the following tactics:
 
 \begin{minted}{coq}
-  assert (A; nil |-- [! ([]psi -> P) -> psi !]) as H11.
+  assert (A; G |-- [! ([]psi -> p) -> psi !]) as H11.
   apply modal_ax6 in H2; auto with modal.
 \end{minted}
 
-\noindent Now, from $\vdash (\Box\Psi \to P) \to \Psi$ and $\vdash \Box \Psi \to P$
+\noindent Now, from $\vdash (\Box\Psi \to p) \to \Psi$ and $\vdash \Box \Psi \to p$
 we can conclude $\vdash \Psi$ by modus ponens.
 
 \begin{minted}{coq}
-  assert (A; nil |-- psi) as H12.
+  assert (A; G |-- psi) as H12.
   eapply Mp; try eassumption.
 \end{minted}
 
 \noindent By necessitation rule, we can deduce $\vdash \Box \Psi$
 
 \begin{minted}{coq}
-  assert (A; nil |-- [! []psi !]) as H13.
+  assert (A; G |-- [! []psi !]) as H13.
   apply Nec; try eassumption.
 \end{minted}
 
@@ -1323,14 +1327,14 @@ In this work, we presented a sound and complete deep embedding of arbitrary
 normal modal logics in Coq. Our approach is able to represent deduction
 uniformly over different modal logic systems by using different axiom sets
 as a predicate parameter in the deduction inductive type. Using this generic
-representation of deduction we are able to prove a soundness theorem, and, in
-order to demonstrate the applicability of the proposed work, prove L\"ob's theorem
+representation of deduction we are able to prove soundness and completeness theorems, and, in order to demonstrate the applicability of the proposed work, prove L\"ob's theorem
 by assuming fixed points. % All source code in this article has
 % been formalized in Coq version 8.15.0 and it is available at~\cite{modal-coq-lib}.
 
 As future work we intend to continue the development of our library by
 including support for multimodalities (fusion of modal logics) and
 non-normal modal logic systems, along with improving usability through proof automation.
+{\color{red} TORRENS: Dedução natural e táticas.}
 
 %\begin{acks}
 %  The present work was supported by Fundação de Amparo à Pesquisa de Minas
