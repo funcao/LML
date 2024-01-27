@@ -93,6 +93,36 @@ Proof.
     + assumption.
 Defined.
 
+Lemma modal_ax7:
+  forall (S: axiom -> Prop) g A B,
+  S (ax7 A B) ->
+  (S; g |-- [! A !]) -> (S; g |-- [! A \/ B !]).
+Proof.
+  intros.
+  assert (S; g |-- Implies A (Or A B)).
+  - apply Ax with (a := ax7 A B).
+    + assumption.
+    + reflexivity.
+  - eapply Mp.
+    + apply H1.
+    + assumption.
+Qed.
+
+Lemma modal_ax8:
+  forall (S: axiom -> Prop) g A B,
+  S (ax8 A B) ->
+  (S; g |-- [! B !]) -> (S; g |-- [! A \/ B !]).
+Proof.
+  intros.
+  assert (S; g |-- Implies B (Or A B)).
+  - apply Ax with (a := ax8 A B).
+    + assumption.
+    + reflexivity.
+  - eapply Mp.
+    + apply H1.
+    + assumption.
+Qed.
+
 Lemma modal_compose:
   forall (S: axiom -> Prop) g A B C,
   S (ax1 [! B -> C !] A) ->

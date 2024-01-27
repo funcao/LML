@@ -564,8 +564,10 @@ Section Completeness.
                 apply K_ax2.
             --- apply extending_K.
                 apply K_ax4.
-            --- (* By axiom 7 and H. *)
-                admit.
+            --- apply modal_ax7.
+                +++ apply extending_K.
+                    apply K_ax7.
+                +++ now constructor 1.
             --- now constructor 1.
         + apply IHp2 in H.
           assert (Maximal w) by now destruct w.
@@ -581,8 +583,10 @@ Section Completeness.
                 apply K_ax2.
             --- apply extending_K.
                 apply K_ax4.
-            --- (* By axiom 8 and H. *)
-                admit.
+            --- apply modal_ax8.
+                +++ apply extending_K.
+                    apply K_ax8.
+                +++ now constructor 1.
             --- now constructor 1.
       - simpl in *.
         assert (Maximal w) by now destruct w.
