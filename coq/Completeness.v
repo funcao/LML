@@ -519,13 +519,35 @@ Section Completeness.
             assumption.
           * exfalso.
             apply H1 with p1.
-            admit.
+            apply modal_ax4.
+            --- apply extending_K.
+                apply K_ax1.
+            --- apply extending_K.
+                apply K_ax2.
+            --- apply extending_K.
+                apply K_ax4.
+            --- apply modal_ax5 with p2.
+                +++ apply extending_K.
+                    apply K_ax5.
+                +++ now constructor 1.
+            --- now constructor 1.
         + destruct H0 with p2.
           * apply IHp2.
             assumption.
           * exfalso.
             apply H1 with p2.
-            admit.
+            apply modal_ax4.
+            --- apply extending_K.
+                apply K_ax1.
+            --- apply extending_K.
+                apply K_ax2.
+            --- apply extending_K.
+                apply K_ax4.
+            --- apply modal_ax6 with p1.
+                +++ apply extending_K.
+                    apply K_ax6.
+                +++ now constructor 1.
+            --- now constructor 1.
       - simpl in *.
         destruct H.
         + apply IHp1 in H.
