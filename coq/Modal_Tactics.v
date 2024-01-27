@@ -37,6 +37,25 @@ Proof.
       * assumption.
 Defined.
 
+Lemma modal_ax3:
+  forall (S: axiom -> Prop) g p q,
+  S (ax3 p q) ->
+  (S; g |-- [! (~q -> ~p) !]) ->
+  (S; g |-- [! p !]) ->
+  (S; g |-- [! q !]).
+Proof.
+  intros.
+  assert (S; g |-- [! (~q -> ~p) -> p -> q !]).
+  - now apply Ax with (a := ax3 p q).
+  - assert (S; g |-- [! p -> q !]).
+    + eapply Mp.
+      * exact H2.
+      * assumption.
+    + eapply Mp.
+      * exact H3.
+      * assumption.
+Qed.
+
 Lemma modal_ax4:
   forall (S: axiom -> Prop) g A B,
   S (ax1 B A) ->
