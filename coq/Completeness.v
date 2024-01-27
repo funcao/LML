@@ -394,10 +394,17 @@ Section Completeness.
       admit.
     Admitted.
 
+    Local Ltac fill_axiom :=
+      match goal with
+      | |- A ?a =>
+        apply extending_K;
+        constructor
+      end.
+
     Lemma truth:
       forall p w,
       (M ' w ||- p) <-> (w p).
-    Proof.
+    Proof with try fill_axiom.
       induction p; split; intros.
       - simpl in *.
         assumption.
@@ -413,13 +420,7 @@ Section Completeness.
         apply IHp in H0.
         assert (Consistent A w) by (destruct w; auto).
         apply H1 with p.
-        apply modal_ax4.
-        + apply extending_K.
-          apply K_ax1.
-        + apply extending_K.
-          apply K_ax2.
-        + apply extending_K.
-          apply K_ax4.
+        apply modal_ax4...
         + constructor 1.
           assumption.
         + constructor 1.
@@ -435,13 +436,7 @@ Section Completeness.
           apply IHp in H.
           assert (Consistent A w') by now destruct w'.
           apply H5 with p.
-          apply modal_ax4.
-          * apply extending_K.
-            apply K_ax1.
-          * apply extending_K.
-            apply K_ax2.
-          * apply extending_K.
-            apply K_ax4.
+          apply modal_ax4...
           * now constructor 1.
           * now constructor 1.
       - simpl in *; intros.
@@ -464,20 +459,8 @@ Section Completeness.
         + assumption.
         + exfalso.
           apply H2 with [! p1 /\ p2 !].
-          apply modal_ax4.
-          * apply extending_K.
-            apply K_ax1.
-          * apply extending_K.
-            apply K_ax2.
-          * apply extending_K.
-            apply K_ax4.
-          * apply modal_ax4.
-            --- apply extending_K.
-                apply K_ax1.
-            --- apply extending_K.
-                apply K_ax2.
-            --- apply extending_K.
-                apply K_ax4.
+          apply modal_ax4...
+          * apply modal_ax4...
             --- now constructor 1.
             --- now constructor 1.
           * now constructor 1.
@@ -490,13 +473,7 @@ Section Completeness.
             assumption.
           * exfalso.
             apply H1 with p1.
-            apply modal_ax4.
-            --- apply extending_K.
-                apply K_ax1.
-            --- apply extending_K.
-                apply K_ax2.
-            --- apply extending_K.
-                apply K_ax4.
+            apply modal_ax4...
             --- apply modal_ax5 with p2.
                 +++ apply extending_K.
                     apply K_ax5.
@@ -507,13 +484,7 @@ Section Completeness.
             assumption.
           * exfalso.
             apply H1 with p2.
-            apply modal_ax4.
-            --- apply extending_K.
-                apply K_ax1.
-            --- apply extending_K.
-                apply K_ax2.
-            --- apply extending_K.
-                apply K_ax4.
+            apply modal_ax4...
             --- apply modal_ax6 with p1.
                 +++ apply extending_K.
                     apply K_ax6.
@@ -528,13 +499,7 @@ Section Completeness.
           * assumption.
           * exfalso.
             apply H1 with [! (p1 \/ p2) !].
-            apply modal_ax4.
-            --- apply extending_K.
-                apply K_ax1.
-            --- apply extending_K.
-                apply K_ax2.
-            --- apply extending_K.
-                apply K_ax4.
+            apply modal_ax4...
             --- apply modal_ax7.
                 +++ apply extending_K.
                     apply K_ax7.
@@ -547,13 +512,7 @@ Section Completeness.
           * assumption.
           * exfalso.
             apply H1 with [! (p1 \/ p2) !].
-            apply modal_ax4.
-            --- apply extending_K.
-                apply K_ax1.
-            --- apply extending_K.
-                apply K_ax2.
-            --- apply extending_K.
-                apply K_ax4.
+            apply modal_ax4...
             --- apply modal_ax8.
                 +++ apply extending_K.
                     apply K_ax8.
@@ -572,13 +531,7 @@ Section Completeness.
             assumption.
           * exfalso.
             apply H1 with [! p1 \/ p2 !].
-            apply modal_ax4.
-            --- apply extending_K.
-                apply K_ax1.
-            --- apply extending_K.
-                apply K_ax2.
-            --- apply extending_K.
-                apply K_ax4.
+            apply modal_ax4...
             --- now constructor 1.
             --- admit.
       - simpl in *.
