@@ -31,6 +31,10 @@ Proof.
   intros A ? G p ? q ?.
   apply H0; clear H0.
   apply modal_explosion with q.
+  - apply H; constructor.
+  - apply H; constructor.
+  - apply H; constructor.
+  - apply H; constructor.
   - apply modal_ax5 with [! ~q !].
     + apply H, K_ax5.
     + assumption.
