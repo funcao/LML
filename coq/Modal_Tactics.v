@@ -175,12 +175,59 @@ Section Deduction.
 
   Lemma modal_explosion:
     forall p q,
-    (A; G |-- [! p /\ ~p !]) ->
+    Subset K A ->
+    (A; G |-- p) ->
+    (A; G |-- [! ~p !]) ->
     (A; G |-- q).
   Proof.
     intros.
-    admit.
-  Admitted.
+    (* 0... *)
+    assert (A; G |-- [! p /\ ~p !]).
+    apply modal_ax4.
+    apply H; constructor.
+    apply H; constructor.
+    apply H; constructor.
+    assumption.
+    assumption.
+    (* 1... *)
+    assert (A; G |-- [! ~~q -> q !]).
+    (* TODO: what the f...??? *)
+    apply Ax with (a := ax10 q q).
+    apply H; constructor.
+    reflexivity.
+    (* 2... *)
+    assert (A; G |-- [! (~~q -> q) -> (p /\ ~p) -> (~~q -> q) !]).
+    eapply Ax with (a := ax1 _ _).
+    apply H; constructor.
+    reflexivity.
+    (* 3... *)
+    assert (A; G |-- [! p /\ ~p -> ~~q -> q !]).
+    now apply Mp with [! ~~q -> q !].
+    (* 4... *)
+    assert (A; G |-- [! (p /\ ~p -> ~~q -> q) ->
+      (p /\ ~p -> ~~q) -> (p /\ ~p) -> q !]).
+    eapply Ax with (a := ax2 _ _ _).
+    apply H; constructor.
+    reflexivity.
+    (* 5... *)
+    assert (A; G |-- [! (p /\ ~p -> ~~q) -> (p /\ ~p) -> q !]).
+    now apply Mp with [! (p /\ ~p -> ~~q -> q) !].
+    (* 6... *)
+    assert (A; G |-- [! ~p -> q !]).
+    apply modal_ax3.
+    apply H; constructor.
+    apply modal_ax1.
+    apply H; constructor.
+    apply Mp with p.
+    apply modal_ax3.
+    apply H; constructor.
+    apply modal_ax1.
+    apply H; constructor.
+    assumption.
+    assumption.
+    (* I'm not sure how I did this one, but there we go! *)
+    now apply Mp with [! ~p !].
+  Defined.
 
   Lemma modal_excluded_middle:
     forall A Γ φ,
