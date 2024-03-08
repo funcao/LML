@@ -210,22 +210,21 @@ Section Deduction.
       now apply Mp with [! ~p !].
   Defined.
 
-  (* Lemma modal_excluded_middle:
-    forall A Γ φ,
-    Subset K A ->
-    A; Γ |-- [! φ \/ ~φ !].
+  Lemma modal_excluded_middle:
+    forall p,
+    (A; G |-- [! p \/ ~p !]).
   Proof.
     intros.
     admit.
-  Admitted. *)
+  Admitted.
 
 End Deduction.
 
 Lemma modal_deduction:
-  forall A g p q,
+  forall A G p q,
   Subset K A ->
-  (A; Extend p g |-- q) ->
-  (A; g |-- [! p -> q !]).
+  (A; Extend p G |-- q) ->
+  (A; G |-- [! p -> q !]).
 Proof.
   intros.
   dependent induction H0.

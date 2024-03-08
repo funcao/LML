@@ -70,13 +70,42 @@ Proof.
     + assert (Consistent A G).
       * now apply nonderivation_implies_consistency with p.
       * apply H1; clear H1; intros q ?.
-        (* ... *)
-        destruct classic with (A; G |-- [! ~p !]).
-        --- apply H2 with q.
-            now apply modal_cut with [! ~p !].
-        --- unfold not in H3.
-            admit.
-Admitted.
+        assert ((A; Extend [! ~p !] G |-- [! q !]) /\
+                (A; Extend [! ~p !] G |-- [! ~q !])) as (?H, ?H);
+        try split.
+        --- apply modal_ax5 with [! ~q !]; auto.
+            apply H.
+            apply K_ax5.
+        --- apply modal_ax6 with [! q !]; auto.
+            apply H.
+            apply K_ax6.
+        --- apply modal_deduction in H3, H4; auto.
+            apply H0.
+            apply modal_ax9 with [! q !] [! ~q !].
+            +++ apply H.
+                apply K_ax9.
+            +++ apply modal_ax3.
+                *** apply H.
+                    apply K_ax3.
+                *** assumption.
+            +++ apply modal_ax3.
+                *** apply H.
+                    apply K_ax3.
+                *** apply modal_compose with q.
+                    apply H.
+                    apply K_ax1.
+                    apply H.
+                    apply K_ax2.
+                    assumption.
+                    apply modal_ax3.
+                    apply H.
+                    apply K_ax3.
+                    apply Ax with (a := ax10 [! ~q !] q).
+                    apply H.
+                    apply K_ax10.
+                    reflexivity.
+            +++ apply modal_excluded_middle.
+Qed.
 
 Lemma consistency_either:
   forall A,
