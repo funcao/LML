@@ -17,18 +17,19 @@ Local Hint Constructors K4: modal.
 
 Theorem Lob:
   (* Löb's theorem is provable in any superset of K4 with fixed points. *)
-  forall A G,
-  subset K4 A /\ fixed_point A G ->
+  forall A,
+  subset K4 A /\ fixed_point A Empty ->
   forall p,
-  (A; G |-- [! []p -> p !]) ->
-  (A; G |-- [! p !]).
+  (A; Empty |-- [! []p -> p !]) ->
+  (A; Empty |-- [! p !]).
 Proof.
+  set (G := Empty).
   (* Step 1. *)
-  intros A G [I FP] p H1.
+  intros A [I FP] p H1.
   (* Step 2. *)
   destruct FP with (fun X => [! X -> p !]) as (psi, H2).
   (* Step 3. *)
-  assert (A; G |-- [! psi -> []psi -> p !]) as H3.
+  assert (A; Empty |-- [! psi -> []psi -> p !]) as H3.
   apply modal_ax5 in H2; auto with modal.
   (* Step 4. *)
   assert (A; G |-- [! [](psi -> []psi -> p) !]) as H4.
@@ -64,6 +65,8 @@ Proof.
   (* Step 14. *)
   eapply Mp; eassumption.
 Qed.
+
+(* TODO: review later!
 
 Definition fromList (ps: list formula): theory :=
   fun p =>
@@ -122,3 +125,5 @@ Proof.
     + apply Prem; simpl.
       firstorder.
 Qed.
+
+*)

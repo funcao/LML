@@ -62,7 +62,7 @@ Inductive deduction (A: axiom -> Prop): theory -> formula -> Prop :=
   (* Generalization. *)
   | Nec: forall (t: theory)
                 (f: formula)
-                (d1: deduction A t f),
+                (d1: deduction A Empty f),
          deduction A t [! []f !].
 
 Inductive K: axiom -> Prop :=

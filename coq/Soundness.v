@@ -196,5 +196,6 @@ Proof.
   - intros M ?H w.
     apply Necessitation_soundness.
     apply IHdeduction.
-    assumption.
+    intros p ? ?.
+    inversion H1.
 Qed.

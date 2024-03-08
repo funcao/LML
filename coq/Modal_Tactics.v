@@ -28,9 +28,7 @@ Section Deduction.
         * assumption.
         * reflexivity.
     - constructor 4.
-      eapply IHdeduction.
-      + assumption.
-      + reflexivity.
+      assumption.
   Defined.
 
   Lemma modal_ax1:
@@ -251,6 +249,5 @@ Proof.
     + apply IHdeduction2.
       assumption.
   - econstructor 4.
-    apply IHdeduction.
     assumption.
 Qed.

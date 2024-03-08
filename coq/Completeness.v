@@ -322,9 +322,8 @@ Section Completeness.
           * apply delta_is_monotonic.
             auto with arith.
           * assumption.
-      (* For necessitation, follows simply by the hypothesis. *)
-      - destruct IHdeduction as (n, ?); auto.
-        exists n.
+      (* For necessitation, zero is enough! *)
+      - exists 0; simpl.
         constructor 4.
         assumption.
     Qed.
