@@ -138,6 +138,24 @@ Section Deduction.
     - now apply Mp with q.
   Defined.
 
+  Lemma modal_ax9:
+    forall p q r,
+    A (ax9 p q r) ->
+    (A; G |-- [! p -> r !]) ->
+    (A; G |-- [! q -> r !]) ->
+    (A; G |-- [! p \/ q !]) ->
+    (A; G |-- [! r !]).
+  Proof.
+    intros.
+    assert (A; G |-- [! p \/ q -> r !]).
+    - apply Mp with [! q -> r !].
+      + apply Mp with [! p -> r !].
+        * now apply Ax with (a := ax9 p q r).
+        * assumption.
+      + assumption.
+    - now apply Mp with [! p \/ q !].
+  Qed.
+
   Lemma modal_compose:
     forall p q r,
     A (ax1 [! q -> r !] p) ->

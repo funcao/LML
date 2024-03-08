@@ -70,8 +70,12 @@ Proof.
     + assert (Consistent A G).
       * now apply nonderivation_implies_consistency with p.
       * apply H1; clear H1; intros q ?.
-        (* Left as an exercise to the reader. *)
-        admit.
+        (* ... *)
+        destruct classic with (A; G |-- [! ~p !]).
+        --- apply H2 with q.
+            now apply modal_cut with [! ~p !].
+        --- unfold not in H3.
+            admit.
 Admitted.
 
 Lemma consistency_either:
@@ -740,5 +744,30 @@ Section Completeness.
     Qed.
 
   End CanonicalModel.
+
+  Goal
+    forall G p q,
+    (A; Extend p G |-- q) -> (A; G |-- [! p -> q !]).
+  Proof.
+    intros.
+    apply determination.
+    apply determination in H.
+    intros ? ?.
+    apply truth in H0.
+    simpl in w.
+    unfold validate_model in H.
+    simpl in H.
+    destruct w as (D, ?H, ?H, ?H).
+    assert (Subset (Extend p G) D) as ?H.
+    - intros t ?.
+      destruct H4.
+      + now dependent destruction H4.
+      + now apply H3.
+    - specialize (H (W_mk H1 H2 H4)).
+      apply truth.
+      apply truth in H.
+      simpl in *.
+      assumption.
+  Qed.
 
 End Completeness.
