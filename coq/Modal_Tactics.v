@@ -221,6 +221,45 @@ Section Deduction.
 
 End Deduction.
 
+Lemma modal_deduction:
+  forall A g p q,
+  Subset K A ->
+  (A; Extend p g |-- q) ->
+  (A; g |-- [! p -> q !]).
+Proof.
+  intros.
+  dependent induction H0.
+  - destruct H0.
+    + dependent destruction H0.
+      apply derive_identity.
+      assumption.
+    + apply modal_ax1.
+      * apply H.
+        apply K_ax1.
+      * constructor 1.
+        assumption.
+  - apply modal_ax1.
+    + apply H.
+      apply K_ax1.
+    + econstructor 2.
+      * eassumption.
+      * reflexivity.
+  - eapply modal_ax2.
+    + apply H.
+      apply K_ax2.
+    + apply IHdeduction1.
+      * assumption.
+      * reflexivity.
+    + apply IHdeduction2.
+      * assumption.
+      * reflexivity.
+  - apply modal_ax1.
+    + apply H.
+      apply K_ax1.
+    + constructor 4.
+      assumption.
+Qed.
+
 Lemma modal_impl_transitivity:
   forall M a b c,
   (M |= [! a -> b !]) /\ (M |= [! b -> c !]) ->
