@@ -176,7 +176,7 @@
 
 \author{Miguel Nunes}
 \ead{miguel.alfredo.nunes@gmail.com}
-\address{Santa Catarina State University}
+\address{State University of Campinas}
 
 \author{Karina Roggia}
 \ead{karina.roggia@udesc.br}
@@ -483,23 +483,47 @@ over disjunction.
   \end{array}
 \]
 Apart from the axioms, we also need \emph{modus ponens} and necessitation rules.
+The complete deduction system is as follows:
 
 \begin{figure}[H]
-\begin{tabular}{cc}
+\begin{tabular}{cccc}
+    \AxiomC{$\varphi \in \Gamma$}
+    \RightLabel{Prem}
+    \UnaryInfC{$\Gamma\vdash \varphi$} 
+    \DisplayProof
+  & 
+    \AxiomC{$\varphi\:\textit{is an axiom}$}
+    \RightLabel{Ax}
+    \UnaryInfC{$\Gamma \vdash \varphi$}
+    \DisplayProof 
+  &
     \AxiomC{$\Gamma\vdash\varphi_1\to\varphi_2$}
     \AxiomC{$\Gamma\vdash\varphi_1$}
     \RightLabel{MP}
     \BinaryInfC{$\Gamma\vdash\varphi_2$}
     \DisplayProof
   &
-    \AxiomC{$\Gamma\vdash\varphi$}
+    \AxiomC{$\vdash\varphi$}
     \RightLabel{Nec}
     \UnaryInfC{$\Gamma\vdash\Box \varphi$}
     \DisplayProof
 \end{tabular}
 \centering
 \end{figure}
-The set of axioms and the two previous rules form a sound and complete Hilbert-style
+\noindent In the SBLP 2022 version of this work, we use a different deductive system in which 
+the necessitation rule was as follows:
+\[
+    \AxiomC{$\Gamma\vdash\varphi$}
+    \RightLabel{Nec}
+    \UnaryInfC{$\Gamma\vdash\Box \varphi$}
+    \DisplayProof
+\]
+However, this system does not admit the deduction theorem. Since we aim for a 
+completeness result and it implies the deduction theorem, the system which we used in 
+the previous version can't be complete and hence requires this changes. 
+For a clarification on the change and the role of the deduction theorem in modal logic,
+we refer the reader to~\cite{HakliN12}.
+The set of axioms and the two last rules form a sound and complete Hilbert-style
 deductive system for modal logics~\cite{blackburn}. Given a formula $\varphi$ and a
 set of hypothesis $\Gamma$, the soundness property ensures that
 whenever $\varphi$ is deduced from $\Gamma$, then $\Gamma\models \varphi$. On the
@@ -512,7 +536,16 @@ of formulas.
 
 %% -----------------------------------------------------------------------------
 
-It's worth to mention about the choice of Hilbert-style systems as the deductive system in our library. The main reason is itself the soundness and completeness proofs: deductive systems such as natural deduction~\cite{Russo_PMLD, basin.ea:labelled:1997, SVRS02-recipe}, sequent calculi~\cite{Governatori00labelledmodal, 03-MSSV-fiblog19}, or tableaux~\cite{BrodaRusso05}, in modal logics, usually need the aid of labels or provisos. This makes, for instance, the metatheorem of soundness harder to proof: while Hilbert systems need only a simple structural induction on the size of the proof, labeled systems need to deal with several corner cases. The disadvantage of the Hilbert system is to use it as a way to establish proofs \emph{in} the system itself, which is not ``direct'' or ``natural''. However, it is still possible to use the $\mathcal{L}$tac language in Coq to automatize parts of this work.
+It's worth to mention about the choice of Hilbert-style systems as the deductive system in our library. 
+The main reason is itself the soundness and completeness proofs: deductive systems such as natural 
+deduction~\cite{Russo_PMLD, basin.ea:labelled:1997, SVRS02-recipe}, sequent 
+calculi~\cite{Governatori00labelledmodal, 03-MSSV-fiblog19}, or tableaux~\cite{BrodaRusso05}, 
+in modal logics, usually need the aid of labels or provisos. This makes, for instance, the 
+metatheorem of soundness harder to proof: while Hilbert systems need only a simple structural induction 
+on the size of the proof, labeled systems need to deal with several corner cases. The disadvantage of the 
+Hilbert system is to use it as a way to establish proofs \emph{in} the system itself, which is not 
+``direct'' or ``natural''. However, it is still possible to use the $\mathcal{L}$tac language in Coq 
+to automatize parts of this work.
 
 %% -----------------------------------------------------------------------------
 
@@ -652,7 +685,7 @@ Inductive deduction (A: axiom -> Prop): theory -> formula -> Prop :=
   (* Generalization. *)
   | Nec: forall (t: theory)
                 (f: formula)
-                (d1: deduction A t f),
+                (d1: deduction A Empty i),
          deduction A t ([] f).
 \end{minted}
 The constructors \mintinline{coq}{Prem}, \mintinline{coq}{Mp} and \mintinline{coq}{Nec}
@@ -793,7 +826,17 @@ Before we start,
 it is worth mentioning that there are different notions of completeness, and
 the literature is not always clear about the difference of those~\cite{Popkorn_1994,modal_lean}.
 %-------------------------------------------------------------------------------
-The semantic entailment, $\Gamma\models\varphi$, represents a global consequence since, by our definition, we expect that the hypotheses are valid in every world in a model instead of only on those worlds where $\varphi$ hold \cite{de1999global}. Also, the completeness result may be weak, which is only valid without hypotheses, or strong, allowing it to be stated with any set of hypotheses \cite{blackburn}. We follow the definitions as stabilished by Popkorn \cite{Popkorn_1994} and note that we prove a strong completeness result using a global consequence: as this subsumes both weak completeness and a local one (as local consequence implies global consequence \cite{de1999global}), our result allows us to derive other possible definitions of completeness, while still being a weak result enough that it will work for any of the possible sets of axioms \cite{Popkorn_1994}.
+The semantic entailment, $\Gamma\models\varphi$, represents a global consequence since, by our definition,
+we expect that the hypotheses are valid in every world in a model instead 
+of having $\varphi$ hold only on those worlds where the hypotheses are valid \cite{de1999global}. 
+Also, the completeness result may be 
+weak, which is only valid without hypotheses, or strong, allowing it to be stated with any set of 
+hypotheses \cite{blackburn}. We follow the definitions as stabilished by Popkorn \cite{Popkorn_1994} 
+and note that we prove a strong completeness result using a global consequence: as this subsumes 
+both weak completeness and a local one (as local consequence implies global consequence 
+\cite{de1999global}), our result allows us to derive other possible definitions of completeness,
+while still being a weak result enough that it will work for any of the possible sets of 
+axioms \cite{Popkorn_1994}.
 
 %-------------------------------------------------------------------------------
 
@@ -1088,9 +1131,9 @@ that \mintinline{coq}{p} is a modal fixed point for \mintinline{coq}{f}.
 
 \begin{minted}{coq}
   Theorem Lob:
-    forall A G, subset K4 A /\ fixed_point A G ->
-    forall p, (A; G |-- [! []p -> p !]) ->
-              (A; G |-- [! p !]).
+    forall A, subset K4 A /\ fixed_point A Empty ->
+    forall p, (A; Empty |-- [! []p -> p !]) ->
+              (A; Empty |-- [! p !]).
 \end{minted}
 
 \noindent The proof starts by assuming an arbitrary formula $p$, the existence of modal fixed
@@ -1098,7 +1141,7 @@ points and that $\Box p \to p$ is provable with axioms A. These deduction steps
 are performed by the following tactic:
 
 \begin{minted}{coq}
-  intros A G [I FP] P H1.
+  intros A [I FP] P H1.
 \end{minted}
 
 \noindent Next, from the existence of modal fixed points for every formula,
@@ -1113,7 +1156,7 @@ we know that there is a formula $\Psi$ such that $\Psi \leftrightarrow (\Box
 step result as follows:
 
 \begin{minted}{coq}
-  assert (A; G |-- [! psi -> []psi -> p !]) as H3.
+  assert (A; Empty |-- [! psi -> []psi -> p !]) as H3.
   apply modal_ax5 in H2; auto with modal.
 \end{minted}
 
@@ -1128,7 +1171,7 @@ From $\vdash \Psi \to (\Box \Psi \to p)$ and the necessitation
 rule, we can deduce $\vdash \Box (\Psi \to (\Box \Psi \to p))$
 using the following tactics:
 \begin{minted}{coq}
-  assert (A; G |-- [! [](psi -> []psi -> p) !]) as H4.
+  assert (A; Empty |-- [! [](psi -> []psi -> p) !]) as H4.
   apply Nec; auto.
 \end{minted}
 
@@ -1137,7 +1180,7 @@ using the following tactics:
 \mintinline{coq}{assert} tactic.
 
 \begin{minted}{coq}
-  assert (A; G |-- [! []psi -> []([]psi -> p) !]) as H5.
+  assert (A; Empty |-- [! []psi -> []([]psi -> p) !]) as H5.
   apply modal_axK in H4; auto with modal.
 \end{minted}
 
@@ -1146,7 +1189,7 @@ $\vdash \Box (\Box \Psi \to p)\to (\Box \Box \Psi \to \Box p)$ holds
 by axiom K.
 
 \begin{minted}{coq}
-  assert (A; G |-- [! []([]psi -> p) -> [][]psi -> []p !]) as H6.
+  assert (A; Empty |-- [! []([]psi -> p) -> [][]psi -> []p !]) as H6.
   eapply Ax with (a := axK ?[X] ?[Y]); auto with modal.
   reflexivity.
 \end{minted}
@@ -1158,7 +1201,7 @@ implication,
 which we defined in an auxiliary lemma.
 
 \begin{minted}{coq}
-  assert (A; G |-- [! []psi -> [][]psi -> []p !]) as H7.
+  assert (A; Empty |-- [! []psi -> [][]psi -> []p !]) as H7.
   eapply modal_compose; eauto with modal.
 \end{minted}
 
@@ -1167,7 +1210,7 @@ the axiom K4 of A. The next snippet of tactics perform this
 reasoning step.
 
 \begin{minted}{coq}
-  assert (A; G |-- [! []psi -> [][]psi !]) as H8.
+  assert (A; Empty |-- [! []psi -> [][]psi !]) as H8.
   apply modal_axK4; auto with modal.
 \end{minted}
 
@@ -1175,7 +1218,7 @@ reasoning step.
 $\vdash \Box \Psi \to p$, using a propositional axiom.
 
 \begin{minted}{coq}
-  assert (A; G |-- [! []psi -> []p !]) as H9.
+  assert (A; Empty |-- [! []psi -> []p !]) as H9.
   eapply modal_ax2; eauto with modal.
 \end{minted}
 
@@ -1184,7 +1227,7 @@ conclude $\vdash \Box \Psi \to p$, by composition of implication as
 follows.
 
 \begin{minted}{coq}
-  assert (A; G |-- [! []psi -> p !]) as H10.
+  assert (A; Empty |-- [! []psi -> p !]) as H10.
   eapply modal_compose; eauto with modal.
 \end{minted}
 
@@ -1193,7 +1236,7 @@ $\Psi \leftrightarrow (\Box \Psi \to p)$ using
 the following tactics:
 
 \begin{minted}{coq}
-  assert (A; G |-- [! ([]psi -> p) -> psi !]) as H11.
+  assert (A; Empty |-- [! ([]psi -> p) -> psi !]) as H11.
   apply modal_ax6 in H2; auto with modal.
 \end{minted}
 
@@ -1201,14 +1244,14 @@ the following tactics:
 we can conclude $\vdash \Psi$ by modus ponens.
 
 \begin{minted}{coq}
-  assert (A; G |-- psi) as H12.
+  assert (A; Empty |-- psi) as H12.
   eapply Mp; try eassumption.
 \end{minted}
 
 \noindent By necessitation rule, we can deduce $\vdash \Box \Psi$
 
 \begin{minted}{coq}
-  assert (A; G |-- [! []psi !]) as H13.
+  assert (A; Empty |-- [! []psi !]) as H13.
   apply Nec; try eassumption.
 \end{minted}
 
@@ -1239,8 +1282,6 @@ their definitions to give some examples of modal operators, worlds and how they
 interact with each other. Using the built machinery, the author developed
 introduction and elimination rules for modal logic operators and use them to
 model the wise man's and muddy children puzzles.
-
-\pagebreak
 
 A Coq formalization for modal systems $K$, $T$ and $K4$ was the subject of
 Doczkal and Smolka's work. The authors' interest was in the definition of dynamic
