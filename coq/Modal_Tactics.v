@@ -210,14 +210,6 @@ Section Deduction.
       now apply Mp with [! ~p !].
   Defined.
 
-  Lemma modal_excluded_middle:
-    forall p,
-    (A; G |-- [! p \/ ~p !]).
-  Proof.
-    intros.
-    admit.
-  Admitted.
-
 End Deduction.
 
 Lemma modal_deduction:
@@ -258,6 +250,77 @@ Proof.
     + constructor 4.
       assumption.
 Qed.
+
+Lemma modal_peirce_law:
+  forall A G p,
+  Subset K A ->
+  (A; G |-- [! (~p -> p) -> p !]).
+Proof.
+  intros.
+  (* This is too ugly! Could we rewrite this please? *)
+  set (q := [! ~p -> p !]).
+  assert (A; G |-- [! ~p -> p -> ~q !]).
+  apply modal_deduction; auto.
+  apply modal_deduction; auto.
+  apply modal_explosion with p.
+  apply H; constructor.
+  apply H; constructor.
+  apply H; constructor.
+  apply H; constructor.
+  apply Prem.
+  firstorder.
+  apply Prem.
+  firstorder.
+  assert (A; G |-- [! (~p -> p -> ~q) -> (~p -> p) -> ~p -> ~q !]).
+  eapply Ax with (a := ax2 _ _ _); try reflexivity.
+  apply H; constructor.
+  assert (A; G |-- [! (~p -> p) -> ~p -> ~q !]).
+  eapply Mp.
+  eassumption.
+  assumption.
+  assert (A; G |-- [! (~p -> p) -> q -> p !]).
+  apply modal_compose with [! ~p -> ~q !].
+  apply H; constructor.
+  apply H; constructor.
+  assumption.
+  eapply Ax with (a := ax3 _ _); try reflexivity.
+  apply H; constructor.
+  assert (A; G |-- [! (q -> q -> p) -> (q -> q) -> q -> p !]).
+  eapply Ax with (a := ax2 _ _ _); try reflexivity.
+  apply H; constructor.
+  assert (A; G |-- [! (q -> q) -> q -> p !]).
+  eapply Mp.
+  eassumption.
+  assumption.
+  eapply Mp.
+  eassumption.
+  apply derive_identity; auto.
+Qed.
+
+Lemma modal_excluded_middle:
+  forall A G p,
+  Subset K A ->
+  (A; G |-- [! p \/ ~p !]).
+Proof.
+  intros.
+  set (q := [! p \/ ~p !]).
+  assert ((A; G |-- [! ~q -> ~p !]) /\
+          (A; G |-- [! ~p -> q !])) as (?, ?);
+  repeat split.
+  - apply modal_ax3.
+    + apply H; constructor.
+    + admit.
+  - eapply Ax with (a := ax8 _ _); try reflexivity.
+    apply H; constructor.
+  - apply Mp with [! (~q -> q) !].
+    + apply modal_peirce_law.
+      assumption.
+    + apply modal_compose with [! ~p !].
+      * apply H; constructor.
+      * apply H; constructor.
+      * assumption.
+      * assumption.
+Admitted.
 
 Lemma modal_impl_transitivity:
   forall M a b c,

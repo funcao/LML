@@ -105,6 +105,7 @@ Proof.
                     apply K_ax10.
                     reflexivity.
             +++ apply modal_excluded_middle.
+                assumption.
 Qed.
 
 Lemma consistency_either:
