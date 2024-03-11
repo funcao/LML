@@ -297,6 +297,20 @@ Proof.
   apply derive_identity; auto.
 Qed.
 
+Lemma modal_double_negation_introduction:
+  forall A G p,
+  Subset K A ->
+  (A; G |-- [! p -> ~~p !]).
+Proof.
+  intros.
+  assert (A; G |-- [! ~~~p -> ~p !]).
+  - apply Ax with (a := ax10 [! ~p !] [! ~p !]); try reflexivity.
+    apply H; constructor.
+  - apply modal_ax3 in H0.
+    + assumption.
+    + apply H; constructor.
+Qed.
+
 Lemma modal_excluded_middle:
   forall A G p,
   Subset K A ->
@@ -309,7 +323,19 @@ Proof.
   repeat split.
   - apply modal_ax3.
     + apply H; constructor.
-    + admit.
+    + apply modal_compose with q.
+      * apply H; constructor.
+      * apply H; constructor.
+      * apply modal_compose with p.
+        apply H; constructor.
+        apply H; constructor.
+        apply Ax with (a := ax10 p p).
+        apply H; constructor.
+        reflexivity.
+        eapply Ax with (a := ax7 _ _); try reflexivity.
+        apply H; constructor.
+      * apply modal_double_negation_introduction.
+        assumption.
   - eapply Ax with (a := ax8 _ _); try reflexivity.
     apply H; constructor.
   - apply Mp with [! (~q -> q) !].
@@ -320,7 +346,7 @@ Proof.
       * apply H; constructor.
       * assumption.
       * assumption.
-Admitted.
+Qed.
 
 Lemma modal_impl_transitivity:
   forall M a b c,
