@@ -427,14 +427,48 @@ Section Completeness.
 
     Local Notation M := canonical_model.
 
+    Inductive existential_world p (w: W): formula -> Prop :=
+      | existential_world1:
+        existential_world p w [! ~p !]
+      | existential_world2:
+        forall x,
+        w [! []x !] ->
+        existential_world p w x
+      | existential_world3:
+        Subset G (existential_world p w).
+
+    Lemma existential_world_consistent:
+      forall p w,
+      Consistent A (existential_world p w).
+    Proof.
+      intros p w q ?.
+      admit.
+    Admitted.
+
     Lemma existential:
       forall (w: W) p,
       w [! ~[]p !] ->
       exists2 w',
       R w w' & w' [! ~p !].
     Proof.
-      admit.
-    Admitted.
+      intros.
+      (* We have to pick a specific context and show it's consistent. *)
+      set (E := existential_world p w).
+      destruct lindenbaum with E as (F, (?, (?, ?))).
+      - apply existential_world_consistent.
+      - assert (Subset G F).
+        + intros t ?.
+          apply H2.
+          now constructor 3.
+        + exists (W_mk H0 H1 H3).
+          * unfold R; simpl.
+            intros t ?.
+            apply H2.
+            now constructor 2.
+          * simpl.
+            apply H2.
+            now constructor 1.
+    Qed.
 
     Local Ltac fill_axiom :=
       match goal with
