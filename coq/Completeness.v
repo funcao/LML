@@ -91,7 +91,7 @@ Proof.
             +++ apply modal_ax3.
                 *** apply H.
                     apply K_ax3.
-                *** apply modal_compose with q.
+                *** apply modal_syllogism with q.
                     apply H.
                     apply K_ax1.
                     apply H.

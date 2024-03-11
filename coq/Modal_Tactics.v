@@ -154,7 +154,7 @@ Section Deduction.
     - now apply Mp with [! p \/ q !].
   Qed.
 
-  Lemma modal_compose:
+  Lemma modal_syllogism:
     forall p q r,
     A (ax1 [! q -> r !] p) ->
     A (ax2 p q r) ->
@@ -279,7 +279,7 @@ Proof.
   eassumption.
   assumption.
   assert (A; G |-- [! (~p -> p) -> q -> p !]).
-  apply modal_compose with [! ~p -> ~q !].
+  apply modal_syllogism with [! ~p -> ~q !].
   apply H; constructor.
   apply H; constructor.
   assumption.
@@ -323,10 +323,10 @@ Proof.
   repeat split.
   - apply modal_ax3.
     + apply H; constructor.
-    + apply modal_compose with q.
+    + apply modal_syllogism with q.
       * apply H; constructor.
       * apply H; constructor.
-      * apply modal_compose with p.
+      * apply modal_syllogism with p.
         apply H; constructor.
         apply H; constructor.
         apply Ax with (a := ax10 p).
@@ -341,7 +341,7 @@ Proof.
   - apply Mp with [! (~q -> q) !].
     + apply modal_peirce_law.
       assumption.
-    + apply modal_compose with [! ~p !].
+    + apply modal_syllogism with [! ~p !].
       * apply H; constructor.
       * apply H; constructor.
       * assumption.

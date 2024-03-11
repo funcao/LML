@@ -43,7 +43,7 @@ Proof.
   reflexivity.
   (* Step 7. *)
   assert (A; G |-- [! []psi -> [][]psi -> []p !]) as H7.
-  eapply modal_compose; eauto with modal.
+  eapply modal_syllogism; eauto with modal.
   (* Step 8. *)
   assert (A; G |-- [! []psi -> [][]psi !]) as H8.
   apply modal_axK4; auto with modal.
@@ -52,7 +52,7 @@ Proof.
   eapply modal_ax2; eauto with modal.
   (* Step 10. *)
   assert (A; G |-- [! []psi -> p !]) as H10.
-  eapply modal_compose; eauto with modal.
+  eapply modal_syllogism; eauto with modal.
   (* Step 11. *)
   assert (A; G |-- [! ([]psi -> p) -> psi !]) as H11.
   apply modal_ax6 in H2; auto with modal.
