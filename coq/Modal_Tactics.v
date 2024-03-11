@@ -304,7 +304,7 @@ Lemma modal_double_negation_introduction:
 Proof.
   intros.
   assert (A; G |-- [! ~~~p -> ~p !]).
-  - apply Ax with (a := ax10 [! ~p !] [! ~p !]); try reflexivity.
+  - apply Ax with (a := ax10 [! ~p !]); try reflexivity.
     apply H; constructor.
   - apply modal_ax3 in H0.
     + assumption.
@@ -329,7 +329,7 @@ Proof.
       * apply modal_compose with p.
         apply H; constructor.
         apply H; constructor.
-        apply Ax with (a := ax10 p p).
+        apply Ax with (a := ax10 p).
         apply H; constructor.
         reflexivity.
         eapply Ax with (a := ax7 _ _); try reflexivity.

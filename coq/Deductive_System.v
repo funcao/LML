@@ -11,7 +11,7 @@ Inductive axiom : Set :=
   | ax7  : formula -> formula -> axiom
   | ax8  : formula -> formula -> axiom
   | ax9  : formula -> formula -> formula -> axiom
-  | ax10 : formula -> formula -> axiom
+  | ax10 : formula -> axiom
   | axK  : formula -> formula -> axiom
   | axPos: formula -> formula -> axiom
   | axT  : formula -> axiom
@@ -32,7 +32,7 @@ Definition instantiate (a: axiom): formula :=
   | ax7   φ ψ   => [! φ -> (φ \/ ψ) !]
   | ax8   φ ψ   => [! ψ -> (φ \/ ψ) !]
   | ax9   φ ψ Ɣ => [! (φ -> Ɣ) -> ((ψ -> Ɣ) -> ((φ \/ ψ) -> Ɣ)) !]
-  | ax10  φ ψ   => [! ~~φ -> φ !]
+  | ax10  φ     => [! ~~φ -> φ !]
   | axK   φ ψ   => [! [](φ -> ψ) -> ([] φ -> [] ψ) !]
   | axPos φ ψ   => [! <> (φ \/ ψ) -> (<> φ \/ <> ψ) !]
   | axT   φ     => [! []φ -> φ !]
@@ -75,7 +75,7 @@ Inductive K: axiom -> Prop :=
   | K_ax7: forall φ ψ, K (ax7 φ ψ)
   | K_ax8: forall φ ψ, K (ax8 φ ψ)
   | K_ax9: forall φ ψ Ɣ, K (ax9 φ ψ Ɣ)
-  | K_ax10: forall φ ψ, K (ax10 φ ψ)
+  | K_ax10: forall φ, K (ax10 φ)
   | K_axK: forall φ ψ, K (axK φ ψ)
   | K_axPos: forall φ ψ, K (axPos φ ψ).
 

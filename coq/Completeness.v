@@ -100,7 +100,7 @@ Proof.
                     apply modal_ax3.
                     apply H.
                     apply K_ax3.
-                    apply Ax with (a := ax10 [! ~q !] q).
+                    apply Ax with (a := ax10 [! ~q !]).
                     apply H.
                     apply K_ax10.
                     reflexivity.
