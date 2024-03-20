@@ -393,14 +393,12 @@ Section Completeness.
 
   Section CanonicalModel.
 
-    Variable G: theory.
-
     Inductive W: Type :=
-      | W_mk D: Consistent A D -> Maximal D -> Subset G D -> W.
+      | W_mk D: Consistent A D -> Maximal D -> W.
 
     Definition wit (w: W) (p: formula): Prop :=
       match w with
-      | @W_mk D _ _ _ => D p
+      | @W_mk D _ _ => D p
       end.
 
     Global Coercion wit: W >-> Funclass.
@@ -427,23 +425,137 @@ Section Completeness.
 
     Local Notation M := canonical_model.
 
-    Inductive existential_world p (w: W): formula -> Prop :=
-      | existential_world1:
-        existential_world p w [! ~p !]
-      | existential_world2:
+    Inductive existential_world (w: W): formula -> Prop :=
+      | existential_world_mk:
         forall x,
         w [! []x !] ->
-        existential_world p w x
-      | existential_world3:
-        Subset G (existential_world p w).
+        existential_world w x.
+
+    Local Ltac fill_axiom :=
+      match goal with
+      | |- A ?a =>
+        apply extending_K;
+        constructor
+      end.
+
+    Lemma finite_world:
+      forall G p,
+      (A; G |-- p) ->
+      exists2 ps: list formula,
+      (A; Fin ps |-- p) & Subset (Fin ps) G.
+    Proof.
+      induction 1.
+      - exists [f].
+        + apply Prem.
+          left; reflexivity.
+        + inversion_clear 1; subst.
+          * assumption.
+          * inversion H1.
+      - exists nil.
+        + now apply Ax with (a := a).
+        + inversion 1.
+      - destruct IHdeduction1 as (ps, ?, ?).
+        destruct IHdeduction2 as (qs, ?, ?).
+        (* The list doesn't have to be minimal, just finite. *)
+        exists (ps ++ qs).
+        + eapply Mp.
+          * eapply deduction_subset with (Fin ps); eauto.
+            intros p ?.
+            apply in_or_app.
+            left.
+            assumption.
+          * eapply deduction_subset with (Fin qs); eauto.
+            intros p ?.
+            apply in_or_app.
+            right.
+            assumption.
+        + intros p ?.
+          apply in_app_or in H5 as [ ? | ? ].
+          * apply H2.
+            assumption.
+          * apply H4.
+            assumption.
+      - clear IHdeduction.
+        exists nil.
+        + now apply Nec.
+        + inversion 1.
+    Qed.
+
+    Lemma finite_spread:
+      forall ps p,
+      (A; Fin ps |-- p) ->
+      (A; Empty |-- fold_right Implies p ps).
+    Proof.
+      induction ps using rev_ind; simpl; intros.
+      - assumption.
+      - assert (A; Extend x (Fin ps) |-- p).
+        + apply deduction_subset with (Fin (ps ++ [x])); auto.
+          intros q ?.
+          apply in_app_or in H0 as [ ? | ? ].
+          * now right.
+          * destruct H0; subst.
+            --- now left.
+            --- inversion H0.
+        + apply modal_deduction in H0; auto.
+          specialize (IHps [! x -> p !] H0).
+          rewrite fold_right_app; simpl.
+          assumption.
+    Qed.
+
+    Lemma existential_modus_ponens:
+      forall (w: W) p ps,
+      (forall q, In q ps -> w [! []q !]) ->
+      (A; w |-- Box (fold_right Implies p ps)) ->
+      (A; w |-- [! []p !]).
+    Proof with try fill_axiom.
+      induction ps; intros.
+      - simpl in H0.
+        assumption.
+      - simpl in H, H0.
+        apply IHps; intros.
+        + apply H.
+          now right.
+        + apply modal_axK in H0...
+          apply Mp with [! []a !].
+          * assumption.
+          * constructor 1.
+            apply H; now left.
+    Qed.
 
     Lemma existential_world_consistent:
-      forall p w,
-      Consistent A (existential_world p w).
-    Proof.
-      intros p w q ?.
-      admit.
-    Admitted.
+      forall p (w: W),
+      w [! ~[]p !] ->
+      Consistent A (Extend [! ~p !] (existential_world w)).
+    Proof with try fill_axiom.
+      intros p w ?.
+      set (E := existential_world w).
+      intros q ?.
+      (* We first move the ~p from the assumptions into the formula. *)
+      apply modal_deduction in H0; auto.
+      (* We have clearly a double negation, which we can remove. *)
+      apply modal_implies_absurd_derives_negation in H0; auto.
+      eapply Mp in H0; [| (* TODO: remake this bit? *)
+        eapply Ax with (a := ax10 _);
+        try reflexivity ]...
+      (* We're left with formulas that are necessary in w inside of E. *)
+      destruct finite_world with E p as (ps, ?, ?); auto.
+      (* Using only ps we derive that ~p implies an absurd. We can spread this
+         now with the deduction theorem. *)
+      apply finite_spread in H1.
+      (* Now we can apply the necessity axiom as we don't have assumptions. *)
+      apply Nec with (t := w) in H1.
+      (* We can derive everything in ps! *)
+      apply existential_modus_ponens in H1; intros.
+      - assert (Consistent A w) by now destruct w.
+        apply H3 with [! []p !].
+        apply modal_ax4...
+        + assumption.
+        + now constructor 1.
+      - rename q0 into t.
+        specialize (H2 t H3).
+        dependent destruction H2.
+        assumption.
+    Qed.
 
     Lemma existential:
       forall (w: W) p,
@@ -453,29 +565,19 @@ Section Completeness.
     Proof.
       intros.
       (* We have to pick a specific context and show it's consistent. *)
-      set (E := existential_world p w).
+      set (E := Extend [! ~p !] (existential_world w)).
       destruct lindenbaum with E as (F, (?, (?, ?))).
       - apply existential_world_consistent.
-      - assert (Subset G F).
-        + intros t ?.
+        assumption.
+      - exists (W_mk H0 H1).
+        + unfold R; simpl.
+          intros t ?.
           apply H2.
-          now constructor 3.
-        + exists (W_mk H0 H1 H3).
-          * unfold R; simpl.
-            intros t ?.
-            apply H2.
-            now constructor 2.
-          * simpl.
-            apply H2.
-            now constructor 1.
+          now constructor.
+        + simpl.
+          apply H2.
+          now constructor.
     Qed.
-
-    Local Ltac fill_axiom :=
-      match goal with
-      | |- A ?a =>
-        apply extending_K;
-        constructor
-      end.
 
     Lemma truth:
       forall p w,
@@ -522,9 +624,42 @@ Section Completeness.
       - simpl in *.
         destruct H as (w', ?, ?).
         apply IHp in H0.
-        admit.
+        assert (Maximal w) by now destruct w.
+        unfold R in H.
+        destruct H1 with [! <>p !].
+        + assumption.
+        + exfalso.
+          destruct H1 with [! []~p !].
+          * assert (Consistent A w') by now destruct w'.
+            specialize (H [! ~p !] H3).
+            apply H4 with [! p !].
+            apply modal_ax4...
+            --- now constructor 1.
+            --- now constructor 1.
+          * assert (Consistent A w) by now destruct w.
+            apply H4 with [! <>p !].
+            apply modal_ax4...
+            --- admit.
+            --- now constructor 1.
       - simpl in *.
-        admit.
+        destruct existential with w [! ~p !] as (w', ?, ?); auto.
+        + assert (Maximal w) by now destruct w.
+          assert (Consistent A w) by now destruct w.
+          destruct H0 with [! []~p !].
+          * exfalso.
+            admit.
+          * assumption.
+        + assert (Maximal w') by now destruct w'.
+          assert (Consistent A w') by now destruct w'.
+          destruct H2 with p.
+          * exists w'; auto.
+            apply IHp.
+            assumption.
+          * exfalso.
+            apply H3 with [! ~p !].
+            apply modal_ax4...
+            --- now constructor 1.
+            --- now constructor 1.
       - simpl in *.
         destruct H.
         apply IHp1 in H.
@@ -609,7 +744,24 @@ Section Completeness.
             apply H1 with [! p1 \/ p2 !].
             apply modal_ax4...
             --- now constructor 1.
-            --- admit.
+            --- apply modal_ax9 with p1 p2...
+                +++ apply modal_deduction; auto.
+                    apply modal_explosion with p1...
+                    *** constructor 1.
+                        now left.
+                    *** apply deduction_subset with w.
+                        (* TODO: simplify? *)
+                        now right.
+                        now constructor 1.
+                +++ apply modal_deduction; auto.
+                    apply modal_explosion with p2...
+                    *** constructor 1.
+                        now left.
+                    *** apply deduction_subset with w.
+                        (* TODO: simplify? *)
+                        now right.
+                        now constructor 1.
+                +++ now constructor 1.
       - simpl in *.
         assert (Maximal w) by now destruct w.
         assert (Consistent A w) by now destruct w.
@@ -653,6 +805,8 @@ Section Completeness.
           * now constructor 1.
     Admitted.
 
+    Variable G: theory.
+
     Theorem canonical:
       Consistent A G ->
       forall p,
@@ -663,7 +817,7 @@ Section Completeness.
       intros.
       destruct lindenbaum with G as (w, (?, (?, ?))); simpl.
       - assumption.
-      - exists (@W_mk w H1 H2 H3).
+      - exists (@W_mk w H1 H2).
         apply truth; simpl.
         apply H3.
         assumption.
@@ -671,10 +825,10 @@ Section Completeness.
 
     Lemma world_derivation:
       forall p,
-      (A; G |-- p) <-> (forall w: W, w p).
+      (A; Empty |-- p) <-> (forall w: W, w p).
     Proof.
       split; intros.
-      - destruct w as (D, ?H, ?H, ?H); simpl.
+      - destruct w as (D, ?H, ?H); simpl.
         destruct H1 with p.
         + assumption.
         + exfalso.
@@ -686,87 +840,77 @@ Section Completeness.
             apply K_ax2.
           * apply extending_K.
             apply K_ax4.
-          * now apply deduction_subset with G.
+          * apply deduction_subset with Empty.
+            --- inversion 1.
+            --- assumption.
           * now constructor.
       - apply consistency_deduction; auto; intro.
-        destruct lindenbaum with (Extend [! ~p !] G) as (D, (?, (?, ?))).
-        + assumption.
-        + assert (Subset G D).
-          * intros t ?.
-            apply H3.
-            now right.
-          * specialize (H (W_mk H1 H2 H4)); simpl in H.
-            apply H1 with p.
-            apply modal_ax4.
-            --- apply extending_K.
-                apply K_ax1.
-            --- apply extending_K.
-                apply K_ax2.
-            --- apply extending_K.
-                apply K_ax4.
-            --- now constructor 1.
-            --- constructor 1.
-                apply H3.
-                now left.
+        destruct lindenbaum with (Singleton [! ~p !]) as (D, (?, (?, ?))).
+        + intros q ?.
+          apply H0 with q.
+          apply deduction_subset with (G1 := Singleton [! ~p !]).
+          * inversion_clear 1.
+            left; reflexivity.
+          * assumption.
+        + specialize (H (W_mk H1 H2)); simpl in H.
+          apply H1 with p.
+          apply modal_ax4.
+          --- apply extending_K.
+              apply K_ax1.
+          --- apply extending_K.
+              apply K_ax2.
+          --- apply extending_K.
+              apply K_ax4.
+          --- now constructor 1.
+          --- constructor 1.
+              apply H3.
+              reflexivity.
     Qed.
 
     Lemma determination_if:
       forall p,
-      (M |= p) -> (A; G |-- p).
-    Proof.
+      (M |= p) -> (A; Empty |-- p).
+    Proof with try fill_axiom.
       intros p.
       apply contrapositive; intros.
       - apply classic.
-      - edestruct lindenbaum with (G := Extend [! ~p !] G)
+      - edestruct lindenbaum with (G := Extend [! ~p !] Empty)
           as (D, (?, (?, ?))).
         + intros q ?.
           apply H.
+          apply modal_deduction in H1; auto.
           apply world_derivation; intros.
-          destruct w as (D, ?H, ?H, ?H); simpl.
+          destruct w as (D, ?H, ?H); simpl.
           destruct H3 with p.
           * assumption.
           * exfalso.
             apply H2 with q.
-            apply deduction_subset with (Extend [! ~p !] G); auto.
-            destruct 1.
-            --- now dependent destruction H6.
-            --- now apply H4.
-        + assert (Subset G D).
-          * intros t ?.
-            apply H3.
-            now right.
-          * specialize (H0 (@W_mk D H1 H2 H4)).
-            apply truth in H0; simpl in H0.
-            apply H1 with p.
-            apply modal_ax4.
-            --- apply extending_K.
-                apply K_ax1.
-            --- apply extending_K.
-                apply K_ax2.
-            --- apply extending_K.
-                apply K_ax4.
-            --- now constructor 1.
-            --- constructor 1.
-                firstorder.
+            eapply Mp.
+            --- apply deduction_subset with Empty.
+                +++ inversion 1.
+                +++ eassumption.
+            --- apply Prem.
+                assumption.
+        + specialize (H0 (@W_mk D H1 H2)).
+          apply truth in H0; simpl in H0.
+          apply H1 with p.
+          apply modal_ax4...
+          * now constructor 1.
+          * constructor 1.
+            firstorder.
     Qed.
 
     Lemma determination_only_if:
       forall p,
-      (A; G |-- p) -> (M |= p).
-    Proof.
-      intros p ? (w, ?H, ?H, ?H).
+      (A; Empty |-- p) -> (M |= p).
+    Proof with try fill_axiom.
+      intros p ? (w, ?H, ?H).
       apply truth; simpl.
       destruct H1 with p; auto.
       destruct H0 with p.
-      apply modal_ax4.
-      - apply extending_K.
-        apply K_ax1.
-      - apply extending_K.
-        apply K_ax2.
-      - apply extending_K.
-        apply K_ax4.
-      - apply deduction_subset with G.
-        + assumption.
+      apply modal_ax4...
+      - apply deduction_subset with Empty.
+        + inversion 1.
         + assumption.
       - constructor 1.
         assumption.
@@ -774,7 +918,7 @@ Section Completeness.
 
     Lemma determination:
       forall p,
-      (M |= p) <-> (A; G |-- p).
+      (M |= p) <-> (A; Empty |-- p).
     Proof.
       split.
       - apply determination_if.
@@ -783,54 +927,28 @@ Section Completeness.
 
     Theorem completeness:
       forall p,
-      (G ||= p) -> (A; G |-- p).
+      (Empty ||= p) -> (A; Empty |-- p).
     Proof.
       intros p.
-      (* We can't pretend we know how to derive this, but there must be a way. *)
+      (* We can't pretend we know how to derive this, but there must be a
+         way. *)
       apply contrapositive; intros.
       - apply classic.
-      - (* Since it's impossible to derive A; G |-- p, this means that G must
-           be consistent. If it were inconsistent, anything could be derived! *)
-        assert (Consistent A G).
+      - (* Since it's impossible to derive A; Empty |-- p, this means that G
+           must be consistent. If it were inconsistent, anything could be
+           derived as we have explosion. *)
+        assert (Consistent A Empty).
         + now apply nonderivation_implies_consistency with p.
         + (* Now, by the determination lemma, since p isn't derivable, it can't
              be done in the canonical model as well. *)
           assert ((M |= p) -> False); intros.
-          * apply determination with p in H2; auto.
-          * apply H2, H0.
-            (* Since our canonical model only contains worlds that extend G, by
-               the truth lemma all of our possible worlds in here will contain
-               the hypotheses of G. *)
-            intros q ? w; apply truth.
-            destruct w as (w, ?H, ?H, ?H); simpl.
-            apply H6; assumption.
+          * apply determination with p in H2.
+            contradiction.
+          * (* Since we have no assumptions, we don't have to show anything to
+               be valid. *)
+            apply H2, H0; easy.
     Qed.
 
   End CanonicalModel.
-
-  Goal
-    forall G p q,
-    (A; Extend p G |-- q) -> (A; G |-- [! p -> q !]).
-  Proof.
-    intros.
-    apply determination.
-    apply determination in H.
-    intros ? ?.
-    apply truth in H0.
-    simpl in w.
-    unfold validate_model in H.
-    simpl in H.
-    destruct w as (D, ?H, ?H, ?H).
-    assert (Subset (Extend p G) D) as ?H.
-    - intros t ?.
-      destruct H4.
-      + now dependent destruction H4.
-      + now apply H3.
-    - specialize (H (W_mk H1 H2 H4)).
-      apply truth.
-      apply truth in H.
-      simpl in *.
-      assumption.
-  Qed.
 
 End Completeness.

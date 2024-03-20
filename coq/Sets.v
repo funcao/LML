@@ -19,3 +19,6 @@ Definition Empty {T} (t: T): Prop :=
 
 Notation Extend p D :=
   (Union (Singleton p) D).
+
+Definition Fin {T} (ps: list T) (q: T): Prop :=
+  In q ps.

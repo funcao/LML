@@ -3,6 +3,28 @@ Require Import Equality.
 Require Import List Modal_Library Modal_Notations Deductive_System.
 Import ListNotations.
 
+Lemma deduction_subset:
+  forall A G1 G2,
+  Subset G1 G2 ->
+  forall p,
+  deduction A G1 p -> deduction A G2 p.
+Proof.
+  induction 2.
+  - constructor 1.
+    apply H.
+    assumption.
+  - econstructor 2.
+    + eassumption.
+    + assumption.
+  - econstructor 3.
+    + apply IHdeduction1.
+      assumption.
+    + apply IHdeduction2.
+      assumption.
+  - econstructor 4.
+    assumption.
+Qed.
+
 Section Deduction.
 
   Variable A: axiom -> Prop.
@@ -348,6 +370,62 @@ Proof.
       * assumption.
 Qed.
 
+Lemma modal_implies_absurd_derives_negation:
+  forall A G p q,
+  Subset K A ->
+  (A; G |-- [! p -> q /\ ~q !]) ->
+  (A; G |-- [! ~p !]).
+Proof.
+  intros.
+  assert (A; G |-- [! p \/ ~p !]).
+  - apply modal_excluded_middle.
+    assumption.
+  - apply modal_ax9 with [! p !] [! ~p !].
+    + apply H; constructor.
+    + apply modal_syllogism with [! q /\ ~q !].
+      * apply H; constructor.
+      * apply H; constructor.
+      * assumption.
+      * apply modal_deduction; auto.
+        apply modal_explosion with q...
+        --- apply H; constructor.
+        --- apply H; constructor.
+        --- apply H; constructor.
+        --- apply H; constructor.
+        --- apply modal_ax5 with [! ~q !]...
+            +++ apply H; constructor.
+            +++ apply Prem.
+                now left.
+        --- apply modal_ax6 with [! q !]...
+            +++ apply H; constructor.
+            +++ apply Prem.
+                now left.
+    + apply derive_identity.
+      assumption.
+    + assumption.
+Qed.
+
+Lemma modal_negation_derives_implies_absurd:
+  forall A G p q,
+  Subset K A ->
+  (A; G |-- [! ~p !]) ->
+  (A; G |-- [! p -> q /\ ~q !]).
+Proof.
+  intros.
+  apply modal_deduction; auto.
+  - apply modal_explosion with p.
+    + apply H; constructor.
+    + apply H; constructor.
+    + apply H; constructor.
+    + apply H; constructor.
+    + apply Prem.
+      now left.
+    + apply deduction_subset with G.
+      * intros t ?.
+        now right.
+      * assumption.
+Qed.
+
 Lemma modal_impl_transitivity:
   forall M a b c,
   (M |= [! a -> b !]) /\ (M |= [! b -> c !]) ->
@@ -356,25 +434,3 @@ Proof.
   intros M a b c [H1 H2] w H3.
   apply H2; apply H1; assumption.
 Defined.
-
-Lemma deduction_subset:
-  forall A G1 G2,
-  Subset G1 G2 ->
-  forall p,
-  deduction A G1 p -> deduction A G2 p.
-Proof.
-  induction 2.
-  - constructor 1.
-    apply H.
-    assumption.
-  - econstructor 2.
-    + eassumption.
-    + assumption.
-  - econstructor 3.
-    + apply IHdeduction1.
-      assumption.
-    + apply IHdeduction2.
-      assumption.
-  - econstructor 4.
-    assumption.
-Qed.
