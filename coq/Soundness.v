@@ -132,6 +132,26 @@ Proof.
     assumption.
 Qed.
 
+(* <>p -> ~[]~p *)
+Lemma Axiom_Dual_soundness:
+  forall M w φ,
+  M ' w ||- [! <>φ <-> ~[]~φ !].
+Proof.
+  simpl; split; intros.
+  - destruct H as (w', ?, ?).
+    intro; apply H1 with w'.
+    + assumption.
+    + assumption.
+  - edestruct classic.
+    + eassumption.
+    + exfalso.
+      apply H; intros; intro.
+      apply H0.
+      exists w'.
+      * assumption.
+      * assumption.
+Qed.
+
 (* a /\ (a -> b) -> b *)
 Lemma Modus_Ponens_soundness:
   forall M w φ ψ,
@@ -185,7 +205,7 @@ Proof.
     + intros M ?H w.
       apply Axiom_K_soundness.
     + intros M ?H w.
-      apply Axiom_Possibility_soundness.
+      apply Axiom_Dual_soundness.
   - intros M ?H w.
     apply Modus_Ponens_soundness with f.
     split.

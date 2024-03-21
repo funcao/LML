@@ -176,6 +176,20 @@ Section Deduction.
     - now apply Mp with [! p \/ q !].
   Qed.
 
+  Lemma modal_ax10:
+    forall p,
+    A (ax10 p) ->
+    (A; G |-- [! ~~p !]) ->
+    (A; G |-- [! p !]).
+  Proof.
+    intros.
+    apply Mp with [! ~~p !].
+    - apply Ax with (a := ax10 p).
+      + assumption.
+      + reflexivity.
+    - assumption.
+  Qed.
+
   Lemma modal_syllogism:
     forall p q r,
     A (ax1 [! q -> r !] p) ->
@@ -368,6 +382,25 @@ Proof.
       * apply H; constructor.
       * assumption.
       * assumption.
+Qed.
+
+Lemma modal_axDual:
+  forall A G p,
+  Subset K A ->
+  (A; G |-- [! <>p !]) <-> (A; G |-- [! ~[]~p !]).
+Proof.
+  intros.
+  assert (A; G |-- [! <>p <-> ~[]~p !]).
+  - apply Ax with (a := axDual p).
+    + apply H; constructor.
+    + reflexivity.
+  - split; intros.
+    + apply modal_ax5 in H0.
+      * now apply Mp with [! <>p !].
+      * apply H; constructor.
+    + apply modal_ax6 in H0.
+      * now apply Mp with [! ~[]~p !].
+      * apply H; constructor.
 Qed.
 
 Lemma modal_implies_absurd_derives_negation:

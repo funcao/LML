@@ -639,7 +639,9 @@ Section Completeness.
           * assert (Consistent A w) by now destruct w.
             apply H4 with [! <>p !].
             apply modal_ax4...
-            --- admit.
+            --- apply modal_axDual.
+                +++ assumption.
+                +++ now constructor 1.
             --- now constructor 1.
       - simpl in *.
         destruct existential with w [! ~p !] as (w', ?, ?); auto.
@@ -647,7 +649,12 @@ Section Completeness.
           assert (Consistent A w) by now destruct w.
           destruct H0 with [! []~p !].
           * exfalso.
-            admit.
+            apply H1 with [! []~p !].
+            apply modal_ax4...
+            --- now constructor 1.
+            --- apply modal_axDual.
+                +++ assumption.
+                +++ now constructor 1.
           * assumption.
         + assert (Maximal w') by now destruct w'.
           assert (Consistent A w') by now destruct w'.
@@ -803,7 +810,7 @@ Section Completeness.
             --- now constructor 1.
             --- now constructor 1.
           * now constructor 1.
-    Admitted.
+    Qed.
 
     Variable G: theory.
 

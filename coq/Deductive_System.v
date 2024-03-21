@@ -2,24 +2,24 @@ Require Import Modal_Library Modal_Notations List Classical Logic Equality Sets.
 
 (**** HILBERT SYSTEM (axiomatic method) ****)
 Inductive axiom : Set :=
-  | ax1  : formula -> formula -> axiom
-  | ax2  : formula -> formula -> formula -> axiom
-  | ax3  : formula -> formula -> axiom
-  | ax4  : formula -> formula -> axiom
-  | ax5  : formula -> formula -> axiom
-  | ax6  : formula -> formula -> axiom
-  | ax7  : formula -> formula -> axiom
-  | ax8  : formula -> formula -> axiom
-  | ax9  : formula -> formula -> formula -> axiom
-  | ax10 : formula -> axiom
-  | axK  : formula -> formula -> axiom
-  | axPos: formula -> formula -> axiom
-  | axT  : formula -> axiom
-  | axB  : formula -> axiom
-  | axK4 : formula -> axiom
-  | axD  : formula -> axiom
-  | axK5 : formula -> axiom
-  | axGL : formula -> axiom.
+  | ax1: formula -> formula -> axiom
+  | ax2: formula -> formula -> formula -> axiom
+  | ax3: formula -> formula -> axiom
+  | ax4: formula -> formula -> axiom
+  | ax5: formula -> formula -> axiom
+  | ax6: formula -> formula -> axiom
+  | ax7: formula -> formula -> axiom
+  | ax8: formula -> formula -> axiom
+  | ax9: formula -> formula -> formula -> axiom
+  | ax10: formula -> axiom
+  | axK: formula -> formula -> axiom
+  | axDual: formula -> axiom
+  | axT: formula -> axiom
+  | axB: formula -> axiom
+  | axK4: formula -> axiom
+  | axD: formula -> axiom
+  | axK5: formula -> axiom
+  | axGL: formula -> axiom.
 
 Definition instantiate (a: axiom): formula :=
   match a with
@@ -33,13 +33,13 @@ Definition instantiate (a: axiom): formula :=
   | ax8   φ ψ   => [! ψ -> (φ \/ ψ) !]
   | ax9   φ ψ Ɣ => [! (φ -> Ɣ) -> ((ψ -> Ɣ) -> ((φ \/ ψ) -> Ɣ)) !]
   | ax10  φ     => [! ~~φ -> φ !]
-  | axK   φ ψ   => [! [](φ -> ψ) -> ([] φ -> [] ψ) !]
-  | axPos φ ψ   => [! <> (φ \/ ψ) -> (<> φ \/ <> ψ) !]
+  | axK   φ ψ   => [! [](φ -> ψ) -> ([]φ -> []ψ) !]
+  | axDual φ    => [! <>φ <-> ~[]~φ !]
   | axT   φ     => [! []φ -> φ !]
-  | axB   φ     => [! φ -> [] <> φ !]
-  | axK4  φ     => [! [] φ -> [] [] φ !]
-  | axD   φ     => [! [] φ -> <> φ !]
-  | axK5  φ     => [! <> φ -> [] <> φ !]
+  | axB   φ     => [! φ -> []<>φ !]
+  | axK4  φ     => [! []φ -> [][]φ !]
+  | axD   φ     => [! []φ -> <>φ !]
+  | axK5  φ     => [! <>φ -> []<>φ !]
   | axGL  φ     => [! []([]φ -> φ) -> []φ !]
   end.
 
@@ -77,7 +77,7 @@ Inductive K: axiom -> Prop :=
   | K_ax9: forall φ ψ Ɣ, K (ax9 φ ψ Ɣ)
   | K_ax10: forall φ, K (ax10 φ)
   | K_axK: forall φ ψ, K (axK φ ψ)
-  | K_axPos: forall φ ψ, K (axPos φ ψ).
+  | K_axDual: forall φ, K (axDual φ).
 
 (* Reflexive *)
 Inductive T: axiom -> Prop :=
