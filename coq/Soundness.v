@@ -132,7 +132,7 @@ Proof.
     assumption.
 Qed.
 
-(* <>p -> ~[]~p *)
+(* <>p <-> ~[]~p *)
 Lemma Axiom_Dual_soundness:
   forall M w φ,
   M ' w ||- [! <>φ <-> ~[]~φ !].
