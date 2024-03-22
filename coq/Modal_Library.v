@@ -34,7 +34,7 @@ Fixpoint literals (f: formula): set nat :=
 end.
 
 Record Frame: Type := {
-  W: Set;
+  W: Type;
   R: W -> W -> Prop
 }.
 
@@ -45,9 +45,9 @@ Record Model: Type := {
 
 Fixpoint fun_validation (M: Model) (w: W (F M)) (φ: formula): Prop :=
   match φ with
-  | Lit     x   => v M x w 
+  | Lit     x   => v M x w
   | Box     ψ   => forall w', R (F M) w w' -> fun_validation M w' ψ
-  | Dia     ψ   => exists w', R (F M) w w' /\ fun_validation M w' ψ
+  | Dia     ψ   => exists2 w', R (F M) w w' & fun_validation M w' ψ
   | Neg     ψ   => ~fun_validation M w ψ
   | And     ψ Ɣ => fun_validation M w ψ /\ fun_validation M w Ɣ
   | Or      ψ Ɣ => fun_validation M w ψ \/ fun_validation M w Ɣ
@@ -62,11 +62,14 @@ Definition validate_model (M: Model) (φ: formula): Prop :=
 
 Definition theory := formula -> Prop.
 
-Definition theoryModal (M: Model) (Γ: theory): Prop :=
+Definition theory_modal (M: Model) (Γ: theory): Prop :=
   forall p, Γ p -> validate_model M p.
 
 Definition entails (M: Model) (Γ: theory) (φ: formula): Prop :=
-  theoryModal M Γ -> validate_model M φ.
+  (* This is a *global* consequence rather than a local one; i.e., we expect
+     gamma to be valid at every world rather the the world we're dealing with
+     for the formulas p. This is a stronger result than the local one. *)
+  theory_modal M Γ -> validate_model M φ.
 
 (***** structural properties of deduction ****)
 (*
@@ -340,8 +343,7 @@ Definition noetherian_frame (F: Frame): Prop :=
 (* Logical Equivalence *)
 Definition entails_modal (Γ: theory) (φ: formula): Prop :=
   forall M,
-  theoryModal M Γ -> 
-  validate_model M φ.
+  entails M Γ φ.
 
 Definition equivalence (φ ψ: formula): Prop := 
   (entails_modal (Singleton φ) ψ) /\ (entails_modal (Singleton ψ) φ).

@@ -2,24 +2,24 @@ Require Import Modal_Library Modal_Notations List Classical Logic Equality Sets.
 
 (**** HILBERT SYSTEM (axiomatic method) ****)
 Inductive axiom : Set :=
-  | ax1  : formula -> formula -> axiom
-  | ax2  : formula -> formula -> formula -> axiom
-  | ax3  : formula -> formula -> axiom
-  | ax4  : formula -> formula -> axiom
-  | ax5  : formula -> formula -> axiom
-  | ax6  : formula -> formula -> axiom
-  | ax7  : formula -> formula -> axiom
-  | ax8  : formula -> formula -> axiom
-  | ax9  : formula -> formula -> formula -> axiom
-  | ax10 : formula -> formula -> axiom
-  | axK  : formula -> formula -> axiom
-  | axPos: formula -> formula -> axiom
-  | axT  : formula -> axiom
-  | axB  : formula -> axiom
-  | axK4 : formula -> axiom
-  | axD  : formula -> axiom
-  | axK5 : formula -> axiom
-  | axGL : formula -> axiom.
+  | ax1: formula -> formula -> axiom
+  | ax2: formula -> formula -> formula -> axiom
+  | ax3: formula -> formula -> axiom
+  | ax4: formula -> formula -> axiom
+  | ax5: formula -> formula -> axiom
+  | ax6: formula -> formula -> axiom
+  | ax7: formula -> formula -> axiom
+  | ax8: formula -> formula -> axiom
+  | ax9: formula -> formula -> formula -> axiom
+  | ax10: formula -> axiom
+  | axK: formula -> formula -> axiom
+  | axDual: formula -> axiom
+  | axT: formula -> axiom
+  | axB: formula -> axiom
+  | axK4: formula -> axiom
+  | axD: formula -> axiom
+  | axK5: formula -> axiom
+  | axGL: formula -> axiom.
 
 Definition instantiate (a: axiom): formula :=
   match a with
@@ -32,14 +32,14 @@ Definition instantiate (a: axiom): formula :=
   | ax7   φ ψ   => [! φ -> (φ \/ ψ) !]
   | ax8   φ ψ   => [! ψ -> (φ \/ ψ) !]
   | ax9   φ ψ Ɣ => [! (φ -> Ɣ) -> ((ψ -> Ɣ) -> ((φ \/ ψ) -> Ɣ)) !]
-  | ax10  φ ψ   => [! ~~φ -> φ !]
-  | axK   φ ψ   => [! [](φ -> ψ) -> ([] φ -> [] ψ) !]
-  | axPos φ ψ   => [! <> (φ \/ ψ) -> (<> φ \/ <> ψ) !]
+  | ax10  φ     => [! ~~φ -> φ !]
+  | axK   φ ψ   => [! [](φ -> ψ) -> ([]φ -> []ψ) !]
+  | axDual φ    => [! <>φ <-> ~[]~φ !]
   | axT   φ     => [! []φ -> φ !]
-  | axB   φ     => [! φ -> [] <> φ !]
-  | axK4  φ     => [! [] φ -> [] [] φ !]
-  | axD   φ     => [! [] φ -> <> φ !]
-  | axK5  φ     => [! <> φ -> [] <> φ !]
+  | axB   φ     => [! φ -> []<>φ !]
+  | axK4  φ     => [! []φ -> [][]φ !]
+  | axD   φ     => [! []φ -> <>φ !]
+  | axK5  φ     => [! <>φ -> []<>φ !]
   | axGL  φ     => [! []([]φ -> φ) -> []φ !]
   end.
 
@@ -62,7 +62,7 @@ Inductive deduction (A: axiom -> Prop): theory -> formula -> Prop :=
   (* Generalization. *)
   | Nec: forall (t: theory)
                 (f: formula)
-                (d1: deduction A t f),
+                (d1: deduction A Empty f),
          deduction A t [! []f !].
 
 Inductive K: axiom -> Prop :=
@@ -75,9 +75,9 @@ Inductive K: axiom -> Prop :=
   | K_ax7: forall φ ψ, K (ax7 φ ψ)
   | K_ax8: forall φ ψ, K (ax8 φ ψ)
   | K_ax9: forall φ ψ Ɣ, K (ax9 φ ψ Ɣ)
-  | K_ax10: forall φ ψ, K (ax10 φ ψ)
+  | K_ax10: forall φ, K (ax10 φ)
   | K_axK: forall φ ψ, K (axK φ ψ)
-  | K_axPos: forall φ ψ, K (axPos φ ψ).
+  | K_axDual: forall φ, K (axDual φ).
 
 (* Reflexive *)
 Inductive T: axiom -> Prop :=
@@ -129,20 +129,24 @@ Notation "A ; G |-- p" := (deduction A G p)
     (at level 110, no associativity).
 
 Lemma derive_identity:
-  forall Γ φ,
-  K; Γ |-- [! φ -> φ !].
+  forall A Γ φ,
+  Subset K A ->
+  A; Γ |-- [! φ -> φ !].
 Proof.
   intros.
   apply Mp with (f := [! φ -> φ -> φ !]).
   - apply Mp with (f := [! φ -> (φ -> φ) -> φ !]).
     + apply Ax with (a := ax2 φ [! φ -> φ !] φ).
-      * constructor.
+      * apply H.
+        constructor.
       * reflexivity.
     + apply Ax with (a := ax1 φ [! φ -> φ !]).
-      * constructor.
+      * apply H.
+        constructor.
       * reflexivity.
   - apply Ax with (a := ax1 φ φ).
-    + constructor.
+    + apply H.
+      constructor.
     + reflexivity.
 Qed.
 
@@ -175,41 +179,13 @@ Proof.
 Qed.
 
 Lemma derive_monotonicity:
-  forall ẟ Γ φ,
-  (K; Γ |-- φ) ->
-  (K; Union ẟ Γ |-- φ).
+  forall A ẟ Γ φ,
+  (A; Γ |-- φ) ->
+  (A; Union ẟ Γ |-- φ).
 Proof.
   intros.
   apply derive_weak with Γ.
   - intros p ?.
     right; auto.
   - assumption.
-Qed.
-
-Lemma derive_modus_ponens:
-  forall Γ φ ψ,
-  (K; Union (Singleton φ) Γ |-- ψ) ->
-  (K; Γ |-- φ) ->
-  (K; Γ |-- ψ).
-Proof.
-  intros; dependent induction H.
-  - destruct H.
-    + dependent destruction H.
-      assumption.
-    + apply Prem.
-      assumption.
-  - apply Ax with (a:=a).
-    + assumption.
-    + reflexivity.
-  - eapply Mp.
-    + eapply IHdeduction1.
-      * eauto.
-      * assumption.
-    + eapply IHdeduction2.
-      * eauto.
-      * assumption.
-  - apply Nec.
-    + eapply IHdeduction.
-      * eauto.
-      * assumption.
 Qed.
