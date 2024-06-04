@@ -1,5 +1,7 @@
 Require Import Modal_Library Modal_Notations Classical List Deductive_System.
 
+Context `{X: modal_index_set}.
+
 (* p -> (q -> p) *)
 Lemma Hilbert_Axiom_1_soundness:
   forall M w φ ψ,
@@ -107,8 +109,8 @@ Qed.
 
 (* <>(p \/ q) -> (<>p \/ <>q) *)
 Lemma Axiom_Possibility_soundness:
-  forall M w φ ψ,
-  M ' w ||- [! <>(φ \/ ψ) -> (<>φ \/ <>ψ) !].
+  forall M w φ ψ idx,
+  M ' w ||- [! <idx>(φ \/ ψ) -> (<idx>φ \/ <idx>ψ) !].
 Proof.
   simpl; intros.
   destruct H as (w', ?H, [ ?H | ?H ]).
@@ -122,8 +124,8 @@ Qed.
 
 (* [](p -> q) -> ([]p -> []q) *)
 Lemma Axiom_K_soundness:
-  forall M w φ ψ,
-  M ' w ||- [! [](φ -> ψ) -> ([]φ -> []ψ) !].
+  forall M w φ ψ idx,
+  M ' w ||- [! [idx](φ -> ψ) -> ([idx]φ -> [idx]ψ) !].
 Proof.
   simpl; intros.
   apply H.
@@ -134,8 +136,8 @@ Qed.
 
 (* <>p <-> ~[]~p *)
 Lemma Axiom_Dual_soundness:
-  forall M w φ,
-  M ' w ||- [! <>φ <-> ~[]~φ !].
+  forall M w φ idx,
+  M ' w ||- [! <idx>φ <-> ~[idx]~φ !].
 Proof.
   simpl; split; intros.
   - destruct H as (w', ?, ?).
@@ -165,46 +167,47 @@ Proof.
 Qed.
 
 Lemma Necessitation_soundness:
-  forall M φ,
+  forall M φ idx,
   (M |= φ) ->
-  (M |= [! []φ !]).
+  (M |= [! [idx]φ !]).
 Proof.
   unfold validate_model; simpl; intros.
   apply H.
 Qed.
 
 Theorem soundness:
-  forall (G: theory) (φ: formula),
-  (K; G |-- φ) ->
+  forall (G: theory) (φ: formula) idx,
+  (K idx; G |-- φ) ->
   (G ||= φ).
 Proof.
   induction 1.
   - intros M ?H.
     apply H0; auto.
-  - destruct H; destruct H0; simpl.
-    + intros M ?H w.
-      apply Hilbert_Axiom_1_soundness.
-    + intros M ?H w.
-      apply Hilbert_Axiom_2_soundness.
-    + intros M ?H w.
-      apply Hilbert_Axiom_3_soundness.
-    + intros M ?H w.
-      apply Hilbert_Axiom_4_soundness.
-    + intros M ?H w.
-      apply Hilbert_Axiom_5_soundness.
-    + intros M ?H w.
-      apply Hilbert_Axiom_6_soundness.
-    + intros M ?H w.
-      apply Hilbert_Axiom_7_soundness.
-    + intros M ?H w.
-      apply Hilbert_Axiom_8_soundness.
-    + intros M ?H w.
-      apply Hilbert_Axiom_9_soundness.
-    + intros M ?H w.
-      apply Hilbert_Axiom_10_soundness.
-    + intros M ?H w.
+  - destruct H.
+    + destruct H; subst; simpl.
+      * intros M ?H w.
+        apply Hilbert_Axiom_1_soundness.
+      * intros M ?H w.
+        apply Hilbert_Axiom_2_soundness.
+      * intros M ?H w.
+        apply Hilbert_Axiom_3_soundness.
+      * intros M ?H w.
+        apply Hilbert_Axiom_4_soundness.
+      * intros M ?H w.
+        apply Hilbert_Axiom_5_soundness.
+      * intros M ?H w.
+        apply Hilbert_Axiom_6_soundness.
+      * intros M ?H w.
+        apply Hilbert_Axiom_7_soundness.
+      * intros M ?H w.
+        apply Hilbert_Axiom_8_soundness.
+      * intros M ?H w.
+        apply Hilbert_Axiom_9_soundness.
+      * intros M ?H w.
+        apply Hilbert_Axiom_10_soundness.
+    + intros M ?H w; subst; simpl instantiate.
       apply Axiom_K_soundness.
-    + intros M ?H w.
+    + intros M ?H w; subst; simpl instantiate.
       apply Axiom_Dual_soundness.
   - intros M ?H w.
     apply Modus_Ponens_soundness with f.

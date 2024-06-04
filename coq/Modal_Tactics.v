@@ -3,6 +3,10 @@ Require Import Equality.
 Require Import List Modal_Library Modal_Notations Deductive_System.
 Import ListNotations.
 
+Section Tactics.
+
+Context `{X: modal_index_set}.
+
 Lemma deduction_subset:
   forall A G1 G2,
   Subset G1 G2 ->
@@ -31,7 +35,7 @@ Section Deduction.
   Variable G: theory.
 
   Lemma modal_cut:
-    forall A G p,
+    forall p,
     (A; G |-- p) ->
     forall q,
     (A; Extend p G |-- q) -> (A; G |-- q).
@@ -43,15 +47,17 @@ Section Deduction.
       + now constructor 1.
     - now constructor 2 with a.
     - constructor 3 with f.
-      + apply IHdeduction1.
+      + apply IHdeduction1 with (p := p).
         * assumption.
         * reflexivity.
-      + apply IHdeduction2.
+      + apply IHdeduction2 with (p := p).
         * assumption.
         * reflexivity.
     - constructor 4.
       assumption.
   Defined.
+
+  Variable idx: modal_index.
 
   Lemma modal_ax1:
     forall p q,
@@ -206,23 +212,23 @@ Section Deduction.
 
   Lemma modal_axK:
     forall p q,
-    A (axK p q) ->
-    (A; G |-- [! [](p -> q) !]) ->
-    (A; G |-- [! []p -> []q !]).
+    A (axK idx p q) ->
+    (A; G |-- [! [idx](p -> q) !]) ->
+    (A; G |-- [! [idx]p -> [idx]q !]).
   Proof.
     intros.
-    assert (A; G |-- [! [](p -> q) -> []p -> []q !]).
-    - now apply Ax with (a := axK p q).
-    - now apply Mp with [! [](p -> q) !].
+    assert (A; G |-- [! [idx](p -> q) -> [idx]p -> [idx]q !]).
+    - now apply Ax with (a := axK idx p q).
+    - now apply Mp with [! [idx](p -> q) !].
   Defined.
 
   Lemma modal_axK4:
     forall p,
-    A (axK4 p) ->
-    (A; G |-- [! []p -> [][]p !]).
+    A (axK4 idx p) ->
+    (A; G |-- [! [idx]p -> [idx][idx]p !]).
   Proof.
     intros.
-    now apply Ax with (a := axK4 p).
+    now apply Ax with (a := axK4 idx p).
   Defined.
 
   Lemma modal_explosion:
@@ -250,7 +256,7 @@ End Deduction.
 
 Lemma modal_deduction:
   forall A G p q,
-  Subset K A ->
+  Subset P A ->
   (A; Extend p G |-- q) ->
   (A; G |-- [! p -> q !]).
 Proof.
@@ -262,18 +268,18 @@ Proof.
       assumption.
     + apply modal_ax1.
       * apply H.
-        apply K_ax1.
+        apply P_ax1.
       * constructor 1.
         assumption.
   - apply modal_ax1.
     + apply H.
-      apply K_ax1.
+      apply P_ax1.
     + econstructor 2.
       * eassumption.
       * reflexivity.
   - eapply modal_ax2.
     + apply H.
-      apply K_ax2.
+      apply P_ax2.
     + apply IHdeduction1.
       * assumption.
       * reflexivity.
@@ -282,14 +288,14 @@ Proof.
       * reflexivity.
   - apply modal_ax1.
     + apply H.
-      apply K_ax1.
+      apply P_ax1.
     + constructor 4.
       assumption.
 Qed.
 
 Lemma modal_peirce_law:
   forall A G p,
-  Subset K A ->
+  Subset P A ->
   (A; G |-- [! (~p -> p) -> p !]).
 Proof.
   intros.
@@ -335,7 +341,7 @@ Qed.
 
 Lemma modal_double_negation_introduction:
   forall A G p,
-  Subset K A ->
+  Subset P A ->
   (A; G |-- [! p -> ~~p !]).
 Proof.
   intros.
@@ -349,7 +355,7 @@ Qed.
 
 Lemma modal_excluded_middle:
   forall A G p,
-  Subset K A ->
+  Subset P A ->
   (A; G |-- [! p \/ ~p !]).
 Proof.
   intros.
@@ -385,27 +391,28 @@ Proof.
 Qed.
 
 Lemma modal_axDual:
-  forall A G p,
-  Subset K A ->
-  (A; G |-- [! <>p !]) <-> (A; G |-- [! ~[]~p !]).
+  forall A G p idx,
+  Subset (K idx) A ->
+  (A; G |-- [! <idx>p !]) <-> (A; G |-- [! ~[idx]~p !]).
 Proof.
   intros.
-  assert (A; G |-- [! <>p <-> ~[]~p !]).
-  - apply Ax with (a := axDual p).
-    + apply H; constructor.
+  assert (A; G |-- [! <idx>p <-> ~[idx]~p !]).
+  - apply Ax with (a := axDual idx p).
+    + apply H.
+      apply K_axDual.
     + reflexivity.
   - split; intros.
     + apply modal_ax5 in H0.
-      * now apply Mp with [! <>p !].
-      * apply H; constructor.
+      * now apply Mp with [! <idx>p !].
+      * apply H; do 2 constructor.
     + apply modal_ax6 in H0.
-      * now apply Mp with [! ~[]~p !].
-      * apply H; constructor.
+      * now apply Mp with [! ~[idx]~p !].
+      * apply H; do 2 constructor.
 Qed.
 
 Lemma modal_implies_absurd_derives_negation:
   forall A G p q,
-  Subset K A ->
+  Subset P A ->
   (A; G |-- [! p -> q /\ ~q !]) ->
   (A; G |-- [! ~p !]).
 Proof.
@@ -440,7 +447,7 @@ Qed.
 
 Lemma modal_negation_derives_implies_absurd:
   forall A G p q,
-  Subset K A ->
+  Subset P A ->
   (A; G |-- [! ~p !]) ->
   (A; G |-- [! p -> q /\ ~q !]).
 Proof.
@@ -467,3 +474,5 @@ Proof.
   intros M a b c [H1 H2] w H3.
   apply H2; apply H1; assumption.
 Defined.
+
+End Tactics.

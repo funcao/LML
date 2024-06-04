@@ -1,11 +1,26 @@
 Require Import Arith List ListSet Notations Classical Relations Sets.
 Export ListNotations.
 
+Section Modal.
+
+Context {I: Set}.
+
+Class modal_index_set: Type := {
+  C: I -> Prop
+}.
+
+Context `{X: modal_index_set}.
+
+Structure modal_index: Set := {
+  index: I;
+  index_valid: C index
+}.
+
 Inductive formula: Set :=
   | Lit    : nat -> formula
   | Neg    : formula -> formula
-  | Box    : formula -> formula
-  | Dia    : formula -> formula
+  | Box    : modal_index -> formula -> formula
+  | Dia    : modal_index -> formula -> formula
   | And    : formula -> formula -> formula
   | Or     : formula -> formula -> formula
   | Implies: formula -> formula -> formula.
@@ -15,8 +30,8 @@ Fixpoint modalSize (f: formula): nat :=
   match f with 
   | Lit     x     => 1
   | Neg     p1    => 1 + (modalSize p1)
-  | Box     p1    => 1 + (modalSize p1)
-  | Dia     p1    => 1 + (modalSize p1)
+  | Box   i p1    => 1 + (modalSize p1)
+  | Dia   i p1    => 1 + (modalSize p1)
   | And     p1 p2 => 1 + (modalSize p1) + (modalSize p2)
   | Or      p1 p2 => 1 + (modalSize p1) + (modalSize p2)
   | Implies p1 p2 => 1 + (modalSize p1) + (modalSize p2)
@@ -25,8 +40,8 @@ end.
 Fixpoint literals (f: formula): set nat :=
   match f with 
   | Lit     x     => set_add eq_nat_dec x (empty_set nat)
-  | Dia     p1    => literals p1
-  | Box     p1    => literals p1
+  | Dia   i p1    => literals p1
+  | Box   i p1    => literals p1
   | Neg     p1    => literals p1
   | And     p1 p2 => set_union eq_nat_dec (literals p1) (literals p2)
   | Or      p1 p2 => set_union eq_nat_dec (literals p1) (literals p2)
@@ -35,7 +50,8 @@ end.
 
 Record Frame: Type := {
   W: Type;
-  R: W -> W -> Prop
+  (* We quantify the relations over the set of valid indexes. *)
+  R: modal_index -> W -> W -> Prop
 }.
 
 Record Model: Type := {
@@ -46,8 +62,8 @@ Record Model: Type := {
 Fixpoint fun_validation (M: Model) (w: W (F M)) (φ: formula): Prop :=
   match φ with
   | Lit     x   => v M x w
-  | Box     ψ   => forall w', R (F M) w w' -> fun_validation M w' ψ
-  | Dia     ψ   => exists2 w', R (F M) w w' & fun_validation M w' ψ
+  | Box   i ψ   => forall w', R (F M) i w w' -> fun_validation M w' ψ
+  | Dia   i ψ   => exists2 w', R (F M) i w w' & fun_validation M w' ψ
   | Neg     ψ   => ~fun_validation M w ψ
   | And     ψ Ɣ => fun_validation M w ψ /\ fun_validation M w Ɣ
   | Or      ψ Ɣ => fun_validation M w ψ \/ fun_validation M w Ɣ
@@ -276,69 +292,64 @@ Proof.
 Qed.
 *)
 
+Section Classes.
+
+Variable F: Frame.
+
+Variable i: modal_index.
+
 (* Reflexividade *)
-Definition reflexivity_frame (F: Frame): Prop :=
-  forall w, R F w w.
+Definition reflexivity_frame: Prop :=
+  forall w, R F i w w.
 
 (* Transitividade *)
-Definition transitivity_frame (F: Frame): Prop :=
+Definition transitivity_frame: Prop :=
   forall w w' w'': W F,
-  (R F w w' /\ 
-  R F w' w'') -> 
-  R F w w''.
+  (R F i w w' /\ R F i w' w'') -> R F i w w''.
 
 (* Simetria *)
-Definition simmetry_frame (F: Frame): Prop :=
+Definition simmetry_frame: Prop :=
   forall w w',
-  R F w w' -> 
-  R F w' w.
+  R F i w w' -> R F i w' w.
 
 (* Euclidiana *)
-Definition euclidian_frame (F: Frame): Prop :=
+Definition euclidian_frame: Prop :=
   forall w w' w'',
-  (R F w w' /\ 
-  R F w w'') -> 
-  R F w' w''.
+  (R F i w w' /\ R F i w w'') -> R F i w' w''.
 
 (* Serial *)
-Definition serial_frame (F: Frame): Prop :=
+Definition serial_frame: Prop :=
   forall w,
-  exists w', R F w w'.
+  exists w', R F i w w'.
 
 (* Funcional *)
-Definition functional_frame (F: Frame): Prop :=
+Definition functional_frame: Prop :=
   forall w w' w'',
-  (R F w w' /\ 
-  R F w w'') -> 
-  w' = w''.
+  (R F i w w' /\ R F i w w'') -> w' = w''.
 
 (* Densa*)
-Definition dense_frame (F: Frame): Prop :=
+Definition dense_frame: Prop :=
   forall w w',
   exists w'',
-  R F w w' -> 
-  (R F w w'' /\ 
-  R F w'' w').
+  R F i w w' -> (R F i w w'' /\ R F i w'' w').
 
 (* Convergente *)
-Definition convergente_frame (F: Frame): Prop :=
+Definition convergente_frame: Prop :=
   forall w x y,
   exists z,
-  (R F w x /\ 
-  R F w y) -> 
-  (R F x z /\ R F y z).
+  (R F i w x /\ R F i w y) -> (R F i x z /\ R F i y z).
 
-Definition SubsetOfW (F: Frame): Type :=
-  W F -> Prop.
-
-Definition conversely_well_founded_frame (F: Frame): Prop :=
+Definition conversely_well_founded_frame: Prop :=
   (* Set-theoretic definition: *)
-  forall X: SubsetOfW F, (exists x, X x) -> 
-  exists w1, X w1 /\ forall w2, X w2 -> 
-  ~ (R F w1 w2).
+  forall X: W F -> Prop,
+  (exists x, X x) ->
+  exists w1, X w1 /\
+    forall w2, X w2 -> ~(R F i w1 w2).
 
-Definition noetherian_frame (F: Frame): Prop :=
-  transitivity_frame F /\ conversely_well_founded_frame F.
+Definition noetherian_frame: Prop :=
+  transitivity_frame /\ conversely_well_founded_frame.
+
+End Classes.
 
 (* Logical Equivalence *)
 Definition entails_modal (Γ: theory) (φ: formula): Prop :=
@@ -347,3 +358,5 @@ Definition entails_modal (Γ: theory) (φ: formula): Prop :=
 
 Definition equivalence (φ ψ: formula): Prop := 
   (entails_modal (Singleton φ) ψ) /\ (entails_modal (Singleton ψ) φ).
+
+End Modal.

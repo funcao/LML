@@ -24,10 +24,14 @@ Notation " p /\ q " :=
   (And p q) (in custom modal at level 11, left associativity).
 Notation " ~ p " := (Neg p)
   (in custom modal at level 9, right associativity, format "~ p").
-Notation " [] p " := (Box p)
+(* Notation " [] p " := (Box _ p)
   (in custom modal at level 9, right associativity, format "[] p").
-Notation " <> p " := (Dia p)
-  (in custom modal at level 9, right associativity, format "<> p").
+Notation " <> p " := (Dia _ p)
+  (in custom modal at level 9, right associativity, format "<> p"). *)
+Notation " [ i ] p " := (Box i p)
+  (in custom modal at level 9, right associativity, format "[ i ] p").
+Notation " < i > p " := (Dia i p)
+  (in custom modal at level 9, right associativity, format "< i > p").
 Notation " # p " := (Lit p)
   (in custom modal at level 2, no associativity, p constr at level 1,
     format "# p").
