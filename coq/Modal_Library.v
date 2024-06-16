@@ -56,7 +56,7 @@ Record Frame: Type := {
 
 Record Model: Type := {
   F: Frame;
-  v: nat -> (W F) -> Prop
+  v: nat -> W F -> Prop
 }.
 
 Fixpoint fun_validation (M: Model) (w: W (F M)) (φ: formula): Prop :=
@@ -358,5 +358,12 @@ Definition entails_modal (Γ: theory) (φ: formula): Prop :=
 
 Definition equivalence (φ ψ: formula): Prop := 
   (entails_modal (Singleton φ) ψ) /\ (entails_modal (Singleton ψ) φ).
+
+Variable P: Frame -> Prop.
+
+Definition entails_modal_class (Γ: theory) (φ: formula): Prop :=
+  forall M,
+  P (F M) ->
+  entails M Γ φ.
 
 End Modal.
