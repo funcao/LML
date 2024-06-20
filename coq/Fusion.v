@@ -540,7 +540,7 @@ Definition sound I `{X: @modal_index_set I} P A: Prop :=
   forall G p,
   (A; G |-- p) -> entails_modal_class P G p.
 
-Goal
+Theorem soundness_transfer:
   forall I1 `{X1: @modal_index_set I1} P1 A1,
   forall I2 `{X2: @modal_index_set I2} P2 A2,
   sound I1 P1 A1 ->
@@ -591,3 +591,39 @@ Proof.
     apply IHdeduction.
     inversion 1.
 Qed.
+
+Require Import Soundness.
+
+Section Example.
+
+  Instance unit_index: @modal_index_set unit := {|
+    (* Use the whole universe (i.e., unit). *)
+    C x := True
+  |}.
+
+  (* The only possible index in the system. *)
+  Definition idx: modal_index :=
+    Build_modal_index tt I.
+
+  (* We define KK as the fusion of two copies of System K on idx. *)
+  Definition KK :=
+    fusion_axioms (K idx) (K idx).
+
+  (* Condition on frames: any frame is ok (as they are System K). *)
+  Definition P: Frame -> Prop :=
+    fun _ => True.
+
+  (* We prove System KK is sound from soundness of System K alone. *)
+  Goal
+    sound fusion (PF P P) KK.
+  Proof.
+    apply soundness_transfer.
+    - intros G p ? M ?.
+      eapply soundness with (idx := idx).
+      assumption.
+    - intros G p ? M ?.
+      eapply soundness with (idx := idx).
+      assumption.
+  Qed.
+
+End Example.

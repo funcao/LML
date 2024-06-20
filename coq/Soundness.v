@@ -1,5 +1,7 @@
 Require Import Modal_Library Modal_Notations Classical List Deductive_System.
 
+Section Soundness.
+
 Context `{X: modal_index_set}.
 
 (* p -> (q -> p) *)
@@ -222,3 +224,5 @@ Proof.
     intros p ? ?.
     inversion H1.
 Qed.
+
+End Soundness.
