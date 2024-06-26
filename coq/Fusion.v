@@ -31,11 +31,6 @@ Section Fusion.
 
   (*** Helper Notations ***)
 
-  (*Frames of either logic and the logic resulting from their fusion*)
-  Local Notation Frame1 := (@Frame I1 X1).
-  Local Notation Frame2 := (@Frame I2 X2).
-  Local Notation FrameF := (@Frame fusion fusion_index_set).
-
   (*Modal Indexes of either logic and the logic resulting from their fusion*)
   Local Notation modal_index1 := (@modal_index I1 X1).
   Local Notation modal_index2 := (@modal_index I2 X2).
@@ -45,6 +40,11 @@ Section Fusion.
   Local Notation formula1 := (@formula I1 X1).
   Local Notation formula2 := (@formula I2 X2).
   Local Notation formulaF := (@formula fusion fusion_index_set).
+
+  (*Frames of either logic and the logic resulting from their fusion*)
+  Local Notation Frame1 := (@Frame I1 X1).
+  Local Notation Frame2 := (@Frame I2 X2).
+  Local Notation FrameF := (@Frame fusion fusion_index_set).
 
   (* Models of either logic and the logic resulting from their fusion *)
   Local Notation Model1 := (@Model I1 X1).
@@ -274,11 +274,11 @@ Section Fusion.
       + exact (lift f).
   Defined.
 
-  (* Proving that lift and instantiate are inversible *)
-  Lemma instantiate_lift_inversion1:
-    forall (p: axiom1) (f: formulaF),
-    instantiate (lift p) = f ->
-    f = lift (instantiate p).
+  (* Proving that lift and instantiate are commutative *)
+    Lemma instantiate_lift_inversion1:
+      forall (p: axiom1) (f: formulaF),
+      instantiate (lift p) = f ->
+      f = lift (instantiate p).
   Proof.
     intros.
     induction p; auto.
@@ -292,16 +292,6 @@ Section Fusion.
     intros.
     induction p; auto.
   Qed.
-
-  (* Axiom Systems of either logic *)
-  Variable A1: axiom1 -> Prop.
-  Variable A2: axiom2 -> Prop.
-
-  Inductive fusion_axioms: axiomF -> Prop :=
-    | fusion_axioms1:
-      forall p, A1 p -> fusion_axioms (lift p)
-    | fusion_axioms2:
-      forall p, A2 p -> fusion_axioms (lift p).
 
   (* Proving that we can recover the frames/models of the base logics after fusion *)
   Lemma split_frame1:
@@ -526,6 +516,16 @@ Section Fusion.
     fun F =>
       P1 (split_frame1 F) /\ P2 (split_frame2 F).
 
+  (* Axiom Systems of either logic *)
+  Variable A1: axiom1 -> Prop.
+  Variable A2: axiom2 -> Prop.
+
+  Inductive fusion_axioms: axiomF -> Prop :=
+    | fusion_axioms1:
+      forall p, A1 p -> fusion_axioms (lift p)
+    | fusion_axioms2:
+      forall p, A2 p -> fusion_axioms (lift p).
+
 End Fusion.
 
 (* Generic Definition of Soundness (in the base library we only have this definition for K) *)
@@ -589,7 +589,7 @@ Require Import Soundness Modal_Notations.
 
 (* TODO: Figure out were to put these examples! *)
 
-Section Example.
+Section Soundness_Transfer_Example.
 
   Instance unit_index: @modal_index_set unit := {|
     (* Use the whole universe (i.e., unit). *)
@@ -624,4 +624,4 @@ Section Example.
       assumption.
   Qed.
 
-End Example.
+End Soundness_Transfer_Example.
