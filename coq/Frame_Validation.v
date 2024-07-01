@@ -388,6 +388,7 @@ Proof.
   contradiction.
 Qed.
 
+(* Proof adapted from: https://planetmath.org/modallogicgl *)
 Lemma GL_implies_4:
   forall M idx,
   (forall q, M |= [! [idx]([idx]q -> q) -> [idx]q !]) ->

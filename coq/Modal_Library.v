@@ -298,6 +298,8 @@ Variable F: Frame.
 
 Variable i: modal_index.
 
+(* TODO: Fix these names!! *)
+
 (* Reflexividade *)
 Definition reflexivity_frame: Prop :=
   forall w, R F i w w.

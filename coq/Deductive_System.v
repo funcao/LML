@@ -142,6 +142,7 @@ End Systems.
 
 (* Notations and Theorems *)
 
+(* TODO: Move you to the notation file!!! *)
 Notation "A ; G |-- p" := (deduction A G p)
     (at level 110, no associativity).
 

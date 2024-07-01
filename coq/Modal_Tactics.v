@@ -299,43 +299,37 @@ Lemma modal_peirce_law:
   (A; G |-- [! (~p -> p) -> p !]).
 Proof.
   intros.
-  (* This is too ugly! Could we rewrite this please? *)
-  set (q := [! ~p -> p !]).
-  assert (A; G |-- [! ~p -> p -> ~q !]).
-  apply modal_deduction; auto.
-  apply modal_deduction; auto.
-  apply modal_explosion with p.
-  apply H; constructor.
-  apply H; constructor.
-  apply H; constructor.
-  apply H; constructor.
-  apply Prem.
-  firstorder.
-  apply Prem.
-  firstorder.
-  assert (A; G |-- [! (~p -> p -> ~q) -> (~p -> p) -> ~p -> ~q !]).
-  eapply Ax with (a := ax2 _ _ _); try reflexivity.
-  apply H; constructor.
-  assert (A; G |-- [! (~p -> p) -> ~p -> ~q !]).
-  eapply Mp.
-  eassumption.
-  assumption.
+  (*
+    This is too ugly! Could we rewrite this please?
+    Okay!
+  *)
+  set (q := [! ~p -> p !]). (* This breaks notation in the VSCoq proof view, huh *)
+  assert (A; G |-- [! ~p -> p -> ~q !]). 
+  {
+    do 2 (apply modal_deduction; auto).
+    apply modal_explosion with p;
+    try (apply H; constructor);
+    apply Prem;
+    firstorder.
+  }
+  assert (A; G |-- [! (~p -> p -> ~q) -> (~p -> p) -> ~p -> ~q !]) by
+    (eapply Ax with (a := ax2 _ _ _); try reflexivity; 
+      apply H; constructor).
+  assert (A; G |-- [! (~p -> p) -> ~p -> ~q !]) by
+    (eapply Mp; eassumption).
   assert (A; G |-- [! (~p -> p) -> q -> p !]).
-  apply modal_syllogism with [! ~p -> ~q !].
-  apply H; constructor.
-  apply H; constructor.
-  assumption.
-  eapply Ax with (a := ax3 _ _); try reflexivity.
-  apply H; constructor.
-  assert (A; G |-- [! (q -> q -> p) -> (q -> q) -> q -> p !]).
-  eapply Ax with (a := ax2 _ _ _); try reflexivity.
-  apply H; constructor.
-  assert (A; G |-- [! (q -> q) -> q -> p !]).
-  eapply Mp.
-  eassumption.
-  assumption.
-  eapply Mp.
-  eassumption.
+  {
+    apply modal_syllogism with [! ~p -> ~q !];
+    do 2 (try(apply H; constructor)); try assumption.
+    eapply Ax with (a := ax3 _ _); try reflexivity.
+    apply H; constructor.
+  }
+  assert (A; G |-- [! (q -> q -> p) -> (q -> q) -> q -> p !]) by
+    (eapply Ax with (a := ax2 _ _ _); try reflexivity;
+      apply H; constructor).
+  assert (A; G |-- [! (q -> q) -> q -> p !]) by
+    (eapply Mp; eassumption).
+  eapply Mp; try eassumption.
   apply derive_identity; auto.
 Qed.
 

@@ -31,17 +31,17 @@ Section Fusion.
 
   (*** Helper Notations ***)
 
-  (*Modal Indexes of either logic and the logic resulting from their fusion*)
+  (* Modal Indexes of either logic and the logic resulting from their fusion *)
   Local Notation modal_index1 := (@modal_index I1 X1).
   Local Notation modal_index2 := (@modal_index I2 X2).
   Local Notation modal_indexF := (@modal_index fusion fusion_index_set).
 
-  (*Formulas of either logic and the logic resulting from their fusion*)
+  (* Formulas of either logic and the logic resulting from their fusion *)
   Local Notation formula1 := (@formula I1 X1).
   Local Notation formula2 := (@formula I2 X2).
   Local Notation formulaF := (@formula fusion fusion_index_set).
 
-  (*Frames of either logic and the logic resulting from their fusion*)
+  (* Frames of either logic and the logic resulting from their fusion *)
   Local Notation Frame1 := (@Frame I1 X1).
   Local Notation Frame2 := (@Frame I2 X2).
   Local Notation FrameF := (@Frame fusion fusion_index_set).
@@ -56,7 +56,7 @@ Section Fusion.
   Local Notation axiom2 := (@axiom I2 X2).
   Local Notation axiomF := (@axiom fusion fusion_index_set).
 
-  (*Definition of the fusion of frames*)
+  (* Definition of the fusion of frames *)
   Definition join_frames (f1: Frame1) (f2: Frame2) (H: W f2 = W f1): FrameF.
   Proof.
     constructor 1 with (W f1).
@@ -134,8 +134,7 @@ Section Fusion.
       + exact IHformula2.
   Defined.
 
-  (* Some cheeky automation *)
-  (* That may not work :-( *)
+  (* Some cheeky automation that may not work :-( *)
   (* TODO: Ver se é possível fazer essa automação funcionar *)
   Ltac lift_me_up type :=
     repeat match goal with
@@ -148,9 +147,6 @@ Section Fusion.
   Proof.
     constructor; intros.
     destruct H.
-    (* constructor;
-    lift_me_up (@formula I1 X1).
-  Defined. *)
     - constructor 1.
       + exact (lift f).
       + exact (lift f0).
@@ -213,9 +209,6 @@ Section Fusion.
   Proof.
     constructor; intros.
     destruct H.
-    (* constructor;
-    lift_me_up (@formula I2 X2).
-  Defined. *)
     - constructor 1.
       + exact (lift f).
       + exact (lift f0).
@@ -508,7 +501,7 @@ Section Fusion.
       assumption.
   Qed.
 
-  (*Classes of Frames of either logic and the logic resulting from their fusion*)
+  (* Classes of Frames of either logic and the logic resulting from their fusion *)
   Variable P1: Frame1 -> Prop.
   Variable P2: Frame2 -> Prop.
 
@@ -516,7 +509,7 @@ Section Fusion.
     fun F =>
       P1 (split_frame1 F) /\ P2 (split_frame2 F).
 
-  (* Axiom Systems of either logic *)
+  (* Axiom Systems of either logic and the axiom system resulting from fusion *)
   Variable A1: axiom1 -> Prop.
   Variable A2: axiom2 -> Prop.
 
@@ -543,10 +536,23 @@ Theorem soundness_transfer:
 Proof.
   intros.
   intros G p ?H M ?H ?H.
+  (* 
+    The original soundness goal is of the form:
+    (fusion_axioms A1 A2; G |-- p) -> entails_modal_class (PF P1 P2) G p.
+    As we've introduced the premisse of the ->, we must prove that entails_modal_class (PF P1 P2) G p
+      Given the hypothesis that fusion_axioms A1 A2; G |-- p
+    We proced by induction on this hypothesis
+  *)
   induction H1; intro.
-  - now apply H3.
-  - destruct H1.
-    + apply instantiate_lift_inversion1 in H4; subst.
+  - (* Case 0: Premisse *)
+    now apply H3.
+  - (* 
+      Case 1: Instance of an Axiom
+      We proceed by analising from which system the axiom comes from 
+    *)
+    destruct H1.
+    + (* Either A1 *)
+      apply instantiate_lift_inversion1 in H4; subst.
       assert (A1; Empty |-- instantiate p) by now constructor 2 with p.
       set (M1 := split_model1 M).
       specialize (H Empty _ H4 M1).
@@ -561,7 +567,8 @@ Proof.
         specialize (H w).
         apply split_model1_coherence in H.
         assumption.
-    + apply instantiate_lift_inversion2 in H4; subst.
+    + (* Or A2 *)
+      apply instantiate_lift_inversion2 in H4; subst.
       assert (A2; Empty |-- instantiate p) by now constructor 2 with p.
       set (M2 := split_model2 M).
       specialize (H0 Empty _ H4 M2).
@@ -576,10 +583,12 @@ Proof.
         specialize (H0 w).
         apply split_model2_coherence in H0.
         assumption.
-  - apply IHdeduction1;
+  - (* Case 2: Modus Ponens *)
+    apply IHdeduction1;
     [ | apply IHdeduction2];
     assumption.
-  - intros w' ?.
+  - (* Case 3: Necessitation *)
+    intros w' ?.
     apply IHdeduction.
     inversion 1.
 Qed.
