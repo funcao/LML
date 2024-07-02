@@ -6,8 +6,7 @@ Context `{X: modal_index_set}.
 Definition fixed_point A G i :=
   forall f,
   exists p,
-  (* TODO: we should improve the notation here! *)
-  (A; G |-- And (Implies p (f (Box i p))) (Implies (f (Box i p)) p)).
+  (A; G |-- [! (p <-> f ([i] p))!]).
 
 Definition subset {T} (P: T -> Prop) (Q: T -> Prop): Prop :=
   forall x, P x -> Q x.
