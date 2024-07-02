@@ -6,13 +6,13 @@ Context `{X: modal_index_set}.
 
 Theorem reflexive_frame_implies_axiomT:
   forall f p idx,
-  reflexivity_frame f idx ->
+  reflexive_frame f idx ->
   forall v,
   [f -- v] |= [! [idx]p -> p !].
 Proof.
   intros f p idx HR v w1 H1.
   simpl in H1.
-  unfold reflexivity_frame in HR.
+  unfold reflexive_frame in HR.
   apply H1 in HR.
   assumption.
 Qed.
@@ -20,12 +20,12 @@ Qed.
 Theorem axiomT_implies_reflexive_frame:
   forall f idx,
   (forall v p, [f -- v] |= [! [idx]p -> p !]) ->
-  reflexivity_frame f idx.
+  reflexive_frame f idx.
 Proof.
   intros f idx.
   apply contrapositive.
   - apply classic.
-  - intros H; unfold reflexivity_frame in H.
+  - intros H; unfold reflexive_frame in H.
     apply not_all_ex_not in H; destruct H as [w1].
     apply ex_not_not_all.
     exists (fun _ x => R f idx w1 x).
@@ -39,7 +39,7 @@ Qed.
 
 Theorem transitive_frame_implies_axiom4:
   forall f idx,
-  transitivity_frame f idx ->
+  transitive_frame f idx ->
   forall v p,
   [f -- v] |= [! [idx]p -> [idx][idx]p !].
 Proof.
@@ -48,7 +48,7 @@ Proof.
   intros w2 H2 w3 H3.
   simpl in H1.
   apply H1.
-  unfold transitivity_frame in H.
+  unfold transitive_frame in H.
   apply H with (w := w1) (w' := w2) (w'' := w3).
   split; assumption.
 Qed.
@@ -56,12 +56,12 @@ Qed.
 Theorem axiom4_implies_transitive_frame:
   forall f idx,
   (forall v p, [f -- v] |= [! [idx]p -> [idx][idx]p !]) ->
-  transitivity_frame f idx.
+  transitive_frame f idx.
 Proof.
   intros f idx.
   apply contrapositive.
   - apply classic.
-  - intros H; unfold transitivity_frame in H.
+  - intros H; unfold transitive_frame in H.
     apply not_all_ex_not in H; destruct H as [w1];
     apply not_all_ex_not in H; destruct H as [w2];
     apply not_all_ex_not in H; destruct H as [w3].
@@ -81,7 +81,7 @@ Qed.
 
 Theorem symmetric_frame_implies_axiomB:
   forall f idx,
-  simmetry_frame f idx ->
+  symmetric_frame f idx ->
   forall v p,
   [f -- v] |= [! p -> [idx]<idx>p !].
 Proof.
@@ -89,7 +89,7 @@ Proof.
   simpl.
   intros w2 H2.
   exists w1.
-  unfold simmetry_frame in H.
+  unfold symmetric_frame in H.
   - apply H.
     assumption.
   - assumption.
@@ -98,12 +98,12 @@ Qed.
 Theorem axiomB_implies_symmetric_frame:
   forall f idx,
   (forall v p, [f -- v] |= [! p -> [idx]<idx>p !]) ->
-  simmetry_frame f idx.
+  symmetric_frame f idx.
 Proof.
   intros f idx.
   apply contrapositive.
   - apply classic.
-  - intros H; unfold simmetry_frame in H.
+  - intros H; unfold symmetric_frame in H.
     apply not_all_ex_not in H; destruct H as [w1];
     apply not_all_ex_not in H; destruct H as [w2].
     apply imply_to_and in H; destruct H as [H1 H2].
@@ -283,12 +283,12 @@ Qed.
 
 Theorem convergent_frame_implies_axiom:
   forall f idx,
-  convergente_frame f idx ->
+  convergent_frame f idx ->
   forall v p,
   [f -- v] |= [! <idx>[idx]p -> [idx]<idx> p !].
 Proof.
   intros f idx H v p w1 H1 w2 H2.
-  unfold convergente_frame in H.
+  unfold convergent_frame in H.
   destruct H1 as (w3, ?, ?).
   destruct H with w1 w2 w3 as (w4, (?, ?)).
   - firstorder.
@@ -301,12 +301,12 @@ Qed.
 Theorem axiom_implies_convergent_frame:
   forall f idx,
   (forall v p, [f -- v] |= [! <idx>[idx]p -> [idx]<idx> p !]) ->
-  convergente_frame f idx.
+  convergent_frame f idx.
 Proof.
   intros f idx.
   apply contrapositive.
   - apply classic.
-  - intros H; unfold convergente_frame in H.
+  - intros H; unfold convergent_frame in H.
     apply not_all_ex_not in H; destruct H as [w1];
     apply not_all_ex_not in H; destruct H as [w2];
     apply not_all_ex_not in H; destruct H as [w3].

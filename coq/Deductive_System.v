@@ -150,39 +150,6 @@ Section Helper.
 
 Context `{X: modal_index_set}.
 
-Lemma derive_identity:
-  forall A Γ φ,
-  Subset P A ->
-  A; Γ |-- [! φ -> φ !].
-Proof.
-  intros.
-  apply Mp with (f := [! φ -> φ -> φ !]).
-  - apply Mp with (f := [! φ -> (φ -> φ) -> φ !]).
-    + apply Ax with (a := ax2 φ [! φ -> φ !] φ).
-      * apply H.
-        constructor.
-      * reflexivity.
-    + apply Ax with (a := ax1 φ [! φ -> φ !]).
-      * apply H.
-        constructor.
-      * reflexivity.
-  - apply Ax with (a := ax1 φ φ).
-    + apply H.
-      constructor.
-    + reflexivity.
-Qed.
-
-(*
-Lemma derive_refl:
-  forall A Γ φ,
-  A; φ :: Γ |-- φ.
-Proof.
-  intros.
-  apply Prem with (i := 0).
-  reflexivity.
-Qed.
-*)
-
 Lemma derive_weak:
   forall Γ ẟ,
   Subset Γ ẟ ->

@@ -89,6 +89,9 @@ Definition entails (M: Model) (Γ: theory) (φ: formula): Prop :=
 
 (***** structural properties of deduction ****)
 (*
+
+TODO: Is this still needed?
+
 (* If a formula belongs in a theory, it's valid. *)
 Theorem exact_deduction:
   forall Γ φ,
@@ -298,19 +301,17 @@ Variable F: Frame.
 
 Variable i: modal_index.
 
-(* TODO: Fix these names!! *)
-
 (* Reflexividade *)
-Definition reflexivity_frame: Prop :=
+Definition reflexive_frame: Prop :=
   forall w, R F i w w.
 
 (* Transitividade *)
-Definition transitivity_frame: Prop :=
+Definition transitive_frame: Prop :=
   forall w w' w'': W F,
   (R F i w w' /\ R F i w' w'') -> R F i w w''.
 
 (* Simetria *)
-Definition simmetry_frame: Prop :=
+Definition symmetric_frame: Prop :=
   forall w w',
   R F i w w' -> R F i w' w.
 
@@ -336,7 +337,7 @@ Definition dense_frame: Prop :=
   R F i w w' -> (R F i w w'' /\ R F i w'' w').
 
 (* Convergente *)
-Definition convergente_frame: Prop :=
+Definition convergent_frame: Prop :=
   forall w x y,
   exists z,
   (R F i w x /\ R F i w y) -> (R F i x z /\ R F i y z).
@@ -349,7 +350,7 @@ Definition conversely_well_founded_frame: Prop :=
     forall w2, X w2 -> ~(R F i w1 w2).
 
 Definition noetherian_frame: Prop :=
-  transitivity_frame /\ conversely_well_founded_frame.
+  transitive_frame /\ conversely_well_founded_frame.
 
 End Classes.
 
