@@ -608,11 +608,7 @@ Section Soundness_Transfer_Example.
   (* The only possible index in the system. *)
   Definition idx: modal_index :=
     Build_modal_index tt I.
-
-  (* Check Box idx (Lit 0).
-  Variable i: modal_index.
-  Check [! [i] #0 !]. *)
-
+    
   (* We define KK as the fusion of two copies of System K on idx. *)
   Definition KK :=
     fusion_axioms (K idx) (K idx).
