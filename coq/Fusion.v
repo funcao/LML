@@ -617,7 +617,7 @@ Section Soundness_Transfer_Example.
   Definition P: Frame -> Prop :=
     fun F => equivalence_frame F idx.
 
-  (* We prove System X is sound from soundness of System K alone. *)
+  (* We prove System X is sound from soundness of System S4 alone. *)
   Goal
     sound fusion (PF P P) X.
   Proof.
