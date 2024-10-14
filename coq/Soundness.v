@@ -256,7 +256,7 @@ Theorem soundness_S4:
   forall (G: theory) (φ: formula) idx,
   (S4 idx; G |-- φ) ->
   (* TODO: we might wanna change the order of arguments. *)
-  entails_modal_class (fun F => equivalence_frame F idx) G φ.
+  entails_modal_class (fun F => preorder_frame F idx) G φ.
 Proof.
   unfold entails_modal_class, entails.
   induction 1; intros.

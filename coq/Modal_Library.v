@@ -352,7 +352,7 @@ Definition conversely_well_founded_frame: Prop :=
 Definition noetherian_frame: Prop :=
   transitive_frame /\ conversely_well_founded_frame.
 
-Definition equivalence_frame: Prop :=
+Definition preorder_frame: Prop :=
   reflexive_frame /\ transitive_frame.
 
 End Classes.

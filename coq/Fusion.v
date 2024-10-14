@@ -613,9 +613,9 @@ Section Soundness_Transfer_Example.
   Local Definition X :=
     fusion_axioms (S4 idx) (S4 idx).
 
-  (* Condition on frames: both need to be equivalences. *)
+  (* Condition on frames: both need to be pre-orders. *)
   Local Definition P: Frame -> Prop :=
-    fun F => equivalence_frame F idx.
+    fun F => preorder_frame F idx.
 
   (* We prove System X is sound from soundness of System S4 alone. *)
   Goal
