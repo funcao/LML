@@ -160,7 +160,7 @@ Require Import Relations.
 
 Lemma T_soundness:
   forall M w φ idx,
-  reflexivity_frame (F M) idx ->
+  reflexive_frame (F M) idx ->
   M ' w ||- [! [idx]φ -> φ !].
 Proof.
   simpl; intros.
@@ -170,7 +170,7 @@ Qed.
 
 Lemma K4_soundness:
   forall M w φ idx,
-  transitivity_frame (F M) idx ->
+  transitive_frame (F M) idx ->
   M ' w ||- [! [idx]φ -> [idx][idx]φ !].
 Proof.
   simpl; intros.

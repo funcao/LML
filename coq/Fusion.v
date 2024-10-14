@@ -608,26 +608,24 @@ Section Soundness_Transfer_Example.
   (* The only possible index in the system. *)
   Definition idx: modal_index :=
     Build_modal_index tt I.
-    
-  (* We define KK as the fusion of two copies of System K on idx. *)
-  Definition KK :=
-    fusion_axioms (K idx) (K idx).
 
-  (* Condition on frames: any frame is ok (as they are System K). *)
+  (* We define X as the fusion of two copies of System S4 on idx. *)
+  Definition X :=
+    fusion_axioms (S4 idx) (S4 idx).
+
+  (* Condition on frames: both need to be equivalences. *)
   Definition P: Frame -> Prop :=
-    fun _ => True.
+    fun F => equivalence_frame F idx.
 
-  (* We prove System KK is sound from soundness of System K alone. *)
+  (* We prove System X is sound from soundness of System K alone. *)
   Goal
-    sound fusion (PF P P) KK.
+    sound fusion (PF P P) X.
   Proof.
     apply soundness_transfer.
     - intros G p ? M ?.
-      eapply soundness with (idx := idx).
-      assumption.
+      now apply soundness_S4 with (idx := idx).
     - intros G p ? M ?.
-      eapply soundness with (idx := idx).
-      assumption.
+      now apply soundness_S4 with (idx := idx).
   Qed.
 
 End Soundness_Transfer_Example.

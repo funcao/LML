@@ -353,7 +353,7 @@ Definition noetherian_frame: Prop :=
   transitive_frame /\ conversely_well_founded_frame.
 
 Definition equivalence_frame: Prop :=
-  reflexivity_frame /\ transitivity_frame.
+  reflexive_frame /\ transitive_frame.
 
 End Classes.
 
