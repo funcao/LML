@@ -156,6 +156,29 @@ Proof.
       * assumption.
 Qed.
 
+Require Import Relations.
+
+Lemma T_soundness:
+  forall M w φ idx,
+  reflexivity_frame (F M) idx ->
+  M ' w ||- [! [idx]φ -> φ !].
+Proof.
+  simpl; intros.
+  apply H0.
+  apply H.
+Qed.
+
+Lemma K4_soundness:
+  forall M w φ idx,
+  transitivity_frame (F M) idx ->
+  M ' w ||- [! [idx]φ -> [idx][idx]φ !].
+Proof.
+  simpl; intros.
+  apply H0.
+  apply H with w'.
+  now split.
+Qed.
+
 (* a /\ (a -> b) -> b *)
 Lemma Modus_Ponens_soundness:
   forall M w φ ψ,
@@ -176,6 +199,8 @@ Proof.
   unfold validate_model; simpl; intros.
   apply H.
 Qed.
+
+(* K is sound for every frame. *)
 
 Theorem soundness:
   forall (G: theory) (φ: formula) idx,
@@ -223,6 +248,41 @@ Proof.
     apply IHdeduction.
     intros p ? ?.
     inversion H1.
+Qed.
+
+(* S4 is sound for equivalence frames. *)
+
+Theorem soundness_S4:
+  forall (G: theory) (φ: formula) idx,
+  (S4 idx; G |-- φ) ->
+  (* TODO: we might wanna change the order of arguments. *)
+  entails_modal_class (fun F => equivalence_frame F idx) G φ.
+Proof.
+  unfold entails_modal_class, entails.
+  induction 1; intros.
+  - apply H1; auto.
+  - destruct H.
+    + destruct H.
+      * intro w.
+        apply (soundness t f idx); auto.
+        now constructor 2 with (a := φ).
+      * subst; simpl; intro.
+        apply T_soundness.
+        now destruct H1.
+    + subst; simpl; intro.
+      apply K4_soundness.
+      now destruct H1.
+  - intros w.
+    apply Modus_Ponens_soundness with f.
+    split.
+    + now apply IHdeduction2.
+    + now apply IHdeduction1.
+  - intros w.
+    apply Necessitation_soundness.
+    apply IHdeduction.
+    + assumption.
+    + intros p ? ?.
+      inversion H2.
 Qed.
 
 End Soundness.
