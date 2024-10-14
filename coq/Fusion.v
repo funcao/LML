@@ -600,21 +600,21 @@ Require Import Soundness Modal_Notations.
 
 Section Soundness_Transfer_Example.
 
-  Instance unit_index: @modal_index_set unit := {|
+  Local Instance unit_index: @modal_index_set unit := {|
     (* Use the whole universe (i.e., unit). *)
     C x := True
   |}.
 
   (* The only possible index in the system. *)
-  Definition idx: modal_index :=
+  Local Definition idx: modal_index :=
     Build_modal_index tt I.
 
   (* We define X as the fusion of two copies of System S4 on idx. *)
-  Definition X :=
+  Local Definition X :=
     fusion_axioms (S4 idx) (S4 idx).
 
   (* Condition on frames: both need to be equivalences. *)
-  Definition P: Frame -> Prop :=
+  Local Definition P: Frame -> Prop :=
     fun F => equivalence_frame F idx.
 
   (* We prove System X is sound from soundness of System S4 alone. *)
