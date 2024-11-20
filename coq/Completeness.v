@@ -2,6 +2,8 @@ Require Import Decidable Equality Relations.
 Require Import Modal_Library Modal_Notations Modal_Tactics Deductive_System Soundness List Classical Bool Sets.
 Set Implicit Arguments.
 
+Context `{X: modal_index_set}.
+
 (* Assume that formulas are constructively countable for now. *)
 Axiom encode: formula -> nat.
 Axiom decode: nat -> option formula.
@@ -24,7 +26,7 @@ End Properties.
 
 Lemma nonderivation_implies_consistency:
   forall A,
-  Subset K A ->
+  Subset P A ->
   forall G p,
   ~(A; G |-- p) -> Consistent A G.
 Proof.
@@ -36,16 +38,16 @@ Proof.
   - apply H; constructor.
   - apply H; constructor.
   - apply modal_ax5 with [! ~q !].
-    + apply H, K_ax5.
+    + apply H, P_ax5.
     + assumption.
   - apply modal_ax6 with q.
-    + apply H, K_ax6.
+    + apply H, P_ax6.
     + assumption.
 Qed.
 
 Lemma consistency_deduction:
   forall A,
-  Subset K A ->
+  Subset P A ->
   forall G p,
   (A; G |-- p) <-> ~Consistent A (Extend [! ~p !] G).
 Proof.
@@ -54,11 +56,11 @@ Proof.
     apply H1 with p.
     apply modal_ax4.
     + apply H.
-      apply K_ax1.
+      apply P_ax1.
     + apply H.
-      apply K_ax2.
+      apply P_ax2.
     + apply H.
-      apply K_ax4.
+      apply P_ax4.
     + apply deduction_subset with G.
       * intros t ?.
         now right.
@@ -75,34 +77,34 @@ Proof.
         try split.
         --- apply modal_ax5 with [! ~q !]; auto.
             apply H.
-            apply K_ax5.
+            apply P_ax5.
         --- apply modal_ax6 with [! q !]; auto.
             apply H.
-            apply K_ax6.
+            apply P_ax6.
         --- apply modal_deduction in H3, H4; auto.
             apply H0.
             apply modal_ax9 with [! q !] [! ~q !].
             +++ apply H.
-                apply K_ax9.
+                apply P_ax9.
             +++ apply modal_ax3.
                 *** apply H.
-                    apply K_ax3.
+                    apply P_ax3.
                 *** assumption.
             +++ apply modal_ax3.
                 *** apply H.
-                    apply K_ax3.
+                    apply P_ax3.
                 *** apply modal_syllogism with q.
                     apply H.
-                    apply K_ax1.
+                    apply P_ax1.
                     apply H.
-                    apply K_ax2.
+                    apply P_ax2.
                     assumption.
                     apply modal_ax3.
                     apply H.
-                    apply K_ax3.
+                    apply P_ax3.
                     apply Ax with (a := ax10 [! ~q !]).
                     apply H.
-                    apply K_ax10.
+                    apply P_ax10.
                     reflexivity.
             +++ apply modal_excluded_middle.
                 assumption.
@@ -110,7 +112,7 @@ Qed.
 
 Lemma consistency_either:
   forall A,
-  Subset K A ->
+  Subset P A ->
   forall G f,
   Consistent A G ->
   (Consistent A (Extend f G) \/ Consistent A (Extend [! ~f !] G)).
@@ -135,7 +137,7 @@ Qed.
 
 Lemma consistency_negation:
   forall A,
-  Subset K A ->
+  Subset P A ->
   forall G f,
   Consistent A G ->
   ~Consistent A (Extend f G) ->
@@ -153,7 +155,7 @@ Section Completeness.
 
   Variable A: axiom -> Prop.
 
-  Hypothesis extending_K: Subset K A.
+  Hypothesis extending_P: Subset P A.
 
   Section Lindenbaum.
 
@@ -393,6 +395,8 @@ Section Completeness.
 
   Section CanonicalModel.
 
+    Hypothesis extending_K: forall idx, Subset (K idx) A.
+
     Inductive W: Type :=
       | W_mk D: Consistent A D -> Maximal D -> W.
 
@@ -403,9 +407,9 @@ Section Completeness.
 
     Global Coercion wit: W >-> Funclass.
 
-    Definition canonical_accessibility: relation W :=
+    Definition canonical_accessibility idx: relation W :=
       fun w v =>
-        forall p, w [! []p !] -> v p.
+        forall p, w [! [idx]p !] -> v p.
 
     Local Notation R := canonical_accessibility.
 
@@ -425,16 +429,16 @@ Section Completeness.
 
     Local Notation M := canonical_model.
 
-    Inductive existential_world (w: W): formula -> Prop :=
+    Inductive existential_world (w: W) idx: formula -> Prop :=
       | existential_world_mk:
         forall x,
-        w [! []x !] ->
-        existential_world w x.
+        w [! [idx]x !] ->
+        existential_world w idx x.
 
     Local Ltac fill_axiom :=
       match goal with
       | |- A ?a =>
-        apply extending_K;
+        apply extending_P;
         constructor
       end.
 
@@ -503,10 +507,10 @@ Section Completeness.
     Qed.
 
     Lemma existential_modus_ponens:
-      forall (w: W) p ps,
-      (forall q, In q ps -> w [! []q !]) ->
-      (A; w |-- Box (fold_right Implies p ps)) ->
-      (A; w |-- [! []p !]).
+      forall (w: W) p ps idx,
+      (forall q, In q ps -> w [! [idx]q !]) ->
+      (A; w |-- Box idx (fold_right Implies p ps)) ->
+      (A; w |-- [! [idx]p !]).
     Proof with try fill_axiom.
       induction ps; intros.
       - simpl in H0.
@@ -516,19 +520,21 @@ Section Completeness.
         + apply H.
           now right.
         + apply modal_axK in H0...
-          apply Mp with [! []a !].
+          apply Mp with [! [idx]a !].
           * assumption.
           * constructor 1.
             apply H; now left.
+          * apply extending_K with idx.
+            apply K_axK.
     Qed.
 
     Lemma existential_world_consistent:
-      forall p (w: W),
-      w [! ~[]p !] ->
-      Consistent A (Extend [! ~p !] (existential_world w)).
+      forall p (w: W) idx,
+      w [! ~[idx]p !] ->
+      Consistent A (Extend [! ~p !] (existential_world w idx)).
     Proof with try fill_axiom.
-      intros p w ?.
-      set (E := existential_world w).
+      intros p w idx ?.
+      set (E := existential_world w idx).
       intros q ?.
       (* We first move the ~p from the assumptions into the formula. *)
       apply modal_deduction in H0; auto.
@@ -543,11 +549,11 @@ Section Completeness.
          now with the deduction theorem. *)
       apply finite_spread in H1.
       (* Now we can apply the necessity axiom as we don't have assumptions. *)
-      apply Nec with (t := w) in H1.
+      apply Nec with (t := w) (i := idx) in H1.
       (* We can derive everything in ps! *)
       apply existential_modus_ponens in H1; intros.
       - assert (Consistent A w) by now destruct w.
-        apply H3 with [! []p !].
+        apply H3 with [! [idx]p !].
         apply modal_ax4...
         + assumption.
         + now constructor 1.
@@ -558,14 +564,14 @@ Section Completeness.
     Qed.
 
     Lemma existential:
-      forall (w: W) p,
-      w [! ~[]p !] ->
+      forall (w: W) p idx,
+      w [! ~[idx]p !] ->
       exists2 w',
-      R w w' & w' [! ~p !].
+      R idx w w' & w' [! ~p !].
     Proof.
       intros.
       (* We have to pick a specific context and show it's consistent. *)
-      set (E := Extend [! ~p !] (existential_world w)).
+      set (E := Extend [! ~p !] (existential_world w idx)).
       destruct lindenbaum with E as (F, (?, (?, ?))).
       - apply existential_world_consistent.
         assumption.
@@ -608,8 +614,8 @@ Section Completeness.
         + eassumption.
         + exfalso.
           assert (Maximal w) by now destruct w.
-          assert (w [! ~[] p !]) by firstorder.
-          destruct existential with w p as (w', ?, ?); auto.
+          assert (w [! ~[m] p !]) by firstorder.
+          destruct existential with w p m as (w', ?, ?); auto.
           specialize (H w' H3).
           apply IHp in H.
           assert (Consistent A w') by now destruct w'.
@@ -626,10 +632,10 @@ Section Completeness.
         apply IHp in H0.
         assert (Maximal w) by now destruct w.
         unfold R in H.
-        destruct H1 with [! <>p !].
+        destruct H1 with [! <m>p !].
         + assumption.
         + exfalso.
-          destruct H1 with [! []~p !].
+          destruct H1 with [! [m]~p !].
           * assert (Consistent A w') by now destruct w'.
             specialize (H [! ~p !] H3).
             apply H4 with [! p !].
@@ -637,23 +643,23 @@ Section Completeness.
             --- now constructor 1.
             --- now constructor 1.
           * assert (Consistent A w) by now destruct w.
-            apply H4 with [! <>p !].
+            apply H4 with [! <m>p !].
             apply modal_ax4...
             --- apply modal_axDual.
-                +++ assumption.
+                +++ apply extending_K.
                 +++ now constructor 1.
             --- now constructor 1.
       - simpl in *.
-        destruct existential with w [! ~p !] as (w', ?, ?); auto.
+        destruct existential with w [! ~p !] m as (w', ?, ?); auto.
         + assert (Maximal w) by now destruct w.
           assert (Consistent A w) by now destruct w.
-          destruct H0 with [! []~p !].
+          destruct H0 with [! [m]~p !].
           * exfalso.
-            apply H1 with [! []~p !].
+            apply H1 with [! [m]~p !].
             apply modal_ax4...
             --- now constructor 1.
             --- apply modal_axDual.
-                +++ assumption.
+                +++ apply extending_K.
                 +++ now constructor 1.
           * assumption.
         + assert (Maximal w') by now destruct w'.
@@ -692,10 +698,8 @@ Section Completeness.
           * exfalso.
             apply H1 with p1.
             apply modal_ax4...
-            --- apply modal_ax5 with p2.
-                +++ apply extending_K.
-                    apply K_ax5.
-                +++ now constructor 1.
+            --- apply modal_ax5 with p2...
+                now constructor 1.
             --- now constructor 1.
         + destruct H0 with p2.
           * apply IHp2.
@@ -703,10 +707,8 @@ Section Completeness.
           * exfalso.
             apply H1 with p2.
             apply modal_ax4...
-            --- apply modal_ax6 with p1.
-                +++ apply extending_K.
-                    apply K_ax6.
-                +++ now constructor 1.
+            --- apply modal_ax6 with p1...
+                now constructor 1.
             --- now constructor 1.
       - simpl in *.
         destruct H.
@@ -718,10 +720,8 @@ Section Completeness.
           * exfalso.
             apply H1 with [! (p1 \/ p2) !].
             apply modal_ax4...
-            --- apply modal_ax7.
-                +++ apply extending_K.
-                    apply K_ax7.
-                +++ now constructor 1.
+            --- apply modal_ax7...
+                now constructor 1.
             --- now constructor 1.
         + apply IHp2 in H.
           assert (Maximal w) by now destruct w.
@@ -731,10 +731,8 @@ Section Completeness.
           * exfalso.
             apply H1 with [! (p1 \/ p2) !].
             apply modal_ax4...
-            --- apply modal_ax8.
-                +++ apply extending_K.
-                    apply K_ax8.
-                +++ now constructor 1.
+            --- apply modal_ax8...
+                now constructor 1.
             --- now constructor 1.
       - simpl in *.
         assert (Maximal w) by now destruct w.
@@ -841,12 +839,12 @@ Section Completeness.
         + exfalso.
           apply H0 with p.
           apply modal_ax4.
-          * apply extending_K.
-            apply K_ax1.
-          * apply extending_K.
-            apply K_ax2.
-          * apply extending_K.
-            apply K_ax4.
+          * apply extending_P.
+            apply P_ax1.
+          * apply extending_P.
+            apply P_ax2.
+          * apply extending_P.
+            apply P_ax4.
           * apply deduction_subset with Empty.
             --- inversion 1.
             --- assumption.
@@ -862,12 +860,12 @@ Section Completeness.
         + specialize (H (W_mk H1 H2)); simpl in H.
           apply H1 with p.
           apply modal_ax4.
-          --- apply extending_K.
-              apply K_ax1.
-          --- apply extending_K.
-              apply K_ax2.
-          --- apply extending_K.
-              apply K_ax4.
+          --- apply extending_P.
+              apply P_ax1.
+          --- apply extending_P.
+              apply P_ax2.
+          --- apply extending_P.
+              apply P_ax4.
           --- now constructor 1.
           --- constructor 1.
               apply H3.

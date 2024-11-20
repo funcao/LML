@@ -1,5 +1,7 @@
 Require Import Sets Modal_Library Modal_Notations Classical List.
 
+Context `{X: modal_index_set}.
+
 Lemma singleton_formula:
   forall M p,
   theory_modal M (Singleton p) -> M |= p.
@@ -18,7 +20,7 @@ Proof.
     intros; simpl in *.
     apply singleton_formula in H.
     destruct classic with (M ' w ||- φ); firstorder.
-  - unfold entails_modal, entails in *. 
+  - unfold entails_modal, entails in *.
     intros; simpl in *.
     apply singleton_formula in H.
     intro w.
@@ -78,8 +80,8 @@ Proof.
 Qed.
 
 Theorem diamond_to_box_modal:
-  forall φ,
-  [! <>φ !] =|= [! ~[]~φ !].
+  forall φ idx,
+  [! <idx>φ !] =|= [! ~[idx]~φ !].
 Proof.
   split.
   - unfold entails_modal, entails, validate_model in *.

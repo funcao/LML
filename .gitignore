@@ -42,6 +42,8 @@ CppProperties.json
 .CoqMakefile.d
 CoqMakefile.conf
 *.out
-coq/.coq-native
-coq/.makefile.d
-coq/makefile.conf
+**/.coq-native
+**/.makefile.d
+**/makefile.conf
+**/.Makefile.d
+**/Makefile.conf

@@ -1,66 +1,68 @@
 Require Import List Modal_Library Modal_Notations Deductive_System Modal_Tactics Sets.
 Import ListNotations.
 
-Definition fixed_point A G :=
+Context `{X: modal_index_set}.
+
+Definition fixed_point A G i :=
   forall f,
   exists p,
-  (* TODO: we should improve the notation here! *)
-  (A; G |-- And (Implies p (f (Box p))) (Implies (f (Box p)) p)).
+  (A; G |-- [! (p <-> f ([i] p))!]).
 
 Definition subset {T} (P: T -> Prop) (Q: T -> Prop): Prop :=
   forall x, P x -> Q x.
 
 (* Some quick automation! *)
 Local Hint Unfold subset: modal.
+Local Hint Constructors P: modal.
 Local Hint Constructors K: modal.
 Local Hint Constructors K4: modal.
 
 Theorem Lob:
   (* Löb's theorem is provable in any superset of K4 with fixed points. *)
-  forall A,
-  subset K4 A /\ fixed_point A Empty ->
+  forall A i,
+  subset (K4 i) A /\ fixed_point A Empty i ->
   forall p,
-  (A; Empty |-- [! []p -> p !]) ->
+  (A; Empty |-- [! [i]p -> p !]) ->
   (A; Empty |-- [! p !]).
 Proof.
   set (G := Empty).
   (* Step 1. *)
-  intros A [I FP] p H1.
+  intros A i [I FP] p H1.
   (* Step 2. *)
   destruct FP with (fun X => [! X -> p !]) as (psi, H2).
   (* Step 3. *)
-  assert (A; Empty |-- [! psi -> []psi -> p !]) as H3.
+  assert (A; G |-- [! psi -> [i]psi -> p !]) as H3.
   apply modal_ax5 in H2; auto with modal.
   (* Step 4. *)
-  assert (A; G |-- [! [](psi -> []psi -> p) !]) as H4.
+  assert (A; G |-- [! [i](psi -> [i]psi -> p) !]) as H4.
   apply Nec; auto.
   (* Step 5. *)
-  assert (A; G |-- [! []psi -> []([]psi -> p) !]) as H5.
+  assert (A; G |-- [! [i]psi -> [i]([i]psi -> p) !]) as H5.
   apply modal_axK in H4; auto with modal.
   (* Step 6. *)
-  assert (A; G |-- [! []([]psi -> p) -> [][]psi -> []p !]) as H6.
-  eapply Ax with (a := axK ?[X] ?[Y]); auto with modal.
+  assert (A; G |-- [! [i]([i]psi -> p) -> [i][i]psi -> [i]p !]) as H6.
+  eapply Ax with (a := axK i ?[X] ?[Y]); auto with modal.
   reflexivity.
   (* Step 7. *)
-  assert (A; G |-- [! []psi -> [][]psi -> []p !]) as H7.
+  assert (A; G |-- [! [i]psi -> [i][i]psi -> [i]p !]) as H7.
   eapply modal_syllogism; eauto with modal.
   (* Step 8. *)
-  assert (A; G |-- [! []psi -> [][]psi !]) as H8.
+  assert (A; G |-- [! [i]psi -> [i][i]psi !]) as H8.
   apply modal_axK4; auto with modal.
   (* Step 9. *)
-  assert (A; G |-- [! []psi -> []p !]) as H9.
+  assert (A; G |-- [! [i]psi -> [i]p !]) as H9.
   eapply modal_ax2; eauto with modal.
   (* Step 10. *)
-  assert (A; G |-- [! []psi -> p !]) as H10.
+  assert (A; G |-- [! [i]psi -> p !]) as H10.
   eapply modal_syllogism; eauto with modal.
   (* Step 11. *)
-  assert (A; G |-- [! ([]psi -> p) -> psi !]) as H11.
+  assert (A; G |-- [! ([i]psi -> p) -> psi !]) as H11.
   apply modal_ax6 in H2; auto with modal.
   (* Step 12. *)
   assert (A; G |-- psi) as H12.
   eapply Mp; try eassumption.
   (* Step 13. *)
-  assert (A; G |-- [! []psi !]) as H13.
+  assert (A; G |-- [! [i]psi !]) as H13.
   apply Nec; try assumption.
   (* Step 14. *)
   eapply Mp; eassumption.
