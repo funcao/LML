@@ -1,5 +1,5 @@
-![Coquand](https://img.shields.io/badge/Coq-8.12.0-CC2927)
-![](https://img.shields.io/badge/License-BSD--2--Clause-blue)
+![Coquand](https://img.shields.io/badge/Coq-8.16.1-CC2927)
+![](https://img.shields.io/badge/License-BSD--3--Clause-blue)
 [![Maintenance](https://img.shields.io/badge/Maintained%3F-yes-green.svg)](https://GitHub.com/Naereen/StrapDown.js/graphs/commit-activity)
 
 
