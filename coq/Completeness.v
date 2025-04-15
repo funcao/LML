@@ -2,6 +2,7 @@ Require Import Decidable Equality Relations.
 Require Import Modal_Library Modal_Notations Modal_Tactics Deductive_System Soundness List Classical Bool Sets.
 Set Implicit Arguments.
 
+Section Completeness.
 Context `{X: modal_index_set}.
 
 (* Assume that formulas are constructively countable for now. *)
@@ -150,8 +151,6 @@ Proof.
   - contradiction.
   - assumption.
 Qed.
-
-Section Completeness.
 
   Variable A: axiom -> Prop.
 
