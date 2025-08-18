@@ -9,4 +9,5 @@ Completeness.v
 Frame_Validation.v
 Logical_Equivalence.v
 Soundness.v
-exemplos.v
+Fusion.v
+Examples.v
