@@ -47,3 +47,6 @@ CoqMakefile.conf
 **/makefile.conf
 **/.Makefile.d
 **/Makefile.conf
+**/CoqMakefile
+**/*.synctex.gz
+**/_minted
