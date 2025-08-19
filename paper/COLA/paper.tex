@@ -247,7 +247,7 @@ which have been applied with success in non-trivial projects like a certified co
 for C programming language~\cite{Leroy09} and the kernel of an operating
 system~\cite{Klein10},
 % it is possible to formalize and verify highly complex computer systems.
-we argue we may achieve betters ways of formally describing and verifying complex programs.
+we argue we may achieve better ways of formally describing and verifying complex programs.
 
 Although there are some dedicated provers for modal logics~\cite{Gleissner17,Mora11},
 we believe that using mature tools, like a proof assistant, would be a better option for
@@ -396,7 +396,7 @@ directly as a function:
 Definition example: (A -> B) -> (B -> C) -> A -> C :=
   fun (H: A -> B) (H': B -> C) (HA: A) => H' (H HA).
 \end{minted}
-However, even for very simple theorems, coding a definition directly
+However, even for very simple theorems, coding a proof directly
 as a Coq term can be a hard task. Because of this, the use of tactics
 has become the standard way of proving theorems in Coq. Furthermore,
 the Coq proof assistant provides not only a great number of tactics
@@ -462,7 +462,7 @@ We say that a formula $\varphi$ is satisfiable in a model $\mathcal{M}$,
 denoted by $\mathcal{M}\models \varphi$, if $\forall w \in W. (M\,;w\,\models \varphi)$ holds.
 Similarly, $\varphi$ is valid in a frame $\mathcal{F}$, written $\mathcal{F}\models\varphi$, if
 it holds on all models $\mathcal{M} = \langle \mathcal{F},\mathcal{V}\rangle$, i.e.,
-for any $\mathcal{M}$, we have that $\mathcal{M}\models\varphi$. A formula
+for any such $\mathcal{M}$, we have that $\mathcal{M}\models\varphi$. A formula
 is valid, written $\models \varphi$, if it is valid in any frame $\mathcal{F}$. Using the above semantics, we can define the concept of \emph{entailment}: given a set
 of formulas $\Gamma$ and a formula $\varphi$, we say that $\Gamma$ entails
 $\varphi$, written $\Gamma\models\varphi$, iff $\forall \mathcal{M} . ((\forall \varphi' \in\Gamma .
@@ -489,13 +489,13 @@ The complete deduction system is as follows:
 \begin{tabular}{cccc}
     \AxiomC{$\varphi \in \Gamma$}
     \RightLabel{Prem}
-    \UnaryInfC{$\Gamma\vdash \varphi$} 
+    \UnaryInfC{$\Gamma\vdash \varphi$}
     \DisplayProof
-  & 
+  &
     \AxiomC{$\varphi\:\textit{is an axiom}$}
     \RightLabel{Ax}
     \UnaryInfC{$\Gamma \vdash \varphi$}
-    \DisplayProof 
+    \DisplayProof
   &
     \AxiomC{$\Gamma\vdash\varphi_1\to\varphi_2$}
     \AxiomC{$\Gamma\vdash\varphi_1$}
@@ -510,7 +510,7 @@ The complete deduction system is as follows:
 \end{tabular}
 \centering
 \end{figure}
-\noindent In the SBLP 2022 version of this work, we use a different deductive system in which 
+\noindent In the SBLP 2022 version of this work, we use a different deductive system in which
 the necessitation rule was as follows:
 \[
     \AxiomC{$\Gamma\vdash\varphi$}
@@ -518,9 +518,9 @@ the necessitation rule was as follows:
     \UnaryInfC{$\Gamma\vdash\Box \varphi$}
     \DisplayProof
 \]
-However, this system does not admit the deduction theorem. Since we aim for a 
-completeness result and it implies the deduction theorem, the system which we used in 
-the previous version can't be complete and hence requires this changes. 
+However, this system does not admit the deduction theorem. Since we aim for a
+completeness result and it implies the deduction theorem, the system which we used in
+the previous version can't be complete and hence requires this changes.
 For a clarification on the change and the role of the deduction theorem in modal logic,
 we refer the reader to~\cite{HakliN12}.
 The set of axioms and the two last rules form a sound and complete Hilbert-style
@@ -536,15 +536,15 @@ of formulas.
 
 %% -----------------------------------------------------------------------------
 
-It's worth to mention about the choice of Hilbert-style systems as the deductive system in our library. 
-The main reason is itself the soundness and completeness proofs: deductive systems such as natural 
-deduction~\cite{Russo_PMLD, basin.ea:labelled:1997, SVRS02-recipe}, sequent 
-calculi~\cite{Governatori00labelledmodal, 03-MSSV-fiblog19}, or tableaux~\cite{BrodaRusso05}, 
-in modal logics, usually need the aid of labels or provisos. This makes, for instance, the 
-metatheorem of soundness harder to proof: while Hilbert systems need only a simple structural induction 
-on the size of the proof, labeled systems need to deal with several corner cases. The disadvantage of the 
-Hilbert system is to use it as a way to establish proofs \emph{in} the system itself, which is not 
-``direct'' or ``natural''. However, it is still possible to use the $\mathcal{L}$tac language in Coq 
+It's worth to mention about the choice of Hilbert-style systems as the deductive system in our library.
+The main reason is itself the soundness and completeness proofs: deductive systems such as natural
+deduction~\cite{Russo_PMLD, basin.ea:labelled:1997, SVRS02-recipe}, sequent
+calculi~\cite{Governatori00labelledmodal, 03-MSSV-fiblog19}, or tableaux~\cite{BrodaRusso05},
+in modal logics, usually need the aid of labels or provisos. This makes, for instance, the
+metatheorem of soundness harder to proof: while Hilbert systems need only a simple structural induction
+on the size of the proof, labeled systems need to deal with several corner cases. The disadvantage of the
+Hilbert system is to use it as a way to establish proofs \emph{in} the system itself, which is not
+``direct'' or ``natural''. However, it is still possible to use the $\mathcal{L}$tac language in Coq
 to automatize parts of this work.
 
 %% -----------------------------------------------------------------------------
@@ -827,15 +827,15 @@ it is worth mentioning that there are different notions of completeness, and
 the literature is not always clear about the difference of those~\cite{Popkorn_1994,modal_lean}.
 %-------------------------------------------------------------------------------
 The semantic entailment, $\Gamma\models\varphi$, represents a global consequence since, by our definition,
-we expect that the hypotheses are valid in every world in a model instead 
-of having $\varphi$ hold only on those worlds where the hypotheses are valid \cite{de1999global}. 
-Also, the completeness result may be 
-weak, which is only valid without hypotheses, or strong, allowing it to be stated with any set of 
-hypotheses \cite{blackburn}. We follow the definitions as stabilished by Popkorn \cite{Popkorn_1994} 
-and note that we prove a strong completeness result using a global consequence: as this subsumes 
-both weak completeness and a local one (as local consequence implies global consequence 
+we expect that the hypotheses are valid in every world in a model instead
+of having $\varphi$ hold only on those worlds where the hypotheses are valid \cite{de1999global}.
+Also, the completeness result may be
+weak, which is only valid without hypotheses, or strong, allowing it to be stated with any set of
+hypotheses \cite{blackburn}. We follow the definitions as stabilished by Popkorn \cite{Popkorn_1994}
+and note that we prove a strong completeness result using a global consequence: as this subsumes
+both weak completeness and a local one (as local consequence implies global consequence
 \cite{de1999global}), our result allows us to derive other possible definitions of completeness,
-while still being a weak result enough that it will work for any of the possible sets of 
+while still being a weak result enough that it will work for any of the possible sets of
 axioms \cite{Popkorn_1994}.
 
 %-------------------------------------------------------------------------------
@@ -1012,7 +1012,7 @@ This fact is formalized by the truth theorem, which is proved by induction over 
 \begin{minted}{coq}
 Lemma truth: forall p w, (M ' w ||- p) <-> (w p).
 \end{minted}
-Notation \mintinline{coq}{M ' w ||- p} denotes the valuation of a fórmula at a given world \verb|w| of the
+Notation \mintinline{coq}{M ' w ||- p} denotes the valuation of a formula at a given world \verb|w| of the
 canonical model. Note that a world in the canonical model is an (infinite) consistent set of formulas.
 Since we are modelling sets by their characteristic functions (functions of type \mintinline{coq}{formula -> Prop}),
 set membership is modelled by function application, \verb|w p|.
@@ -1118,7 +1118,7 @@ fixed points. Formally, let $\varphi(X)$ be a formula with only one propositiona
 $X$. The modal fixed point of $\varphi$ is then a formula $\Psi$ such that
 $\Psi \leftrightarrow \varphi(\Box \Psi)$.
 We represent the existence of modal fixed points for all one-variable formulas by a definition \mintinline{coq}{fixed_point},
-which is parameterized by a system of modal logic, \mintinline{coq}{S}, and a
+which is parameterized by a system of modal logic, \mintinline{coq}{A}, and a
 theory, \mintinline{coq}{G}, and encodes the logical equivalence demonstrating
 that \mintinline{coq}{p} is a modal fixed point for \mintinline{coq}{f}.
 \begin{minted}{coq}
