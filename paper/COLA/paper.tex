@@ -927,8 +927,8 @@ following function:
 In order to produce the $\Delta_{i}$, we need to include the $i$-th formula (built using the function \mintinline{coq}{decode})
 in the theory $\Delta_{i - 1}$. Finally, the maximal set is defined as:
 \begin{minted}{coq}
-Definition Max: theory := UnionOf Delta.
 Definition UnionOf (A: nat -> theory): theory := fun t => exists i, A i t.
+Definition Max: theory := UnionOf Delta.
 \end{minted}
 Function \mintinline{coq}{UnionOf} is a immediate encoding the indexed set union operator using Coq. An important property
 of this construction of the maximal set is that it only increases the number of elements. This fact is proved by
