@@ -1031,30 +1031,28 @@ Lemma determination: forall p, (M |= p) <-> (A; Empty |-- p).
 \end{minted}
 The proof is divided in two more lemmas for each implication direction using the truth lemma. Finally, the desired completeness theorem is stated simply as follows:
 \begin{minted}{coq}
-Theorem completeness: forall p, (G ||= p) -> (A; G |-- p).
+Theorem completeness: forall p, (Empty ||= p) -> (A; Empty |-- p).
 Proof.
+  (* Comments present in the source code omitted. *)
   intros p.
   apply contrapositive; intros.
   - apply classic.
-  - assert (Consistent A G).
-    + apply nonderivation_implies_consistency with p.
-      assumption.
+  - assert (Consistent A Empty).
+    + now apply nonderivation_implies_consistency with p.
     + assert ((M |= p) -> False); intros.
-      * apply determination with p in H2; auto.
-      * apply H2, H0.
-        intros q ? w; apply truth.
-        destruct w as (w, ?H, ?H, ?H); simpl.
-        apply H6; assumption.
+      * apply determination with p in H2.
+        contradiction.
+      * apply H2, H0; easy.
 Qed.
 \end{minted}
 The proof proceeds by the contrapositive.
-Suppose that \mintinline{coq}{A; G |-- p} does not hold.
+Suppose that \mintinline{coq}{A; Empty |-- p} does not hold.
 As this system can't derive every formula, it has to be consistent, which we can safely assume.
-Since \verb|G| is consistent, it
+Since the empty context is clearly consistent, it
 can be extended into the canonical model \verb|M|. By the fact that
-\mintinline{coq}{A; G |-- p} is false, by the determination lemma, we know
-that \verb|p| is not true on the canonical model \verb|M|. Conclusion follows
-by the truth lemma.
+\mintinline{coq}{A; Empty |-- p} is false, by the determination lemma, we know
+that \verb|p| is not true on the canonical model \verb|M|. Conclusion then follows directly
+by our current hypotheses, namely that \mintinline{coq}{Empty ||= p} and \mintinline{coq}{(A; Empty |-- p) -> False} (which includes showing that all formulas in the empty set are valid).
 
 \subsubsection{Frame Correspondence}\label{sec:correspondence}
 
