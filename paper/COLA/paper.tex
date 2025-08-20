@@ -975,10 +975,10 @@ $\mathcal{M}_\Gamma = \langle\mathcal{F}_\Gamma,\mathcal{V}\rangle$ is such that
 \end{itemize}
 
 In the folllowing, we omit the $\Gamma$ subscripts. The canonical model is formalized in Coq as follows: first, we define the type \mintinline{coq}{W} that pack
-the construction of the maximal consistent sets for a theory \mintinline{coq}{G}.
+the construction of the maximal consistent sets for a theory.
 \begin{minted}{coq}
 Inductive W: Type :=
-| W_mk D: Consistent A D -> Maximal D -> Subset G D -> W.
+| W_mk D: Consistent A D -> Maximal D -> W.
 \end{minted}
 Next, we encode the accessibility relation, $\mathcal{R}$, by
 the definition \mintinline{coq}{canonical_accessibility} and use
@@ -1027,7 +1027,7 @@ set membership is modelled by function application, \verb|w p|.
 \paragraph{The completeness proof} We almost have all the pieces to prove the completeness theorem. The next lemma
 shows that a formula holds in the canonical model if, and only if, it is provable in the deductive system.
 \begin{minted}{coq}
-Lemma determination: forall p, (M |= p) <-> (A; G |-- p).
+Lemma determination: forall p, (M |= p) <-> (A; Empty |-- p).
 \end{minted}
 The proof is divided in two more lemmas for each implication direction using the truth lemma. Finally, the desired completeness theorem is stated simply as follows:
 \begin{minted}{coq}
