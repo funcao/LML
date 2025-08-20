@@ -1116,8 +1116,20 @@ a proof L\"ob theorem in an extension of system K4 with modal fixed points.
 The importance of L\"ob's theorem is due to its use in provability
 logic~\cite{boolos_1994}, used to abstract details from encodings in G\"odel's
 incompleteness results.
+%
+The purpose of this exercise is to formally prove that the existence of fixed
+points (defined below) in a modal logic system implies the GL axiom: for any formula $\Psi$, it
+holds that $\Box(\Box\Psi \to \Psi) \to \Box\Psi$. Among the systems defined in
+this paper, System GL possesses the fixed point property, though this proof is
+non-trivial \cite{fixpoint}; but, in this case, our conclusion becomes rather
+uninteresting: the GL axiom is already an axiom in System GL, which trivializes
+the result. Still, we justify this case study as other systems that do not have
+GL as an axiom but do possess the fixed point property (see \cite{fixpoint}) are
+definable, and the main purpose for this code is to formalize a piece of modal
+logic proof within Coq by using our framework.
 
-In order to state L\"ob's theorem we need a way to encode modal
+Proceeding,
+in order to state L\"ob's theorem we need a way to encode modal
 fixed points. Formally, let $\varphi(X)$ be a formula with only one propositional variable
 $X$. The modal fixed point of $\varphi$ is then a formula $\Psi$ such that
 $\Psi \leftrightarrow \varphi(\Box \Psi)$.
