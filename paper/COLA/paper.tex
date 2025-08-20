@@ -888,7 +888,7 @@ Definition Subset (A B : theory): Prop := forall t, A t -> B t.
 
 The completeness proof rely on the fact that the set of modal logic formulas is countable. We model
 this fact by two functions \mintinline{coq}{encode: formula -> nat} and \mintinline{coq}{decode: nat -> option formula}
-which satisfies the following property: $\forall \varphi . (\texttt{decode(encode }\varphi\texttt{)} = \varphi)$, stated in the \mintinline{coq}{countable} axiom.
+which satisfies the following property: $\forall \varphi . (\texttt{decode (encode }\varphi\texttt{)} = \varphi)$, stated in the \mintinline{coq}{countable} axiom.
 
 Using the previously defined predicates, we encode the action of including a formula or its
 negation in a set using the type \mintinline{coq}{Insert}:
@@ -920,7 +920,7 @@ following function:
  Fixpoint Delta (n: nat): theory :=
    match n with
    | 0   => G
-   | S n' => Insert (decode n') (Delta n')
+   | S m => Insert (decode m) (Delta m)
    end.
 \end{minted}
 
