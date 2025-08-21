@@ -5,17 +5,17 @@
 %% The original source files were:
 %%
 %% samples.dtx  (with options: `sigconf')
-%% 
+%%
 %% IMPORTANT NOTICE:
-%% 
+%%
 %% For the copyright see the source file.
-%% 
+%%
 %% Any modified versions of this file must be renamed
 %% with new filenames distinct from sample-sigconf.tex.
-%% 
+%%
 %% For distribution of the original source see the terms
 %% for copying and modification in the file samples.dtx.
-%% 
+%%
 %% This generated file may be distributed as long as the
 %% original source files, as listed above, are part of the
 %% same distribution. (The sources need not necessarily be
@@ -109,22 +109,21 @@ October 6--7, 2022, Virtual Event, Brazil}
 %% Of note is the shared affiliation of the first two authors, and the
 %% "authornote" and "authornotemark" commands
 %% used to denote shared contribution to the research.
+\author{Miguel Nunes}
+\affiliation{\institution{Santa Catarina State University}\country{}}
+\email{miguel.alfredo.nunes@gmail.com}
 
 \author{Ariel Agne da Silveira}
 \affiliation{\institution{Federal University of Ouro Preto}\country{}}
 \email{ariel.silveira@aluno.ufop.edu.br}
 
-\author{Miguel Nunes}
+\author{Paulo Torrens}
 \affiliation{\institution{Santa Catarina State University}\country{}}
-\email{miguel.alfredo.nunes@gmail.com}
+\email{paulotorrens@gnu.org}
 
 \author{Karina Roggia}
 \affiliation{\institution{Santa Catarina State University}\country{}}
 \email{karina.roggia@udesc.br}
-
-\author{Paulo Torrens}
-\affiliation{\institution{Santa Catarina State University}\country{}}
-\email{paulotorrens@gnu.org}
 
 \author{Rodrigo Ribeiro}
 \affiliation{\institution{Federal University of Ouro Preto}\country{}}
@@ -136,7 +135,7 @@ October 6--7, 2022, Virtual Event, Brazil}
 %% other information printed in the page headers. This command allows
 %% the author to define a more concise list
 %% of authors' names for this purpose.
-\renewcommand{\shortauthors}{da Silveira et al.}
+\renewcommand{\shortauthors}{Nunes et al.}
 
 %%
 %% The abstract is a short summary of the work to be presented in the
@@ -177,37 +176,37 @@ October 6--7, 2022, Virtual Event, Brazil}
 \section{Introduction}\label{sec:intro}
 
 
-The start of modal logics can be traced back to Lewis and his definition of 
+The start of modal logics can be traced back to Lewis and his definition of
 logical systems with strict implication instead of material implication \cite{Lewis1918}.
 Based in this work, independently of classical propositional logic,
 defined the systems $\mathsf{S1}$--$\mathsf{S5}$~\cite{Lewis1932}, where $\mathsf{S4}$ and $\mathsf{S5}$
-are well known normal modal systems. It was, in fact, G{\"o}del that had the idea 
-to build a modal logic system as an extension of the classical propositional calculus, 
+are well known normal modal systems. It was, in fact, G{\"o}del that had the idea
+to build a modal logic system as an extension of the classical propositional calculus,
 when constructing a system similar to $\mathsf{S4}$ in \cite{Godel1933}.
 
-Despite that the original motivation of modal systems was to deal with strict implication, 
-for many years modal logic was seen as ``the logic of necessity and possibility''. 
+Despite that the original motivation of modal systems was to deal with strict implication,
+for many years modal logic was seen as ``the logic of necessity and possibility''.
 Only after the introduction of Kripke semantics they were also seen as ``simple yet
-expressive languages for talking about relational structures''~\cite{Blackburn-ModalLogics}. 
-A great multitude of modal systems, with various kinds of modal operators, each of them with 
+expressive languages for talking about relational structures''~\cite{Blackburn-ModalLogics}.
+A great multitude of modal systems, with various kinds of modal operators, each of them with
 different meanings or properties, have then been constructed in order to provide effective
-formalisms for talking about time, space, knowledge, beliefs, actions, 
+formalisms for talking about time, space, knowledge, beliefs, actions,
 obligations, among others.
 
-The interpretation of modal logic simply as ``the logic of necessity'' restricts 
-not only its applications but also the range of modal systems. In fact, modal logic 
-can also be seen as ``the study of \emph{modalities} -- logical operations that qualify 
-assertions about the truth of statements''~\cite{Goldblatt-MathofModality}. In this sense, 
-the necessitation rule (from $\varphi$ infer $\Box\varphi$) may be relaxed. This brings 
-a number of modal systems known as non-normal, whose semantics were defined only in the 
+The interpretation of modal logic simply as ``the logic of necessity'' restricts
+not only its applications but also the range of modal systems. In fact, modal logic
+can also be seen as ``the study of \emph{modalities} -- logical operations that qualify
+assertions about the truth of statements''~\cite{Goldblatt-MathofModality}. In this sense,
+the necessitation rule (from $\varphi$ infer $\Box\varphi$) may be relaxed. This brings
+a number of modal systems known as non-normal, whose semantics were defined only in the
 1970's by Montague~\cite{Montague1970} and Scott~\cite{Scott_AdviceModal1970}.
 
-Such wide range of highly expressive logical languages is the ideal tool to 
-formalize the many complexities of modern advanced software systems, 
+Such wide range of highly expressive logical languages is the ideal tool to
+formalize the many complexities of modern advanced software systems,
 such as those found in cars, airplanes, medical devices and banking applications.
 In combining said modal logics with interactive proof assistants,
 such as Coq~\cite{manual_coq} and Isabelle/HOL~\cite{manual_isabelle}, both of
-which have been applied with success in non-trivial projects like a certified compiler 
+which have been applied with success in non-trivial projects like a certified compiler
 for C programming language~\cite{Leroy09} and the kernel of seL4 operating
 system~\cite{Klein10}, it is possible to formalize and verify highly complex computer
 systems.
@@ -217,7 +216,7 @@ we believe that using mature tools, like a proof assistant, is a better option f
 verifying facts using modal logics. We justify this choice by: 1) the recent
 successful histories on verification of software and
 mathematics~\cite{Leroy09,Klein10,Gonthier13,Gonthier08}; 2) there is a growing
-community of developers using such tools thanks to 
+community of developers using such tools thanks to
 textbooks on the subject~\cite{Nipkow14,Bertot10,Chlipala13} which allows
 newcomers to join the game of formal verification; and 3) the custom automation
 facilities supported by current proof assistants allows for trivial facts to
@@ -255,7 +254,7 @@ modal logics facts.
 % verifying facts using modal logics. We justify this choice by: 1) the recent
 % successful histories on verification of software and
 % mathematics~\cite{Leroy09,Klein10,Gonthier13,Gonthier08}; 2) There is a growing
-% community of developers using such tools thanks to 
+% community of developers using such tools thanks to
 % textbooks on the subject~\cite{Nipkow14,Bertot10,Chlipala13} which allows
 % newbies to join the game of formal verification and 3) The custom automation
 % facilities supported by current proof assistants allows that trivial facts can
@@ -264,7 +263,7 @@ modal logics facts.
 
 % In this context, the present work aims to contribute by constructing a library
 % that formalize a family of normal modal logics and its related properties in Coq
-% by parametrizing the proofs over a set of possible axioms. 
+% by parametrizing the proofs over a set of possible axioms.
 % In using such a library, a developer could use all Coq's resources to prove
 % modal logics facts.
 
@@ -310,7 +309,7 @@ represents the proof has the type corresponding to the given formula.
 
 In order to make writing proofs easier, Coq provides
 \emph{tactics}, which are commands that can be used to construct proof
-terms in a more user-friendly way. As an example, consider the task of proving the following 
+terms in a more user-friendly way. As an example, consider the task of proving the following
 formula of the propositional logic:
 \[
 (A \to B)\to (B\to C) \to A \to C
@@ -324,7 +323,7 @@ Section EXAMPLE.
     intros H H' HA.
     apply H'.
     apply H.
-    assumption. 
+    assumption.
   Qed.
 End EXAMPLE.
 \end{minted}
@@ -371,7 +370,7 @@ $\mathcal{P} = \{A,B,C,...\}$ is the countable set of propositional variables):
 \[
   \begin{array}{lcl}
     \varphi & ::= & \mathcal{P}\,|\,\neg\varphi\,|\,\varphi\land\varphi\,|\,\varphi\lor\varphi\,|\,\varphi\to\varphi\,|\,\Box\varphi\,|\,\Diamond\varphi
-  \end{array}  
+  \end{array}
 \]
 Intuitively, the semantics of the operator $\Box$ is similar to an universal
 quantifier, since it expresses \emph{necessity}: $\Box\,\varphi$ is true in the
@@ -472,7 +471,7 @@ presented in the table below.
 \begin{tabular}{|c|c|}
   \hline
   Property of $R$                          & Formula schema \\ \hline
-  reflexive: $\forall w.wRw$               & $\Box A \to A$ \\ 
+  reflexive: $\forall w.wRw$               & $\Box A \to A$ \\
   serial: $\forall w\exists w'. wRw'$      & $\Box A \to \Diamond A$ \\
   symmetric: $\forall w\,w'.wRw' \to w'Rw$ & $A \to \Box\Diamond A$ \\
   \hline
@@ -531,8 +530,8 @@ A model is then denoted by another record, formed by a frame and a labeling func
 which assigns the truth value of a variable at a given world.
 \begin{minted}{coq}
 Record Model: Type := {
-  F: Frame; 
-  v: nat -> (W F) -> Prop; 
+  F: Frame;
+  v: nat -> (W F) -> Prop;
 }.
 \end{minted}
 Note that the type of the labeling function \mintinline{coq}{v} ensures that it
@@ -544,7 +543,7 @@ for propositional logics connectives for brevity. The interesting parts are for
 variables (constructor \mintinline{coq}{Lit}) which uses the labeling function
 \mintinline{coq}{v} from the model \mintinline{coq}{M}. The meaning of
 modalities $\Box$ and $\Diamond$ is represented by quantifying over worlds
-using the accessibility relation $R$. 
+using the accessibility relation $R$.
 \begin{minted}{coq}
 Fixpoint formula_valuation (M: Model) (w: W (F M))
                            (phi: formula): Prop :=
@@ -714,17 +713,17 @@ All these lemmas are direct consequences from the definitions of the Kripke
 semantics and entailment. We note that system K is used as it doesn't impose
 any restrictions on the frame.
 
-\paragraph{Frame Correspondence} 
+\paragraph{Frame Correspondence}
 As already mentioned, there are some modal formula schemas that correspond
 to properties of the accessibility relation of a modal system, if we take them
 as an axiom in the system.  While the proof that a certain property in a frame
 implies the correspondent axiom is usually  direct, the inverse often needs
 more effort. In the Coq proofs developed for this work,  the former case is
 mostly unfoldings, simplifications and applications of premises
-while the latter, apart from the necessity and burden of a proof by contraposition, 
-requires the construction of a witness valuation function. 
+while the latter, apart from the necessity and burden of a proof by contraposition,
+requires the construction of a witness valuation function.
 Nevertheless, all Coq proofs are fairly similar to the respective
-``pen and paper'' proofs found in the literature. 
+``pen and paper'' proofs found in the literature.
 Our work proves correspondence for the following properties: reflexivity,
 transitivity, symmetry,  euclidean, seriality, functionality, density, convergency,
 and converse well-foundness.
@@ -910,7 +909,7 @@ interact with each other. Using the built machinery, the author developed
 introduction and elimination rules for modal logic operators and use them to
 model the wize man's and muddy children puzzles.
 
-A Coq formalization for modal systems $K$, $T$ and $K4$ was the subject of 
+A Coq formalization for modal systems $K$, $T$ and $K4$ was the subject of
 Doczkal and Smolka's work. The authors' interest was in the definition of dynamic
 and temporal logics. The development of the code establishes the construction
 and definitions of tactics, through lemmas propositional operators and relation
@@ -923,12 +922,12 @@ type theory-based proof assistants are suitable for modal logic reasoning.
 They defined a formalization of systems $K$ and $S5$ and built custom tactics
 which allows proofs using a natural deduction style.
 The authors argue that current proof assistants are a useful technology for
-reasoning about facts expressed using modal logics. 
+reasoning about facts expressed using modal logics.
 
 The development of a completeness proof for modal logic S5 in Lean proof
 assistant was the subject of the Bentzen's work~\cite{Bentzen2021}. The author
 follows the approach due to Henkin for S5 completeness and it depends on
-\texttt{mathlib}, the Lean's library of mathematical results~\cite{mathlib20}. 
+\texttt{mathlib}, the Lean's library of mathematical results~\cite{mathlib20}.
 
 Maggesi et al. developed a formalization of the completeness proof for GL using
 the HOL light theorem prover~\cite{Maggesi21}. The authors argue that using the
@@ -942,7 +941,7 @@ and related works:
   \begin{table}[H]
     \begin{tabular}{|c|c|c|c|c|c|c|c|c|c|}
       \hline
-      \multirow{2}{*}{Authors} & \multicolumn{9}{c|}{Systems considered} \\ \cline{2-10} 
+      \multirow{2}{*}{Authors} & \multicolumn{9}{c|}{Systems considered} \\ \cline{2-10}
                                & K & D & B & T & K4 & K5 & S4 & S5 & GL\\ \hline
       Wind et al.~\cite{dewind}     & X &   &   & X & X  & X  & X  &  X & \\ \hline
       Doczkal et al.~\cite{saarland}   & X &   &   & X & X  &    &    &  &  \\ \hline
@@ -972,7 +971,7 @@ original work are composed by assignment and regular language operators
 (union, concatenation and Kleene star)~\cite{Pratt76}.
 
 An application of modal logic IS5 as a type system for a distributed
-programming language was proposed in~\cite{Murphy04}. 
+programming language was proposed in~\cite{Murphy04}.
 In that work, modalities are used to represent types for mobile code
 and remote addresses. Murphy et al defined the language by interpreting
 the possible worlds of the intutionistic modal logic IS5 to be nodes on a
@@ -991,7 +990,7 @@ the verification of a low-level virtual machine and a C-like language.
 A model for recursive, impredicatively quantified types with mutable references
 was studied by Appel et al.~\cite{Appel07}. Their interest in formalizing such
 advanced typing concepts was in the context of typed assembly languages.
-The authors stabilished a semantic type soundness proof by defining a Kripke-style 
+The authors stabilished a semantic type soundness proof by defining a Kripke-style
 semantics of the G\"odel-L\"ob logic of provability. All their definitions were
 also mechanized through a shallow embedding in Coq.
 
